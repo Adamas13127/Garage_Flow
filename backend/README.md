@@ -49,7 +49,7 @@ Depuis le dossier `backend/` :
 composer install
 ```
 
-CrÃ©er ensuite un fichier `.env.local` si des valeurs locales doivent remplacer celles de `.env`.
+CrÃƒÂ©er ensuite un fichier `.env.local` si des valeurs locales doivent remplacer celles de `.env`.
 Ne jamais versionner de vrais secrets.
 
 ## Lancer le backend localement
@@ -109,3 +109,68 @@ php bin/console doctrine:fixtures:load --append
 
 Les roles charges sont `ROLE_ADMIN`, `ROLE_GERANT`, `ROLE_EMPLOYE` et `ROLE_CLIENT`.
 Les statuts charges sont les etapes de suivi atelier comme `VEHICULE_DEPOSE`, `DIAGNOSTIC_EN_COURS` et `VEHICULE_PRET`.
+## Authentification JWT
+
+Le backend utilise LexikJWTAuthenticationBundle pour creer des tokens JWT.
+Les cles privee et publique sont locales et ne doivent jamais etre commit.
+
+### Generer les cles JWT
+
+Verifier d'abord que `.env.local` contient les variables JWT :
+
+```env
+JWT_SECRET_KEY=%kernel.project_dir%/config/jwt/private.pem
+JWT_PUBLIC_KEY=%kernel.project_dir%/config/jwt/public.pem
+JWT_PASSPHRASE=une-passphrase-locale
+JWT_TOKEN_TTL=3600
+```
+
+Generer ensuite les cles :
+
+```bash
+php bin/console lexik:jwt:generate-keypair --overwrite
+```
+
+Sur Windows/XAMPP, si OpenSSL ne trouve pas sa configuration, definir `OPENSSL_CONF` avant la commande :
+
+```bash
+set OPENSSL_CONF=C:\xampp_neuf\php\extras\openssl\openssl.cnf
+php bin/console lexik:jwt:generate-keypair --overwrite
+```
+
+Les fichiers `config/jwt/private.pem` et `config/jwt/public.pem` sont ignores par Git.
+
+### Charger les fixtures de reference
+
+```bash
+php bin/console doctrine:fixtures:load --append --no-interaction
+```
+
+Ces fixtures chargent uniquement les roles (`ROLE_ADMIN`, `ROLE_GERANT`, `ROLE_EMPLOYE`, `ROLE_CLIENT`) et les statuts d'intervention du MVP.
+
+### Exemples de requetes
+
+Inscription client :
+
+```bash
+curl -X POST http://127.0.0.1:8000/api/auth/register/client \
+  -H "Content-Type: application/json" \
+  -d "{\"nom\":\"Client\",\"prenom\":\"Test\",\"email\":\"client.test@example.com\",\"password\":\"Password123\",\"telephone\":\"0600000000\"}"
+```
+
+Connexion :
+
+```bash
+curl -X POST http://127.0.0.1:8000/api/auth/login \
+  -H "Content-Type: application/json" \
+  -d "{\"email\":\"client.test@example.com\",\"password\":\"Password123\"}"
+```
+
+Utilisateur connecte :
+
+```bash
+curl http://127.0.0.1:8000/api/me \
+  -H "Authorization: Bearer VOTRE_TOKEN_JWT"
+```
+
+Ne jamais versionner `.env.local`, les cles JWT locales ou de vrais secrets.

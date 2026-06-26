@@ -1,0 +1,8 @@
+# Ce fichier configure les tokens JWT du backend GarageFlow.
+# Il existe pour signer les futurs tokens utilises par le web et le mobile.
+# Les chemins pointent vers des cles locales ignorees par Git.
+lexik_jwt_authentication:
+    secret_key: '%env(resolve:JWT_SECRET_KEY)%'
+    public_key: '%env(resolve:JWT_PUBLIC_KEY)%'
+    pass_phrase: '%env(JWT_PASSPHRASE)%'
+    token_ttl: '%env(int:JWT_TOKEN_TTL)%'

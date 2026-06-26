@@ -20,3 +20,9 @@
 .DS_Store
 Thumbs.db
 Desktop.ini
+###> lexik/jwt-authentication-bundle ###
+/config/jwt/*.pem
+###< lexik/jwt-authentication-bundle ###
+
+# OpenSSL local random seed generated during JWT key creation.
+/.rnd

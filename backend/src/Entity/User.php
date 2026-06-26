@@ -119,16 +119,13 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     /** Cette methode retourne les roles Symfony calcules depuis le role stocke en base. */
     public function getRoles(): array
     {
-        $roles = [];
         $roleCode = $this->role?->getCode();
 
         if ($roleCode !== null && $roleCode !== '') {
-            $roles[] = str_starts_with($roleCode, 'ROLE_') ? $roleCode : 'ROLE_'.$roleCode;
+            return [str_starts_with($roleCode, 'ROLE_') ? $roleCode : 'ROLE_'.$roleCode];
         }
 
-        $roles[] = 'ROLE_CLIENT';
-
-        return array_values(array_unique($roles));
+        return ['ROLE_CLIENT'];
     }
     public function getPassword(): ?string { return $this->password; }
     public function setPassword(string $password): static { $this->password = $password; return $this; }

@@ -10,6 +10,8 @@
         "doctrine/doctrine-bundle": "^2.0",
         "doctrine/doctrine-migrations-bundle": "^3.0",
         "doctrine/orm": "^3.0",
+        "lexik/jwt-authentication-bundle": "^3.2",
+        "paragonie/sodium_compat_ext_sodium": "^1.0",
         "symfony/config": "^7.4",
         "symfony/dotenv": "^7.4",
         "symfony/flex": "^2.0",

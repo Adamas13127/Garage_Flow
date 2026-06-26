@@ -3,7 +3,7 @@
 /*
  * Ce fichier liste les bundles Symfony actifs dans le backend GarageFlow.
  * Il existe pour indiquer a Symfony quels modules techniques charger.
- * Il communique avec le framework, Doctrine, les migrations, la securite et les fixtures.
+ * Il communique avec le framework, Doctrine, les migrations, la securite, les fixtures et JWT.
  */
 
 return [
@@ -12,4 +12,5 @@ return [
     Doctrine\Bundle\MigrationsBundle\DoctrineMigrationsBundle::class => ['all' => true],
     Symfony\Bundle\SecurityBundle\SecurityBundle::class => ['all' => true],
     Doctrine\Bundle\FixturesBundle\DoctrineFixturesBundle::class => ['dev' => true, 'test' => true],
+    Lexik\Bundle\JWTAuthenticationBundle\LexikJWTAuthenticationBundle::class => ['all' => true],
 ];
