@@ -49,7 +49,7 @@ Depuis le dossier `backend/` :
 composer install
 ```
 
-Créer ensuite un fichier `.env.local` si des valeurs locales doivent remplacer celles de `.env`.
+CrÃ©er ensuite un fichier `.env.local` si des valeurs locales doivent remplacer celles de `.env`.
 Ne jamais versionner de vrais secrets.
 
 ## Lancer le backend localement
@@ -97,3 +97,15 @@ php bin/console about
 php bin/console lint:container
 composer audit
 ```
+## Fixtures de reference
+
+Les fixtures de reference servent a charger les donnees indispensables au fonctionnement de base du backend.
+Elles ajoutent uniquement les roles Symfony et les statuts d'intervention du MVP.
+Elles ne creent pas de faux utilisateur, de garage de demonstration, de rendez-vous ou d'intervention.
+
+```bash
+php bin/console doctrine:fixtures:load --append
+```
+
+Les roles charges sont `ROLE_ADMIN`, `ROLE_GERANT`, `ROLE_EMPLOYE` et `ROLE_CLIENT`.
+Les statuts charges sont les etapes de suivi atelier comme `VEHICULE_DEPOSE`, `DIAGNOSTIC_EN_COURS` et `VEHICULE_PRET`.

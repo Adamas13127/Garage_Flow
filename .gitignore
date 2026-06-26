@@ -1,4 +1,4 @@
-﻿# Dependencies
+# Dependencies
 vendor/
 node_modules/
 
@@ -21,6 +21,7 @@ coverage/
 .DS_Store
 Thumbs.db
 Desktop.ini
+*.lo1
 
 # Logs
 *.log

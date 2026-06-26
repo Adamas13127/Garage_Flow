@@ -3,7 +3,7 @@
 /*
  * Ce fichier declare l'entite User du backend GarageFlow.
  * Il existe pour centraliser les comptes clients, employes, gerants et administrateurs.
- * Il communique avec les roles, les garages, les vehicules, les rendez-vous et les traces d'action.
+ * Il communique avec les roles, les garages, les vehicules, les rendez-vous, Symfony Security et les traces d'action.
  */
 
 namespace App\Entity;
@@ -12,12 +12,17 @@ use App\Repository\UserRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
+use Symfony\Component\Security\Core\User\UserInterface;
 
+/**
+ * Cette entite represente un utilisateur qui pourra etre authentifie par Symfony Security.
+ */
 #[ORM\Entity(repositoryClass: UserRepository::class)]
 #[ORM\Table(name: 'user')]
 #[ORM\UniqueConstraint(name: 'uniq_user_email', columns: ['email'])]
 #[ORM\Index(name: 'idx_user_garage', columns: ['garage_id'])]
-class User
+class User implements UserInterface, PasswordAuthenticatedUserInterface
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
@@ -109,8 +114,26 @@ class User
     public function setPrenom(string $prenom): static { $this->prenom = $prenom; return $this; }
     public function getEmail(): ?string { return $this->email; }
     public function setEmail(string $email): static { $this->email = $email; return $this; }
+    /** Cette methode permet a Symfony Security d'identifier l'utilisateur connecte grace a son email. */
+    public function getUserIdentifier(): string { return (string) $this->email; }
+    /** Cette methode retourne les roles Symfony calcules depuis le role stocke en base. */
+    public function getRoles(): array
+    {
+        $roles = [];
+        $roleCode = $this->role?->getCode();
+
+        if ($roleCode !== null && $roleCode !== '') {
+            $roles[] = str_starts_with($roleCode, 'ROLE_') ? $roleCode : 'ROLE_'.$roleCode;
+        }
+
+        $roles[] = 'ROLE_CLIENT';
+
+        return array_values(array_unique($roles));
+    }
     public function getPassword(): ?string { return $this->password; }
     public function setPassword(string $password): static { $this->password = $password; return $this; }
+    /** Cette methode efface les donnees sensibles temporaires apres authentification. */
+    public function eraseCredentials(): void {}
     public function getTelephone(): ?string { return $this->telephone; }
     public function setTelephone(?string $telephone): static { $this->telephone = $telephone; return $this; }
     public function isActif(): bool { return $this->actif; }
