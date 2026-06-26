@@ -49,7 +49,7 @@ Depuis le dossier `backend/` :
 composer install
 ```
 
-CrÃƒÂ©er ensuite un fichier `.env.local` si des valeurs locales doivent remplacer celles de `.env`.
+CrÃƒÆ’Ã‚Â©er ensuite un fichier `.env.local` si des valeurs locales doivent remplacer celles de `.env`.
 Ne jamais versionner de vrais secrets.
 
 ## Lancer le backend localement
@@ -174,3 +174,49 @@ curl http://127.0.0.1:8000/api/me \
 ```
 
 Ne jamais versionner `.env.local`, les cles JWT locales ou de vrais secrets.
+## Gestion des vehicules client
+
+Les routes de gestion des vehicules sont protegees par JWT et reservees aux utilisateurs ayant le role `ROLE_CLIENT`.
+Il faut d'abord se connecter avec `/api/auth/login`, puis envoyer le token dans l'en-tete `Authorization`.
+
+### Lister les vehicules
+
+```bash
+curl http://127.0.0.1:8000/api/client/vehicles \
+  -H "Authorization: Bearer VOTRE_TOKEN_JWT"
+```
+
+### Creer un vehicule
+
+```bash
+curl -X POST http://127.0.0.1:8000/api/client/vehicles \
+  -H "Authorization: Bearer VOTRE_TOKEN_JWT" \
+  -H "Content-Type: application/json" \
+  -d "{\"marque\":\"Renault\",\"modele\":\"Clio\",\"plaqueImmatriculation\":\"AB-123-CD\",\"kilometrage\":12000,\"annee\":2021,\"carburant\":\"Essence\"}"
+```
+
+### Consulter un vehicule
+
+```bash
+curl http://127.0.0.1:8000/api/client/vehicles/1 \
+  -H "Authorization: Bearer VOTRE_TOKEN_JWT"
+```
+
+### Modifier un vehicule
+
+```bash
+curl -X PATCH http://127.0.0.1:8000/api/client/vehicles/1 \
+  -H "Authorization: Bearer VOTRE_TOKEN_JWT" \
+  -H "Content-Type: application/json" \
+  -d "{\"kilometrage\":13000,\"carburant\":\"Hybride\"}"
+```
+
+### Supprimer un vehicule
+
+```bash
+curl -X DELETE http://127.0.0.1:8000/api/client/vehicles/1 \
+  -H "Authorization: Bearer VOTRE_TOKEN_JWT"
+```
+
+Un client ne peut voir, modifier ou supprimer que ses propres vehicules.
+Une plaque d'immatriculation ne peut pas etre enregistree deux fois pour le meme client.
