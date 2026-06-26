@@ -1,0 +1,19 @@
+# Ce fichier configure les options principales du framework Symfony.
+# Il existe pour definir le secret applicatif, la session et les reglages communs.
+# Il communique avec les variables d'environnement du backend.
+# see https://symfony.com/doc/current/reference/configuration/framework.html
+framework:
+    secret: '%env(APP_SECRET)%'
+    #csrf_protection: true
+
+    # Note that the session will be started ONLY if you read or write from it.
+    session: true
+
+    #esi: true
+    #fragments: true
+
+when@test:
+    framework:
+        test: true
+        session:
+            storage_factory_id: session.storage.factory.mock_file

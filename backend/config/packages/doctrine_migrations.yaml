@@ -1,0 +1,9 @@
+# Ce fichier configure les migrations Doctrine du backend GarageFlow.
+# Il existe pour preparer les futures evolutions de schema SQL.
+# Les migrations seront generees plus tard apres creation des entites.
+doctrine_migrations:
+    migrations_paths:
+        # namespace is arbitrary but should be different from App\Migrations
+        # as migrations classes should NOT be autoloaded
+        'DoctrineMigrations': '%kernel.project_dir%/migrations'
+    enable_profiler: false

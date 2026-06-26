@@ -1,0 +1,26 @@
+#!/usr/bin/env php
+<?php
+
+/*
+ * Ce fichier est le point d'entree des commandes Symfony du backend GarageFlow.
+ * Il existe pour lancer les commandes de maintenance comme cache:clear ou doctrine:migrations:migrate.
+ * Il communique avec l'autoload Composer et la console Symfony.
+ */
+
+use App\Kernel;
+use Symfony\Bundle\FrameworkBundle\Console\Application;
+
+if (!is_file(dirname(__DIR__).'/vendor/autoload_runtime.php')) {
+    throw new LogicException('Symfony Runtime is missing. Try running "composer require symfony/runtime".');
+}
+
+require_once dirname(__DIR__).'/vendor/autoload_runtime.php';
+
+/**
+ * Cette fonction cree l'application console Symfony pour executer les commandes du backend.
+ */
+return function (array $context) {
+    $kernel = new Kernel($context['APP_ENV'], (bool) $context['APP_DEBUG']);
+
+    return new Application($kernel);
+};

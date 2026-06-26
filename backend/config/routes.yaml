@@ -1,0 +1,8 @@
+# Ce fichier prepare les routes principales du backend GarageFlow.
+# Il existe pour centraliser les futures entrees HTTP de l'API Symfony.
+# Les routes metier seront ajoutees plus tard sans etre creees dans cette mission.
+controllers:
+    resource:
+        path: ../src/Controller/
+        namespace: App\Controller
+    type: attribute

@@ -1,0 +1,7 @@
+# Ce fichier contient les routes techniques du framework Symfony.
+# Il existe pour brancher les outils internes fournis par Symfony.
+# Il ne contient aucun endpoint metier GarageFlow.
+when@dev:
+    _errors:
+        resource: '@FrameworkBundle/Resources/config/routing/errors.xml'
+        prefix: /_error

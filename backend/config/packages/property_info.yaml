@@ -1,0 +1,6 @@
+# Ce fichier configure l'extraction d'informations sur les proprietes PHP.
+# Il existe pour aider le serializer et les futures validations de DTO.
+# Il ne contient aucune regle metier GarageFlow pour le moment.
+framework:
+    property_info:
+        with_constructor_extractor: true

@@ -1,0 +1,6 @@
+# Ce fichier configure l'envoi d'emails du backend GarageFlow.
+# Il existe pour preparer les futures notifications email sans les developper maintenant.
+# Il utilise MAILER_DSN defini dans les variables d'environnement.
+framework:
+    mailer:
+        dsn: '%env(MAILER_DSN)%'

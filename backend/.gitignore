@@ -1,0 +1,22 @@
+# Ce fichier indique les elements techniques du backend Symfony a ne pas versionner.
+# Il existe pour eviter d'ajouter les dependances, caches et secrets locaux dans Git.
+
+###> symfony/framework-bundle ###
+/.env.local
+/.env.local.php
+/.env.*.local
+/config/secrets/prod/prod.decrypt.private.php
+/public/bundles/
+/var/
+/vendor/
+###< symfony/framework-bundle ###
+
+# Composer local cache used only during dependency installation.
+/.composer-cache/
+/.composer-home/
+
+# Local logs and operating system files.
+*.log
+.DS_Store
+Thumbs.db
+Desktop.ini

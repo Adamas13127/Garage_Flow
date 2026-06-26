@@ -1,0 +1,6 @@
+# Ce fichier prepare les routes techniques liees a la securite Symfony.
+# Il existe pour completer la configuration du Security Bundle si besoin.
+# Aucune route d'authentification metier n'est encore creee.
+_security_logout:
+    resource: security.route_loader.logout
+    type: service

@@ -1,0 +1,17 @@
+# Ce fichier decrit un service MySQL local utile pour tester le backend Symfony.
+# Il existe pour preparer la base SQL sans creer encore de donnees metier.
+services:
+  database:
+    image: mysql:${MYSQL_VERSION:-8.0}
+    environment:
+      MYSQL_DATABASE: ${MYSQL_DATABASE:-garageflow}
+      MYSQL_USER: ${MYSQL_USER:-garageflow}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD:-garageflow}
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD:-garageflow_root}
+    ports:
+      - "3306"
+    volumes:
+      - database_data:/var/lib/mysql:rw
+
+volumes:
+  database_data:
