@@ -1,4 +1,4 @@
-﻿# GarageFlow
+# GarageFlow
 
 GarageFlow est une plateforme web et mobile de prise de rendez-vous et de suivi d'intervention pour garages automobiles independants.
 
@@ -52,3 +52,17 @@ Les commandes d'installation seront completees lorsque les applications backend,
 
 La documentation du projet se trouve dans le dossier `docs/`.
 Le fichier `AGENTS.md` a la racine reste la source de verite principale pour les prochaines missions.
+## Frontend web
+
+Le dossier `web/` contient le dashboard garage React/Vite. Commandes principales :
+
+```bash
+cd web
+npm install
+npm run dev
+npm run build
+npm run lint
+npm test
+```
+
+Le frontend utilise `VITE_API_BASE_URL` pour joindre le backend Symfony. Le fichier local `.env.local` ne doit pas etre commite.

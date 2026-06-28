@@ -1,0 +1,13 @@
+# Ce fichier indique les fichiers locaux du frontend web GarageFlow a ne pas versionner.
+# Il existe pour eviter d'ajouter les dependances, builds, caches et variables locales dans Git.
+
+node_modules/
+dist/
+.npm-cache/
+.env
+.env.local
+.env.*.local
+*.log
+.DS_Store
+Thumbs.db
+Desktop.ini
