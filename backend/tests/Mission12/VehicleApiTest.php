@@ -48,7 +48,7 @@ class VehicleApiTest extends BaseApiTestCase
         ];
 
         foreach ($cases as $label => $override) {
-            $payload = $this->vehiclePayload(['plaqueImmatriculation' => 'ERR-'.substr(md5($label), 0, 8)] + $override);
+            $payload = $this->vehiclePayload(array_merge(['plaqueImmatriculation' => 'ERR-'.substr(md5($label), 0, 8)], $override));
             $this->requestJson('POST', '/api/client/vehicles', $payload, $token);
             $this->assertResponseStatus(400);
         }

@@ -31,3 +31,5 @@ Desktop.ini
 /phpunit.xml
 /.phpunit.cache/
 ###< phpunit/phpunit ###
+/.env.test.local
+/config/jwt/**/*.pem
