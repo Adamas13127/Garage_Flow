@@ -490,3 +490,93 @@ curl -X PATCH http://127.0.0.1:8000/api/notifications/read-all \
 ```
 
 Chaque utilisateur ne peut consulter et modifier que ses propres notifications. Le backend retourne `404` si une notification existe mais appartient a un autre utilisateur.
+## Qualite finale et documentation API
+
+Cette section regroupe les commandes a lancer avant de livrer le backend ou de commencer une nouvelle couche frontend.
+
+### Installation backend
+
+```bash
+composer install
+docker compose up -d database
+php bin/console doctrine:database:create --if-not-exists
+php bin/console doctrine:migrations:migrate
+php bin/console doctrine:fixtures:load --append --no-interaction
+```
+
+### Configuration MySQL Docker
+
+Le service Docker `database` expose MySQL sur `127.0.0.1:3306`. En developpement local, `.env.local` doit contenir une `DATABASE_URL` adaptee au container. Ce fichier reste local et ne doit jamais etre commite.
+
+### Configuration JWT dev
+
+Les cles de developpement sont generees dans `config/jwt/private.pem` et `config/jwt/public.pem`.
+
+```bash
+php bin/console lexik:jwt:generate-keypair --overwrite
+php bin/console lexik:jwt:check-config
+```
+
+Sur Windows, si OpenSSL echoue, definir temporairement `OPENSSL_CONF` vers le fichier `openssl.cnf` local avant de relancer la commande.
+
+### Configuration JWT test
+
+Les tests utilisent des cles separees dans `config/jwt/test/private.pem` et `config/jwt/test/public.pem`. Elles sont ignorees par Git. `.env.test` utilise `test_passphrase`, acceptable uniquement pour les tests locaux.
+
+```bash
+php bin/console lexik:jwt:generate-keypair --env=test --overwrite
+php bin/console lexik:jwt:check-config --env=test
+```
+
+### Base et migrations de test
+
+`.env.test` pointe vers la base racine `garageflow`. Doctrine ajoute automatiquement le suffixe `_test`, donc les tests utilisent `garageflow_test`.
+
+```bash
+php bin/console doctrine:database:create --env=test --if-not-exists
+php bin/console doctrine:migrations:migrate --env=test --no-interaction
+```
+
+### Scripts Composer
+
+```bash
+composer test
+composer test:mission12
+composer quality
+composer routes
+```
+
+`composer quality` lance la validation Composer, le lint du container Symfony, la validation du schema Doctrine et PHPUnit.
+
+### Commandes de verification
+
+```bash
+composer validate --strict
+php bin/console lint:container
+php bin/console doctrine:schema:validate
+php bin/console debug:router
+php bin/phpunit
+php bin/phpunit tests/Mission12
+```
+
+### Documentation API
+
+* `docs/API.md` liste les endpoints principaux par domaine.
+* `docs/DEMO_SCENARIO.md` propose un scenario oral pour presenter le MVP.
+* `docs/QUALITY_AUDIT.md` resume les controles qualite et securite.
+* `tests/README.md` explique l'organisation des tests.
+* `tests/Mission12/README.md` detaille la premiere campagne PHPUnit.
+
+### Endpoints principaux par domaine
+
+* Auth : `/api/auth/register/client`, `/api/auth/login`, `/api/me`.
+* Vehicules : `/api/client/vehicles`.
+* Garages : `/api/garages`, `/api/garage/me`, `/api/garage/me/services`, `/api/garage/me/opening-hours`, `/api/garage/me/unavailabilities`.
+* RDV client : `/api/client/appointments`.
+* RDV garage : `/api/garage/me/appointments`.
+* Interventions : `/api/garage/me/interventions`, `/api/client/interventions`.
+* Notifications : `/api/notifications`.
+
+### Regles de securite Git
+
+Ne jamais commiter `.env.local`, `.env.test.local`, `.rnd`, `var/`, `vendor/`, `node_modules/`, ni les fichiers `.pem` de `config/jwt/`. Verifier avec `git status --short` avant chaque commit.

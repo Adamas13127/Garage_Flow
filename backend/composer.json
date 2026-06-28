@@ -6,7 +6,7 @@
     "minimum-stability":  "stable",
     "prefer-stable":  true,
     "require":  {
-                    "php":  "\u003e=8.2",
+                    "php":  ">=8.2",
                     "doctrine/doctrine-bundle":  "^2.0",
                     "doctrine/doctrine-migrations-bundle":  "^3.0",
                     "doctrine/orm":  "^3.0",
@@ -47,7 +47,16 @@
                                          ],
                     "post-update-cmd":  [
                                             "@auto-scripts"
-                                        ]
+                                        ],
+                    "test":  "php bin/phpunit",
+                    "test:mission12":  "php bin/phpunit tests/Mission12",
+                    "routes":  "php bin/console debug:router",
+                    "quality":  [
+                                    "composer validate --strict",
+                                    "php bin/console lint:container",
+                                    "php bin/console doctrine:schema:validate",
+                                    "php bin/phpunit"
+                                ]
                 },
     "extra":  {
                   "symfony":  {
