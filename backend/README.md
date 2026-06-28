@@ -374,3 +374,76 @@ curl -X PATCH http://127.0.0.1:8000/api/garage/me/appointments/1/refuse \
 ```
 
 Le motif est optionnel. Le refus est possible seulement si le rendez-vous est encore `EN_ATTENTE`.
+## Suivi des interventions
+
+Quand un rendez-vous est accepte par le garage, le backend cree automatiquement une intervention. Le garage peut ensuite changer son statut, ajouter un historique et gerer des notes internes. Le client peut consulter l'avancement de sa reparation, mais ne voit jamais les notes internes.
+
+### Interventions cote garage
+
+Lister les interventions du garage connecte :
+
+```bash
+curl http://127.0.0.1:8000/api/garage/me/interventions \
+  -H "Authorization: Bearer VOTRE_TOKEN_GARAGE"
+```
+
+Filtres possibles :
+
+```bash
+curl "http://127.0.0.1:8000/api/garage/me/interventions?statusCode=DIAGNOSTIC_EN_COURS&date=2030-01-10" \
+  -H "Authorization: Bearer VOTRE_TOKEN_GARAGE"
+```
+
+Consulter une intervention :
+
+```bash
+curl http://127.0.0.1:8000/api/garage/me/interventions/1 \
+  -H "Authorization: Bearer VOTRE_TOKEN_GARAGE"
+```
+
+Changer le statut d'une intervention :
+
+```bash
+curl -X PATCH http://127.0.0.1:8000/api/garage/me/interventions/1/status \
+  -H "Authorization: Bearer VOTRE_TOKEN_GARAGE" \
+  -H "Content-Type: application/json" \
+  -d "{\"statusCode\":\"DIAGNOSTIC_EN_COURS\",\"commentaire\":\"Diagnostic commence.\"}"
+```
+
+Chaque changement de statut cree une ligne d'historique. Si le statut devient `VEHICULE_RECUPERE`, l'intervention est cloturee et le rendez-vous lie passe en `TERMINE`.
+
+### Notes internes garage
+
+Les notes internes sont reservees au garage et ne sont jamais retournees dans les routes client.
+
+```bash
+curl http://127.0.0.1:8000/api/garage/me/interventions/1/notes \
+  -H "Authorization: Bearer VOTRE_TOKEN_GARAGE"
+
+curl -X POST http://127.0.0.1:8000/api/garage/me/interventions/1/notes \
+  -H "Authorization: Bearer VOTRE_TOKEN_GARAGE" \
+  -H "Content-Type: application/json" \
+  -d "{\"contenu\":\"Verifier le bruit au freinage.\"}"
+
+curl -X PATCH http://127.0.0.1:8000/api/garage/me/interventions/1/notes/1 \
+  -H "Authorization: Bearer VOTRE_TOKEN_GARAGE" \
+  -H "Content-Type: application/json" \
+  -d "{\"contenu\":\"Verifier aussi les plaquettes.\"}"
+
+curl -X DELETE http://127.0.0.1:8000/api/garage/me/interventions/1/notes/1 \
+  -H "Authorization: Bearer VOTRE_TOKEN_GARAGE"
+```
+
+### Interventions cote client
+
+Le client consulte uniquement les interventions liees a ses propres rendez-vous. L'historique retourne cote client est limite aux statuts marques comme visibles client.
+
+```bash
+curl http://127.0.0.1:8000/api/client/interventions \
+  -H "Authorization: Bearer VOTRE_TOKEN_CLIENT"
+
+curl http://127.0.0.1:8000/api/client/interventions/1 \
+  -H "Authorization: Bearer VOTRE_TOKEN_CLIENT"
+```
+
+Cycle de suivi : rendez-vous accepte, intervention creee, statut mis a jour par le garage, historique ajoute, client informe via consultation API. Les notifications seront ajoutees dans une mission separee.
