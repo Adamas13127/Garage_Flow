@@ -1,14 +1,16 @@
+<!--
+Ce fichier documente le backend Symfony de GarageFlow.
+Il existe pour expliquer au jury et aux developpeurs comment installer, lancer et tester l'API.
+Il communique indirectement avec les commandes Symfony, Docker, Doctrine et les routes HTTP du backend.
+-->
+
 # Backend GarageFlow
 
-Ce dossier contient le backend Symfony de GarageFlow.
-Il fournit le socle de l'API REST qui servira plus tard au dashboard web, a l'application mobile et a la base de donnees MySQL.
+Ce dossier contient le backend Symfony de GarageFlow. Il fournit l'API REST utilisee par le dashboard web garage et l'application mobile client.
 
 ## Role du backend
 
-Le backend sera la source de verite de l'application.
-Il recevra les requetes HTTP, appliquera les regles de securite, executera la logique metier dans les services et enregistrera les donnees avec Doctrine ORM.
-
-Aucune entite metier, aucun endpoint garage, vehicule, rendez-vous ou intervention n'est encore cree dans cette mission.
+Le backend est la source de verite de l'application. Il recoit les requetes HTTP, verifie les droits, applique la logique metier dans les services et enregistre les donnees avec Doctrine ORM et MySQL.
 
 ## Stack utilisee
 
@@ -19,6 +21,8 @@ Aucune entite metier, aucun endpoint garage, vehicule, rendez-vous ou interventi
 * Symfony Validator
 * Symfony Serializer
 * Symfony Security Bundle
+* LexikJWTAuthenticationBundle
+* Doctrine Fixtures Bundle
 * Symfony Mailer
 * Composer
 
@@ -28,17 +32,18 @@ Aucune entite metier, aucun endpoint garage, vehicule, rendez-vous ou interventi
 backend/
 |-- bin/                 -> commandes Symfony
 |-- config/              -> configuration Symfony, Doctrine, routes et securite
+|-- migrations/          -> migrations Doctrine
 |-- public/              -> point d'entree HTTP
-|-- migrations/          -> futures migrations Doctrine
 |-- src/
-|   |-- Controller/      -> futurs controleurs HTTP de l'API
-|   |-- Entity/          -> futures entites Doctrine
-|   |-- Repository/      -> futures requetes vers la base de donnees
-|   |-- Service/         -> future logique metier
-|   |-- Security/        -> future preparation de l'authentification et des roles
-|   |-- DTO/             -> futurs objets de transfert de donnees
-|   |-- Validator/       -> futures validations personnalisees
-|   `-- EventSubscriber/ -> futurs abonnements aux evenements Symfony
+|   |-- Command/         -> commandes Symfony de developpement
+|   |-- Controller/      -> controleurs HTTP de l'API
+|   |-- DTO/             -> objets qui portent et valident les donnees recues
+|   |-- Entity/          -> entites Doctrine synchronisees avec MySQL
+|   |-- EventSubscriber/ -> abonnements aux evenements Symfony
+|   |-- Repository/      -> requetes vers la base de donnees
+|   |-- Security/        -> exceptions et classes liees a la securite
+|   |-- Service/         -> logique metier appelee par les controleurs
+|   `-- Validator/       -> validations personnalisees futures
 ```
 
 ## Installation
@@ -49,113 +54,71 @@ Depuis le dossier `backend/` :
 composer install
 ```
 
-CrÃƒÆ’Ã‚Â©er ensuite un fichier `.env.local` si des valeurs locales doivent remplacer celles de `.env`.
-Ne jamais versionner de vrais secrets.
-
-## Lancer le backend localement
-
-Avec le serveur PHP integre :
-
-```bash
-php -S 127.0.0.1:8000 -t public
-```
-
-Si la CLI Symfony est installee plus tard :
-
-```bash
-symfony server:start
-```
+Creer ensuite un fichier `.env.local` pour les valeurs locales. Ne jamais versionner de vrais secrets.
 
 ## Base de donnees MySQL
 
-La variable `DATABASE_URL` attend une base MySQL :
+La variable `DATABASE_URL` doit pointer vers MySQL :
 
 ```env
-DATABASE_URL="mysql://user:password@127.0.0.1:3306/garageflow?serverVersion=8.0&charset=utf8mb4"
+DATABASE_URL="mysql://app:!ChangeMe!@127.0.0.1:3306/app?serverVersion=8.0&charset=utf8mb4"
 ```
 
-Un service Docker MySQL de developpement est prepare dans `compose.yaml`.
+Demarrer le service Docker MySQL :
 
 ```bash
 docker compose up -d database
 ```
 
+Creer la base si besoin :
+
+```bash
+php bin/console doctrine:database:create --if-not-exists
+```
+
 ## Migrations Doctrine
 
-Les entites metier ne sont pas encore creees.
-Les commandes suivantes serviront plus tard, quand le modele de donnees sera defini :
+Creer une migration apres modification du modele :
 
 ```bash
 php bin/console make:migration
+```
+
+Executer les migrations :
+
+```bash
 php bin/console doctrine:migrations:migrate
 ```
 
-## Verification technique
+Verifier le schema :
 
 ```bash
-php bin/console about
-php bin/console lint:container
-composer audit
+php bin/console doctrine:schema:validate
 ```
+
 ## Fixtures de reference
 
-Les fixtures de reference servent a charger les donnees indispensables au fonctionnement de base du backend.
-Elles ajoutent uniquement les roles Symfony et les statuts d'intervention du MVP.
-Elles ne creent pas de faux utilisateur, de garage de demonstration, de rendez-vous ou d'intervention.
-
-```bash
-php bin/console doctrine:fixtures:load --append
-```
-
-Les roles charges sont `ROLE_ADMIN`, `ROLE_GERANT`, `ROLE_EMPLOYE` et `ROLE_CLIENT`.
-Les statuts charges sont les etapes de suivi atelier comme `VEHICULE_DEPOSE`, `DIAGNOSTIC_EN_COURS` et `VEHICULE_PRET`.
-## Authentification JWT
-
-Le backend utilise LexikJWTAuthenticationBundle pour creer des tokens JWT.
-Les cles privee et publique sont locales et ne doivent jamais etre commit.
-
-### Generer les cles JWT
-
-Verifier d'abord que `.env.local` contient les variables JWT :
-
-```env
-JWT_SECRET_KEY=%kernel.project_dir%/config/jwt/private.pem
-JWT_PUBLIC_KEY=%kernel.project_dir%/config/jwt/public.pem
-JWT_PASSPHRASE=une-passphrase-locale
-JWT_TOKEN_TTL=3600
-```
-
-Generer ensuite les cles :
-
-```bash
-php bin/console lexik:jwt:generate-keypair --overwrite
-```
-
-Sur Windows/XAMPP, si OpenSSL ne trouve pas sa configuration, definir `OPENSSL_CONF` avant la commande :
-
-```bash
-set OPENSSL_CONF=C:\xampp_neuf\php\extras\openssl\openssl.cnf
-php bin/console lexik:jwt:generate-keypair --overwrite
-```
-
-Les fichiers `config/jwt/private.pem` et `config/jwt/public.pem` sont ignores par Git.
-
-### Charger les fixtures de reference
+Les fixtures chargent les donnees indispensables au fonctionnement de base : roles Symfony et statuts d'intervention du MVP.
 
 ```bash
 php bin/console doctrine:fixtures:load --append --no-interaction
 ```
 
-Ces fixtures chargent uniquement les roles (`ROLE_ADMIN`, `ROLE_GERANT`, `ROLE_EMPLOYE`, `ROLE_CLIENT`) et les statuts d'intervention du MVP.
+Les roles charges sont `ROLE_ADMIN`, `ROLE_GERANT`, `ROLE_EMPLOYE` et `ROLE_CLIENT`.
 
-### Exemples de requetes
+## Authentification JWT
 
-Inscription client :
+Le backend utilise JWT pour proteger les routes privees. Les cles locales ne doivent jamais etre commitees.
 
 ```bash
-curl -X POST http://127.0.0.1:8000/api/auth/register/client \
-  -H "Content-Type: application/json" \
-  -d "{\"nom\":\"Client\",\"prenom\":\"Test\",\"email\":\"client.test@example.com\",\"password\":\"Password123\",\"telephone\":\"0600000000\"}"
+php bin/console lexik:jwt:generate-keypair --overwrite
+```
+
+Sur Windows/XAMPP, si OpenSSL ne trouve pas sa configuration :
+
+```bash
+set OPENSSL_CONF=C:\xampp_neuf\php\extras\openssl\openssl.cnf
+php bin/console lexik:jwt:generate-keypair --overwrite
 ```
 
 Connexion :
@@ -166,57 +129,135 @@ curl -X POST http://127.0.0.1:8000/api/auth/login \
   -d "{\"email\":\"client.test@example.com\",\"password\":\"Password123\"}"
 ```
 
-Utilisateur connecte :
+## Commande de demonstration garage
+
+La commande suivante cree localement un garage actif et un compte gerant pour tester les routes protegees du garage. Elle est idempotente : si les donnees existent deja, elle les reutilise.
 
 ```bash
-curl http://127.0.0.1:8000/api/me \
+php bin/console app:create-demo-garage
+```
+
+Identifiants locaux crees par la commande :
+
+```text
+Email: gerant.demo@garageflow.local
+Mot de passe: Password123
+```
+
+Ces identifiants sont uniquement destines au developpement local.
+
+## Lancer le backend localement
+
+Avec le serveur PHP integre :
+
+```bash
+php -S 127.0.0.1:8000 -t public
+```
+
+Avec la CLI Symfony si elle est installee :
+
+```bash
+symfony server:start
+```
+
+## Catalogue public des garages
+
+Ces routes sont publiques car un client doit pouvoir consulter les garages avant de se connecter.
+
+```bash
+curl http://127.0.0.1:8000/api/garages
+curl http://127.0.0.1:8000/api/garages/1
+curl http://127.0.0.1:8000/api/garages/1/services
+```
+
+## Gestion du garage connecte
+
+Ces routes sont protegees par JWT. Les routes de lecture acceptent `ROLE_EMPLOYE`, `ROLE_GERANT` et `ROLE_ADMIN`. Les modifications acceptent `ROLE_GERANT` et `ROLE_ADMIN`.
+
+Consulter son garage :
+
+```bash
+curl http://127.0.0.1:8000/api/garage/me \
   -H "Authorization: Bearer VOTRE_TOKEN_JWT"
 ```
 
-Ne jamais versionner `.env.local`, les cles JWT locales ou de vrais secrets.
+Modifier son garage :
+
+```bash
+curl -X PATCH http://127.0.0.1:8000/api/garage/me \
+  -H "Authorization: Bearer VOTRE_TOKEN_JWT" \
+  -H "Content-Type: application/json" \
+  -d "{\"telephone\":\"0102030405\",\"description\":\"Garage de demonstration\"}"
+```
+
+### Prestations
+
+```bash
+curl http://127.0.0.1:8000/api/garage/me/services \
+  -H "Authorization: Bearer VOTRE_TOKEN_JWT"
+
+curl -X POST http://127.0.0.1:8000/api/garage/me/services \
+  -H "Authorization: Bearer VOTRE_TOKEN_JWT" \
+  -H "Content-Type: application/json" \
+  -d "{\"nom\":\"Vidange\",\"description\":\"Vidange moteur\",\"dureeMinutes\":60,\"actif\":true}"
+
+curl -X PATCH http://127.0.0.1:8000/api/garage/me/services/1 \
+  -H "Authorization: Bearer VOTRE_TOKEN_JWT" \
+  -H "Content-Type: application/json" \
+  -d "{\"dureeMinutes\":75}"
+
+curl -X DELETE http://127.0.0.1:8000/api/garage/me/services/1 \
+  -H "Authorization: Bearer VOTRE_TOKEN_JWT"
+```
+
+La suppression d'une prestation la desactive avec `actif=false`.
+
+### Horaires
+
+```bash
+curl http://127.0.0.1:8000/api/garage/me/opening-hours \
+  -H "Authorization: Bearer VOTRE_TOKEN_JWT"
+
+curl -X POST http://127.0.0.1:8000/api/garage/me/opening-hours \
+  -H "Authorization: Bearer VOTRE_TOKEN_JWT" \
+  -H "Content-Type: application/json" \
+  -d "{\"jourSemaine\":1,\"heureDebut\":\"09:00\",\"heureFin\":\"18:00\",\"actif\":true}"
+```
+
+`heureDebut` doit etre avant `heureFin`. La suppression d'un horaire le desactive avec `actif=false`.
+
+### Indisponibilites
+
+```bash
+curl http://127.0.0.1:8000/api/garage/me/unavailabilities \
+  -H "Authorization: Bearer VOTRE_TOKEN_JWT"
+
+curl -X POST http://127.0.0.1:8000/api/garage/me/unavailabilities \
+  -H "Authorization: Bearer VOTRE_TOKEN_JWT" \
+  -H "Content-Type: application/json" \
+  -d "{\"dateDebut\":\"2030-01-10T09:00:00+01:00\",\"dateFin\":\"2030-01-10T12:00:00+01:00\",\"motif\":\"Formation\"}"
+```
+
+`dateDebut` doit etre avant `dateFin`. La suppression d'une indisponibilite est physique car l'entite n'a pas de champ `actif`.
+
 ## Gestion des vehicules client
 
 Les routes de gestion des vehicules sont protegees par JWT et reservees aux utilisateurs ayant le role `ROLE_CLIENT`.
-Il faut d'abord se connecter avec `/api/auth/login`, puis envoyer le token dans l'en-tete `Authorization`.
-
-### Lister les vehicules
 
 ```bash
 curl http://127.0.0.1:8000/api/client/vehicles \
   -H "Authorization: Bearer VOTRE_TOKEN_JWT"
 ```
 
-### Creer un vehicule
-
-```bash
-curl -X POST http://127.0.0.1:8000/api/client/vehicles \
-  -H "Authorization: Bearer VOTRE_TOKEN_JWT" \
-  -H "Content-Type: application/json" \
-  -d "{\"marque\":\"Renault\",\"modele\":\"Clio\",\"plaqueImmatriculation\":\"AB-123-CD\",\"kilometrage\":12000,\"annee\":2021,\"carburant\":\"Essence\"}"
-```
-
-### Consulter un vehicule
-
-```bash
-curl http://127.0.0.1:8000/api/client/vehicles/1 \
-  -H "Authorization: Bearer VOTRE_TOKEN_JWT"
-```
-
-### Modifier un vehicule
-
-```bash
-curl -X PATCH http://127.0.0.1:8000/api/client/vehicles/1 \
-  -H "Authorization: Bearer VOTRE_TOKEN_JWT" \
-  -H "Content-Type: application/json" \
-  -d "{\"kilometrage\":13000,\"carburant\":\"Hybride\"}"
-```
-
-### Supprimer un vehicule
-
-```bash
-curl -X DELETE http://127.0.0.1:8000/api/client/vehicles/1 \
-  -H "Authorization: Bearer VOTRE_TOKEN_JWT"
-```
-
 Un client ne peut voir, modifier ou supprimer que ses propres vehicules.
-Une plaque d'immatriculation ne peut pas etre enregistree deux fois pour le meme client.
+
+## Verification technique
+
+```bash
+composer validate --strict
+php bin/console lint:container
+php bin/console doctrine:schema:validate
+php bin/console debug:router
+```
+
+Ne jamais versionner `.env.local`, les cles JWT locales, `vendor/`, `var/` ou de vrais secrets.
