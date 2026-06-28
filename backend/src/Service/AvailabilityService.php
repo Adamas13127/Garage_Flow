@@ -8,6 +8,7 @@
 
 namespace App\Service;
 
+use App\Entity\Appointment;
 use App\Entity\Garage;
 use App\Entity\OpeningHour;
 use App\Entity\ServicePrestation;
@@ -73,6 +74,12 @@ class AvailabilityService
     /** Cette methode verifie qu'un creneau precis peut recevoir la prestation demandee. */
     public function isSlotAvailable(Garage $garage, ServicePrestation $service, \DateTimeImmutable $start): bool
     {
+        return $this->isSlotAvailableExcludingAppointment($garage, $service, $start, null);
+    }
+
+    /** Cette methode verifie un creneau en ignorant le rendez-vous en cours de confirmation. */
+    public function isSlotAvailableExcludingAppointment(Garage $garage, ServicePrestation $service, \DateTimeImmutable $start, ?Appointment $excludedAppointment): bool
+    {
         $end = $start->modify('+'.$service->getDureeMinutes().' minutes');
         if ($start <= new \DateTimeImmutable()) {
             return false;
@@ -82,7 +89,7 @@ class AvailabilityService
             return false;
         }
 
-        return $this->isPeriodFree($garage, $start, $end);
+        return $this->isPeriodFree($garage, $start, $end, $excludedAppointment);
     }
 
     /** Cette methode recupere un garage actif ou declenche une erreur 404. */
@@ -155,13 +162,13 @@ class AvailabilityService
     }
 
     /** Cette methode verifie qu'aucune indisponibilite ni rendez-vous bloquant ne chevauche la periode. */
-    private function isPeriodFree(Garage $garage, \DateTimeImmutable $start, \DateTimeImmutable $end): bool
+    private function isPeriodFree(Garage $garage, \DateTimeImmutable $start, \DateTimeImmutable $end, ?Appointment $excludedAppointment = null): bool
     {
         if ($this->unavailabilityRepository->findForGarageBetween($garage, $start, $end) !== []) {
             return false;
         }
 
-        return $this->appointmentRepository->findBlockingAppointmentsForGarageBetween($garage, $start, $end) === [];
+        return $this->appointmentRepository->findBlockingAppointmentsForGarageBetweenExcludingAppointment($garage, $start, $end, $excludedAppointment) === [];
     }
 
     /** Cette methode colle une heure recurrente sur une date precise pour obtenir un vrai creneau. */

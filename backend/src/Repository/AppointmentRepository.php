@@ -2,7 +2,7 @@
 
 /*
  * Ce fichier declare le repository Doctrine de l'entite Appointment.
- * Il existe pour centraliser les requetes SQL liees aux rendez-vous clients.
+ * Il existe pour centraliser les requetes SQL liees aux rendez-vous clients et garage.
  * Il communique avec Doctrine ORM, User, Garage et MySQL pour filtrer les rendez-vous sans exposer ceux des autres utilisateurs.
  */
 
@@ -30,7 +30,13 @@ class AppointmentRepository extends ServiceEntityRepository
     /** Cette methode retrouve les rendez-vous qui bloquent une periode pour un garage donne. */
     public function findBlockingAppointmentsForGarageBetween(Garage $garage, \DateTimeImmutable $start, \DateTimeImmutable $end): array
     {
-        return $this->createQueryBuilder('appointment')
+        return $this->findBlockingAppointmentsForGarageBetweenExcludingAppointment($garage, $start, $end, null);
+    }
+
+    /** Cette methode retrouve les rendez-vous bloquants en excluant le rendez-vous en cours de decision. */
+    public function findBlockingAppointmentsForGarageBetweenExcludingAppointment(Garage $garage, \DateTimeImmutable $start, \DateTimeImmutable $end, ?Appointment $excludedAppointment): array
+    {
+        $queryBuilder = $this->createQueryBuilder('appointment')
             ->andWhere('appointment.garage = :garage')
             ->andWhere('appointment.statut IN (:statuses)')
             ->andWhere('appointment.dateDebut < :end')
@@ -39,9 +45,15 @@ class AppointmentRepository extends ServiceEntityRepository
             ->setParameter('statuses', [Appointment::STATUT_EN_ATTENTE, Appointment::STATUT_CONFIRME])
             ->setParameter('start', $start)
             ->setParameter('end', $end)
-            ->orderBy('appointment.dateDebut', 'ASC')
-            ->getQuery()
-            ->getResult();
+            ->orderBy('appointment.dateDebut', 'ASC');
+
+        if ($excludedAppointment instanceof Appointment && $excludedAppointment->getId() !== null) {
+            $queryBuilder
+                ->andWhere('appointment.id != :excludedId')
+                ->setParameter('excludedId', $excludedAppointment->getId());
+        }
+
+        return $queryBuilder->getQuery()->getResult();
     }
 
     /** Cette methode retourne tous les rendez-vous appartenant au client connecte. */
@@ -62,6 +74,43 @@ class AppointmentRepository extends ServiceEntityRepository
             ->andWhere('appointment.client = :client')
             ->andWhere('appointment.id = :id')
             ->setParameter('client', $client)
+            ->setParameter('id', $id)
+            ->getQuery()
+            ->getOneOrNullResult();
+    }
+
+    /** Cette methode retourne les rendez-vous d'un garage avec des filtres simples de statut et de date. */
+    public function findByGarageWithFilters(Garage $garage, ?string $statut, ?\DateTimeImmutable $date): array
+    {
+        $queryBuilder = $this->createQueryBuilder('appointment')
+            ->andWhere('appointment.garage = :garage')
+            ->setParameter('garage', $garage)
+            ->orderBy('appointment.dateDebut', 'ASC');
+
+        if ($statut !== null && $statut !== '') {
+            $queryBuilder
+                ->andWhere('appointment.statut = :statut')
+                ->setParameter('statut', $statut);
+        }
+
+        if ($date instanceof \DateTimeImmutable) {
+            $queryBuilder
+                ->andWhere('appointment.dateDebut >= :dayStart')
+                ->andWhere('appointment.dateDebut < :dayEnd')
+                ->setParameter('dayStart', $date->setTime(0, 0))
+                ->setParameter('dayEnd', $date->setTime(0, 0)->modify('+1 day'));
+        }
+
+        return $queryBuilder->getQuery()->getResult();
+    }
+
+    /** Cette methode retrouve un rendez-vous uniquement s'il appartient au garage donne. */
+    public function findOneByGarageAndId(Garage $garage, int $id): ?Appointment
+    {
+        return $this->createQueryBuilder('appointment')
+            ->andWhere('appointment.garage = :garage')
+            ->andWhere('appointment.id = :id')
+            ->setParameter('garage', $garage)
             ->setParameter('id', $id)
             ->getQuery()
             ->getOneOrNullResult();

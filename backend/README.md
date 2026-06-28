@@ -321,3 +321,56 @@ curl -X PATCH http://127.0.0.1:8000/api/client/appointments/1/cancel \
 ```
 
 Un rendez-vous `EN_ATTENTE` ou `CONFIRME` peut etre annule. Un rendez-vous `REFUSE`, `ANNULE` ou `TERMINE` ne peut pas etre annule a nouveau.
+## Gestion des rendez-vous cote garage
+
+Ces routes permettent a un gerant ou employe de consulter les demandes de rendez-vous recues par son garage, puis de les accepter ou refuser. Elles necessitent un token garage (`ROLE_GERANT`, `ROLE_EMPLOYE` ou `ROLE_ADMIN` avec un garage rattache).
+
+Cycle metier :
+
+* le client cree un rendez-vous en statut `EN_ATTENTE` ;
+* le garage accepte le rendez-vous : le rendez-vous passe en `CONFIRME` et une intervention est creee automatiquement ;
+* le garage refuse le rendez-vous : le rendez-vous passe en `REFUSE` et aucune intervention n'est creee ;
+* le client peut continuer a consulter son rendez-vous avec ses routes client.
+
+### Lister les rendez-vous du garage
+
+```bash
+curl http://127.0.0.1:8000/api/garage/me/appointments \
+  -H "Authorization: Bearer VOTRE_TOKEN_GARAGE"
+```
+
+Filtres possibles :
+
+```bash
+curl "http://127.0.0.1:8000/api/garage/me/appointments?statut=EN_ATTENTE&date=2030-01-10" \
+  -H "Authorization: Bearer VOTRE_TOKEN_GARAGE"
+```
+
+### Consulter un rendez-vous du garage
+
+```bash
+curl http://127.0.0.1:8000/api/garage/me/appointments/1 \
+  -H "Authorization: Bearer VOTRE_TOKEN_GARAGE"
+```
+
+Le backend retourne `404` si le rendez-vous n'appartient pas au garage connecte.
+
+### Accepter un rendez-vous
+
+```bash
+curl -X PATCH http://127.0.0.1:8000/api/garage/me/appointments/1/accept \
+  -H "Authorization: Bearer VOTRE_TOKEN_GARAGE"
+```
+
+L'acceptation est possible seulement si le rendez-vous est encore `EN_ATTENTE` et si le creneau reste disponible. Elle cree automatiquement une intervention avec un statut initial, de preference `VEHICULE_DEPOSE`.
+
+### Refuser un rendez-vous
+
+```bash
+curl -X PATCH http://127.0.0.1:8000/api/garage/me/appointments/1/refuse \
+  -H "Authorization: Bearer VOTRE_TOKEN_GARAGE" \
+  -H "Content-Type: application/json" \
+  -d "{\"motifRefus\":\"Creneau indisponible.\"}"
+```
+
+Le motif est optionnel. Le refus est possible seulement si le rendez-vous est encore `EN_ATTENTE`.
