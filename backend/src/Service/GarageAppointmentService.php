@@ -3,7 +3,7 @@
 /*
  * Ce fichier declare le service GarageAppointmentService du backend GarageFlow.
  * Il existe pour gerer les rendez-vous recus par le garage connecte.
- * Il communique avec AppointmentRepository, AvailabilityService, InterventionCreationService et Doctrine ORM.
+ * Il communique avec AppointmentRepository, AvailabilityService, InterventionCreationService, NotificationService et Doctrine ORM.
  */
 
 namespace App\Service;
@@ -28,6 +28,7 @@ class GarageAppointmentService
         private readonly AppointmentRepository $appointmentRepository,
         private readonly AvailabilityService $availabilityService,
         private readonly InterventionCreationService $interventionCreationService,
+        private readonly NotificationService $notificationService,
     ) {
     }
 
@@ -61,6 +62,7 @@ class GarageAppointmentService
         $appointment->setStatut(Appointment::STATUT_CONFIRME);
         $appointment->setUpdatedAt(new \DateTimeImmutable());
         $intervention = $this->interventionCreationService->createForAcceptedAppointment($appointment, $changedBy);
+        $this->notificationService->notifyAppointmentAccepted($appointment);
         $this->entityManager->flush();
 
         return ['appointment' => $appointment, 'intervention' => $intervention];
@@ -73,6 +75,7 @@ class GarageAppointmentService
         $this->assertPending($appointment);
         $appointment->setStatut(Appointment::STATUT_REFUSE);
         $appointment->setUpdatedAt(new \DateTimeImmutable());
+        $this->notificationService->notifyAppointmentRefused($appointment);
         $this->entityManager->flush();
 
         return $appointment;

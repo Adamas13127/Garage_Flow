@@ -446,4 +446,47 @@ curl http://127.0.0.1:8000/api/client/interventions/1 \
   -H "Authorization: Bearer VOTRE_TOKEN_CLIENT"
 ```
 
-Cycle de suivi : rendez-vous accepte, intervention creee, statut mis a jour par le garage, historique ajoute, client informe via consultation API. Les notifications seront ajoutees dans une mission separee.
+Cycle de suivi : rendez-vous accepte, intervention creee, statut mis a jour par le garage, historique ajoute, client informe via consultation API et notifications applicatives.
+
+## Notifications applicatives
+
+Les notifications applicatives informent les utilisateurs connectes des evenements importants du MVP. Elles utilisent le canal `APP` uniquement pour cette mission : aucun email reel n'est envoye.
+
+Evenements qui creent une notification :
+
+* creation d'une demande de rendez-vous : `RDV_DEMANDE` pour les gerants du garage ;
+* acceptation d'un rendez-vous : `RDV_ACCEPTE` pour le client ;
+* refus d'un rendez-vous : `RDV_REFUSE` pour le client ;
+* annulation par le client : `RDV_ANNULE` pour les gerants du garage ;
+* changement de statut d'intervention : `STATUT_INTERVENTION_CHANGE` pour le client ;
+* vehicule pret : `VEHICULE_PRET` pour le client, sans doublon avec le changement de statut classique.
+
+Consulter ses notifications :
+
+```bash
+curl http://127.0.0.1:8000/api/notifications \
+  -H "Authorization: Bearer VOTRE_TOKEN_JWT"
+```
+
+Consulter seulement les notifications non lues :
+
+```bash
+curl "http://127.0.0.1:8000/api/notifications?unreadOnly=true" \
+  -H "Authorization: Bearer VOTRE_TOKEN_JWT"
+```
+
+Marquer une notification comme lue :
+
+```bash
+curl -X PATCH http://127.0.0.1:8000/api/notifications/1/read \
+  -H "Authorization: Bearer VOTRE_TOKEN_JWT"
+```
+
+Marquer toutes ses notifications comme lues :
+
+```bash
+curl -X PATCH http://127.0.0.1:8000/api/notifications/read-all \
+  -H "Authorization: Bearer VOTRE_TOKEN_JWT"
+```
+
+Chaque utilisateur ne peut consulter et modifier que ses propres notifications. Le backend retourne `404` si une notification existe mais appartient a un autre utilisateur.

@@ -3,7 +3,7 @@
 /*
  * Ce fichier declare le service GarageInterventionService du backend GarageFlow.
  * Il existe pour gerer le suivi des interventions par le garage connecte.
- * Il communique avec InterventionRepository, InterventionStatusRepository, InterventionStatusHistoryRepository et Doctrine ORM.
+ * Il communique avec InterventionRepository, InterventionStatusRepository, InterventionStatusHistoryRepository, NotificationService et Doctrine ORM.
  */
 
 namespace App\Service;
@@ -32,6 +32,7 @@ class GarageInterventionService
         private readonly InterventionRepository $interventionRepository,
         private readonly InterventionStatusRepository $statusRepository,
         private readonly InterventionStatusHistoryRepository $historyRepository,
+        private readonly NotificationService $notificationService,
     ) {
     }
 
@@ -88,6 +89,7 @@ class GarageInterventionService
         }
 
         $this->entityManager->persist($history);
+        $this->notificationService->notifyInterventionStatusChanged($intervention);
         $this->entityManager->flush();
 
         return $intervention;
