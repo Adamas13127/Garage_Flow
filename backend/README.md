@@ -261,3 +261,63 @@ php bin/console debug:router
 ```
 
 Ne jamais versionner `.env.local`, les cles JWT locales, `vendor/`, `var/` ou de vrais secrets.
+## Prise de rendez-vous client
+
+Le calcul des creneaux disponibles utilise les horaires actifs du garage, les indisponibilites exceptionnelles et les rendez-vous deja pris. Les rendez-vous en statut `EN_ATTENTE` et `CONFIRME` bloquent un creneau. Les rendez-vous `REFUSE` et `ANNULE` ne bloquent pas.
+
+### Consulter les creneaux disponibles
+
+Cette route est publique afin qu'un client puisse verifier les disponibilites avant de finaliser sa demande.
+
+```bash
+curl "http://127.0.0.1:8000/api/garages/1/available-slots?serviceId=1&date=2030-01-10"
+```
+
+La reponse contient des creneaux de 30 minutes bases sur la duree de la prestation :
+
+```json
+[
+  {
+    "dateDebut": "2030-01-10T09:00:00+01:00",
+    "dateFin": "2030-01-10T10:00:00+01:00"
+  }
+]
+```
+
+### Creer une demande de rendez-vous
+
+Cette route necessite un token client. Le vehicule doit appartenir au client connecte. Le statut initial du rendez-vous est `EN_ATTENTE`.
+
+```bash
+curl -X POST http://127.0.0.1:8000/api/client/appointments \
+  -H "Authorization: Bearer VOTRE_TOKEN_CLIENT" \
+  -H "Content-Type: application/json" \
+  -d "{\"garageId\":1,\"vehicleId\":1,\"serviceId\":1,\"dateDebut\":\"2030-01-10T09:00:00+01:00\",\"commentaireClient\":\"Merci de verifier les freins.\"}"
+```
+
+Si le creneau est deja bloque par une indisponibilite ou par un rendez-vous `EN_ATTENTE` ou `CONFIRME`, l'API retourne `409`.
+
+### Lister ses rendez-vous
+
+```bash
+curl http://127.0.0.1:8000/api/client/appointments \
+  -H "Authorization: Bearer VOTRE_TOKEN_CLIENT"
+```
+
+### Consulter un rendez-vous client
+
+```bash
+curl http://127.0.0.1:8000/api/client/appointments/1 \
+  -H "Authorization: Bearer VOTRE_TOKEN_CLIENT"
+```
+
+Un client ne peut consulter que ses propres rendez-vous. Sinon, l'API retourne `404`.
+
+### Annuler un rendez-vous client
+
+```bash
+curl -X PATCH http://127.0.0.1:8000/api/client/appointments/1/cancel \
+  -H "Authorization: Bearer VOTRE_TOKEN_CLIENT"
+```
+
+Un rendez-vous `EN_ATTENTE` ou `CONFIRME` peut etre annule. Un rendez-vous `REFUSE`, `ANNULE` ou `TERMINE` ne peut pas etre annule a nouveau.

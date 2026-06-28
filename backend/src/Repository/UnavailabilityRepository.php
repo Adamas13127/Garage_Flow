@@ -61,4 +61,18 @@ class UnavailabilityRepository extends ServiceEntityRepository
             ->getQuery()
             ->getOneOrNullResult();
     }
+    /** Cette methode retrouve les indisponibilites qui chevauchent une periode precise. */
+    public function findForGarageBetween(Garage $garage, \DateTimeImmutable $start, \DateTimeImmutable $end): array
+    {
+        return $this->createQueryBuilder('unavailability')
+            ->andWhere('unavailability.garage = :garage')
+            ->andWhere('unavailability.dateDebut < :end')
+            ->andWhere('unavailability.dateFin > :start')
+            ->setParameter('garage', $garage)
+            ->setParameter('start', $start)
+            ->setParameter('end', $end)
+            ->orderBy('unavailability.dateDebut', 'ASC')
+            ->getQuery()
+            ->getResult();
+    }
 }

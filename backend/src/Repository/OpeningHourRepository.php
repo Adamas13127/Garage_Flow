@@ -62,4 +62,17 @@ class OpeningHourRepository extends ServiceEntityRepository
             ->getQuery()
             ->getOneOrNullResult();
     }
+    /** Cette methode retourne les horaires actifs d'un garage pour un jour precis de la semaine. */
+    public function findActiveByGarageAndWeekday(Garage $garage, int $weekday): array
+    {
+        return $this->createQueryBuilder('hour')
+            ->andWhere('hour.garage = :garage')
+            ->andWhere('hour.jourSemaine = :weekday')
+            ->andWhere('hour.actif = true')
+            ->setParameter('garage', $garage)
+            ->setParameter('weekday', $weekday)
+            ->orderBy('hour.heureDebut', 'ASC')
+            ->getQuery()
+            ->getResult();
+    }
 }
