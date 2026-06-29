@@ -1,16 +1,6 @@
 /*
- * Ce fichier declare les couleurs simples de l'application mobile GarageFlow.
- * Il existe pour garder une apparence coherente entre les ecrans.
- * Il communique avec les composants UI et les screens.
+ * Ce fichier expose le theme mobile GarageFlow aux anciens imports.
+ * Il existe pour garder la compatibilite avec les composants deja branches sur utils/theme.
+ * Il communique avec src/theme afin de centraliser les choix visuels.
  */
-export const colors = {
-  background: '#f8fafc',
-  surface: '#ffffff',
-  border: '#e2e8f0',
-  text: '#0f172a',
-  muted: '#64748b',
-  primary: '#0369a1',
-  primaryDark: '#075985',
-  danger: '#be123c',
-  success: '#047857',
-};
+export { colors, shadows, spacing, typography } from '../theme';

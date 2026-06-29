@@ -4,7 +4,7 @@
  * Il communique avec les ecrans de listes.
  */
 import { StyleSheet, Text, View } from 'react-native';
-import { colors } from '../../utils/theme';
+import { colors, spacing, typography } from '../../utils/theme';
 
 interface EmptyStateProps { title: string; message?: string; }
 
@@ -13,4 +13,4 @@ export function EmptyState({ message, title }: EmptyStateProps) {
   return <View style={styles.container}><Text style={styles.title}>{title}</Text>{message ? <Text style={styles.message}>{message}</Text> : null}</View>;
 }
 
-const styles = StyleSheet.create({ container: { alignItems: 'center', borderColor: colors.border, borderRadius: 8, borderStyle: 'dashed', borderWidth: 1, padding: 20 }, title: { color: colors.text, fontWeight: '700' }, message: { color: colors.muted, marginTop: 6, textAlign: 'center' } });
+const styles = StyleSheet.create({ container: { alignItems: 'center', borderColor: colors.border, borderRadius: 8, borderStyle: 'dashed', borderWidth: 1, padding: spacing.lg }, title: { color: colors.text, fontSize: typography.body, fontWeight: '800' }, message: { color: colors.muted, fontSize: typography.secondary, marginTop: spacing.xs, textAlign: 'center' } });

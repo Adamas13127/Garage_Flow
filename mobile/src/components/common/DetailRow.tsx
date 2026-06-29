@@ -4,7 +4,7 @@
  * Il communique avec les ecrans rendez-vous, interventions et notifications.
  */
 import { StyleSheet, Text, View } from 'react-native';
-import { colors } from '../../utils/theme';
+import { colors, spacing, typography } from '../../utils/theme';
 
 interface DetailRowProps { label: string; value?: string | number | null; }
 
@@ -14,7 +14,7 @@ export function DetailRow({ label, value }: DetailRowProps) {
 }
 
 const styles = StyleSheet.create({
-  row: { borderBottomColor: colors.border, borderBottomWidth: 1, gap: 4, paddingVertical: 10 },
-  label: { color: colors.muted, fontSize: 12, fontWeight: '700', textTransform: 'uppercase' },
-  value: { color: colors.text, fontSize: 15 },
+  row: { borderBottomColor: colors.border, borderBottomWidth: 1, gap: 2, paddingVertical: spacing.sm },
+  label: { color: colors.muted, fontSize: typography.secondary, fontWeight: '800', textTransform: 'uppercase' },
+  value: { color: colors.text, fontSize: typography.body },
 });

@@ -1,11 +1,11 @@
 /*
  * Ce fichier declare le composant AppCard de GarageFlow mobile.
- * Il existe pour afficher des blocs d'information reutilisables.
+ * Il existe pour afficher des blocs d'information reutilisables avec une surface compacte.
  * Il communique avec les ecrans Home et listes metier.
  */
 import type { PropsWithChildren } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
-import { colors } from '../../utils/theme';
+import { colors, shadows, spacing, typography } from '../../utils/theme';
 
 interface AppCardProps { title?: string; subtitle?: string; }
 
@@ -13,16 +13,16 @@ interface AppCardProps { title?: string; subtitle?: string; }
 export function AppCard({ children, subtitle, title }: PropsWithChildren<AppCardProps>) {
   return (
     <View style={styles.card}>
-      {title ? <Text style={styles.title}>{title}</Text> : null}
-      {subtitle ? <Text style={styles.subtitle}>{subtitle}</Text> : null}
+      {title ? <Text numberOfLines={2} style={styles.title}>{title}</Text> : null}
+      {subtitle ? <Text numberOfLines={2} style={styles.subtitle}>{subtitle}</Text> : null}
       {children ? <View style={title || subtitle ? styles.body : undefined}>{children}</View> : null}
     </View>
   );
 }
 
 const styles = StyleSheet.create({
-  card: { backgroundColor: colors.surface, borderColor: colors.border, borderRadius: 10, borderWidth: 1, padding: 16 },
-  title: { color: colors.text, fontSize: 16, fontWeight: '700' },
-  subtitle: { color: colors.muted, fontSize: 13, marginTop: 4 },
-  body: { marginTop: 12 },
+  card: { ...shadows.card, backgroundColor: colors.surface, borderColor: colors.border, borderRadius: 8, borderWidth: 1, padding: spacing.md },
+  title: { color: colors.text, fontSize: typography.cardTitle, fontWeight: '800' },
+  subtitle: { color: colors.muted, fontSize: typography.secondary, marginTop: spacing.xs },
+  body: { gap: spacing.sm, marginTop: spacing.sm },
 });

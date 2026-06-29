@@ -24,5 +24,5 @@ export function GaragesScreen({ navigation }: GaragesScreenProps) {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   useEffect(() => { getGarages().then(setGarages).catch((e: Error) => setError(e.message)).finally(() => setLoading(false)); }, []);
-  return <ScreenContainer><Text style={{ color: colors.text, fontSize: 24, fontWeight: '800' }}>Garages</Text>{loading ? <LoadingState /> : null}{error ? <ErrorState message={error} /> : null}{!loading && !error && garages.length === 0 ? <EmptyState title="Aucun garage" message="Les garages disponibles apparaitront ici." /> : null}{garages.map((garage) => <GarageCard key={garage.id} garage={garage} onViewServices={() => navigation.navigate('GarageDetail', { garageId: garage.id })} />)}</ScreenContainer>;
+  return <ScreenContainer><Text style={{ color: colors.text, fontSize: 22, fontWeight: '800' }}>Garages</Text>{loading ? <LoadingState /> : null}{error ? <ErrorState message={error} /> : null}{!loading && !error && garages.length === 0 ? <EmptyState title="Aucun garage" message="Les garages disponibles apparaitront ici." /> : null}{garages.map((garage) => <GarageCard key={garage.id} garage={garage} onViewServices={() => navigation.navigate('GarageDetail', { garageId: garage.id })} />)}</ScreenContainer>;
 }

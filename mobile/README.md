@@ -117,6 +117,12 @@ Si le backend renvoie un historique de statuts, l'application l'utilise. Sinon, 
 
 L'ecran Notifications permet de consulter toutes les notifications ou seulement les non lues. Une notification non lue peut etre marquee comme lue, et un bouton permet de tout marquer comme lu.
 
+
+## Polish UI/UX MVP
+
+L'interface mobile utilise un theme centralise pour les couleurs, espacements, tailles de texte et ombres legeres. Les choix restent sobres pour une presentation jury : fond clair, bleu GarageFlow, cartes compactes, boutons moins hauts et onglets courts (`Autos`, `RDV`, `Suivi`, `Alertes`) pour eviter les labels tronques sur iPhone.
+
+Limites assumees : le design reste MVP, sans animations avancees, sans design system complet de production et sans notifications push.
 ## Securite
 
 Le token JWT est stocke avec AsyncStorage pour le MVP. Pour une application en production, une solution plus securisee comme SecureStore serait preferable.

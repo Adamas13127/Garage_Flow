@@ -5,14 +5,14 @@
  */
 import type { PropsWithChildren } from 'react';
 import { ScrollView, StyleSheet } from 'react-native';
-import { colors } from '../../utils/theme';
+import { colors, spacing } from '../../utils/theme';
 
 /** Ce conteneur evite les pages blanches et garde un espacement confortable. */
 export function ScreenContainer({ children }: PropsWithChildren) {
-  return <ScrollView contentContainerStyle={styles.content} style={styles.screen}>{children}</ScrollView>;
+  return <ScrollView contentContainerStyle={styles.content} keyboardShouldPersistTaps="handled" style={styles.screen}>{children}</ScrollView>;
 }
 
 const styles = StyleSheet.create({
   screen: { backgroundColor: colors.background, flex: 1 },
-  content: { gap: 16, padding: 20 },
+  content: { gap: spacing.md, padding: spacing.lg },
 });

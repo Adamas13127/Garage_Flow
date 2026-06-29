@@ -4,7 +4,7 @@
  * Il communique avec InterventionDetailScreen.
  */
 import { StyleSheet, Text, View } from 'react-native';
-import { colors } from '../../utils/theme';
+import { colors, spacing, typography } from '../../utils/theme';
 import { formatDateTime } from '../../utils/format';
 
 export type TimelineStepState = 'done' | 'current' | 'todo';
@@ -25,14 +25,14 @@ export function Timeline({ steps }: TimelineProps) {
 }
 
 const styles = StyleSheet.create({
-  container: { gap: 10 },
-  step: { flexDirection: 'row', gap: 12 },
-  dot: { borderRadius: 8, height: 16, marginTop: 2, width: 16 },
+  container: { gap: spacing.sm },
+  step: { flexDirection: 'row', gap: spacing.sm },
+  dot: { borderRadius: 7, height: 14, marginTop: 3, width: 14 },
   done: { backgroundColor: colors.success },
   current: { backgroundColor: colors.primary },
   todo: { backgroundColor: colors.border },
-  content: { flex: 1, paddingBottom: 12 },
-  label: { color: colors.text, fontSize: 15, fontWeight: '700' },
-  state: { color: colors.muted, fontSize: 12, marginTop: 2 },
-  date: { color: colors.muted, fontSize: 12, marginTop: 2 },
+  content: { flex: 1, paddingBottom: spacing.sm },
+  label: { color: colors.text, fontSize: typography.body, fontWeight: '700' },
+  state: { color: colors.muted, fontSize: typography.secondary, marginTop: 1 },
+  date: { color: colors.muted, fontSize: typography.secondary, marginTop: 1 },
 });

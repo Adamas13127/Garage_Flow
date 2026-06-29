@@ -1,11 +1,11 @@
 /*
  * Ce fichier declare le composant AppInput de GarageFlow mobile.
- * Il existe pour associer chaque champ a un label lisible.
- * Il communique avec LoginScreen et RegisterScreen.
+ * Il existe pour associer chaque champ a un label lisible et compact.
+ * Il communique avec les formulaires de connexion, inscription, vehicule et reservation.
  */
 import type { TextInputProps } from 'react-native';
 import { StyleSheet, Text, TextInput, View } from 'react-native';
-import { colors } from '../../utils/theme';
+import { colors, spacing, typography } from '../../utils/theme';
 
 interface AppInputProps extends TextInputProps { label: string; }
 
@@ -20,7 +20,7 @@ export function AppInput({ label, ...props }: AppInputProps) {
 }
 
 const styles = StyleSheet.create({
-  container: { gap: 6 },
-  label: { color: colors.text, fontSize: 14, fontWeight: '600' },
-  input: { backgroundColor: colors.surface, borderColor: colors.border, borderRadius: 8, borderWidth: 1, color: colors.text, minHeight: 44, paddingHorizontal: 12 },
+  container: { gap: spacing.xs },
+  label: { color: colors.text, fontSize: typography.secondary, fontWeight: '700' },
+  input: { backgroundColor: colors.surface, borderColor: colors.border, borderRadius: 8, borderWidth: 1, color: colors.text, fontSize: typography.body, minHeight: 40, paddingHorizontal: spacing.md, paddingVertical: spacing.sm },
 });

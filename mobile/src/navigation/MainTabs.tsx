@@ -20,14 +20,14 @@ const Tab = createBottomTabNavigator<MainTabsParamList>();
 /** Ce navigateur donne acces aux principales zones client du MVP. */
 export function MainTabs() {
   return (
-    <Tab.Navigator screenOptions={{ tabBarActiveTintColor: colors.primary, tabBarLabelStyle: { fontSize: 11 }, headerTitleStyle: { color: colors.text } }}>
-      <Tab.Screen name="Home" component={HomeScreen} options={{ title: 'Accueil' }} />
-      <Tab.Screen name="Garages" component={GaragesStackNavigator} options={{ title: 'Garages', headerShown: false }} />
-      <Tab.Screen name="Vehicles" component={VehiclesScreen} options={{ title: 'Vehicules' }} />
-      <Tab.Screen name="Appointments" component={AppointmentsStackNavigator} options={{ title: 'Rendez-vous', headerShown: false }} />
-      <Tab.Screen name="Interventions" component={InterventionsStackNavigator} options={{ title: 'Reparations', headerShown: false }} />
-      <Tab.Screen name="Notifications" component={NotificationsScreen} options={{ title: 'Notifications' }} />
-      <Tab.Screen name="Profile" component={ProfileScreen} options={{ title: 'Profil' }} />
+    <Tab.Navigator screenOptions={{ tabBarActiveTintColor: colors.primary, tabBarInactiveTintColor: colors.muted, tabBarLabelStyle: { fontSize: 10, fontWeight: '700' }, tabBarStyle: { minHeight: 58, paddingBottom: 4, paddingTop: 4 }, headerTitleStyle: { color: colors.text, fontSize: 17 } }}>
+      <Tab.Screen name="Home" component={HomeScreen} options={{ title: 'Accueil', tabBarLabel: 'Accueil' }} />
+      <Tab.Screen name="Garages" component={GaragesStackNavigator} options={{ title: 'Garages', tabBarLabel: 'Garages', headerShown: false }} />
+      <Tab.Screen name="Vehicles" component={VehiclesScreen} options={{ title: 'Autos', tabBarLabel: 'Autos' }} />
+      <Tab.Screen name="Appointments" component={AppointmentsStackNavigator} options={{ title: 'RDV', tabBarLabel: 'RDV', headerShown: false }} />
+      <Tab.Screen name="Interventions" component={InterventionsStackNavigator} options={{ title: 'Suivi', tabBarLabel: 'Suivi', headerShown: false }} />
+      <Tab.Screen name="Notifications" component={NotificationsScreen} options={{ title: 'Alertes', tabBarLabel: 'Alertes' }} />
+      <Tab.Screen name="Profile" component={ProfileScreen} options={{ title: 'Profil', tabBarLabel: 'Profil' }} />
     </Tab.Navigator>
   );
 }

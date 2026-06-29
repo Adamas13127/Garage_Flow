@@ -5,7 +5,7 @@
  */
 import type { PropsWithChildren } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
-import { colors } from '../../utils/theme';
+import { colors, spacing, typography } from '../../utils/theme';
 
 interface FormSectionProps { title: string; }
 
@@ -14,4 +14,4 @@ export function FormSection({ children, title }: PropsWithChildren<FormSectionPr
   return <View style={styles.container}><Text style={styles.title}>{title}</Text>{children}</View>;
 }
 
-const styles = StyleSheet.create({ container: { gap: 12 }, title: { color: colors.text, fontSize: 18, fontWeight: '800' } });
+const styles = StyleSheet.create({ container: { gap: spacing.sm }, title: { color: colors.text, fontSize: typography.sectionTitle, fontWeight: '800' } });

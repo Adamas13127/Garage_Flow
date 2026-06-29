@@ -37,7 +37,7 @@ export function RegisterScreen({ navigation }: RegisterScreenProps) {
 
   return (
     <ScreenContainer>
-      <Text style={{ color: colors.text, fontSize: 24, fontWeight: '800' }}>Creer un compte</Text>
+      <Text style={{ color: colors.text, fontSize: 22, fontWeight: '800' }}>Creer un compte</Text>
       {error ? <ErrorState message={error} /> : null}
       {success ? <Text style={{ color: colors.success, fontWeight: '700' }}>{success}</Text> : null}
       <AppInput label="Nom" value={nom} onChangeText={setNom} />
