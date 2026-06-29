@@ -1,13 +1,16 @@
 /*
  * Ce fichier declare la page notifications du frontend web GarageFlow.
- * Il existe pour afficher les notifications applicatives de l'utilisateur connecte.
+ * Il existe pour afficher et marquer comme lues les notifications applicatives.
  * Il communique avec notificationApi.ts et les pages liees aux rendez-vous/interventions.
  */
-import { useEffect, useMemo, useState } from 'react';
-import { getNotifications } from '../api/notificationApi';
+import { useCallback, useEffect, useMemo, useState } from 'react';
+import { getNotifications, markAllNotificationsAsRead, markNotificationAsRead } from '../api/notificationApi';
 import { EmptyState } from '../components/feedback/EmptyState';
 import { ErrorState } from '../components/feedback/ErrorState';
+import { InlineError } from '../components/feedback/InlineError';
 import { LoadingState } from '../components/feedback/LoadingState';
+import { SuccessMessage } from '../components/feedback/SuccessMessage';
+import { ActionButton } from '../components/ui/ActionButton';
 import { Button } from '../components/ui/Button';
 import { Card } from '../components/ui/Card';
 import { PageHeader } from '../components/ui/PageHeader';
@@ -16,33 +19,68 @@ import { formatDateTime } from '../utils/format';
 
 type NotificationFilter = 'all' | 'unread';
 
-/** Cette page charge les notifications et permet de filtrer les non lues. */
+/** Cette page charge les notifications et gere les actions de lecture. */
 export function NotificationsPage() {
   const [notifications, setNotifications] = useState<NotificationItem[]>([]);
   const [filter, setFilter] = useState<NotificationFilter>('all');
   const [loading, setLoading] = useState(true);
+  const [actionId, setActionId] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [actionError, setActionError] = useState<string | null>(null);
+  const [success, setSuccess] = useState<string | null>(null);
+
+  const loadNotifications = useCallback(async () => {
+    try {
+      setLoading(true);
+      setError(null);
+      setNotifications(await getNotifications());
+    } catch (exception) {
+      setError(exception instanceof Error ? exception.message : 'Impossible de charger les notifications.');
+    } finally {
+      setLoading(false);
+    }
+  }, []);
 
   useEffect(() => {
-    async function loadNotifications() {
-      try {
-        setLoading(true);
-        setError(null);
-        setNotifications(await getNotifications());
-      } catch (exception) {
-        setError(exception instanceof Error ? exception.message : 'Impossible de charger les notifications.');
-      } finally {
-        setLoading(false);
-      }
-    }
-
     void loadNotifications();
-  }, []);
+  }, [loadNotifications]);
 
   const displayedNotifications = useMemo(
     () => (filter === 'unread' ? notifications.filter((notification) => !notification.lu) : notifications),
     [filter, notifications],
   );
+
+  const unreadCount = notifications.filter((notification) => !notification.lu).length;
+
+  async function handleRead(notificationId: number) {
+    try {
+      setActionId(`read-${notificationId}`);
+      setActionError(null);
+      setSuccess(null);
+      await markNotificationAsRead(notificationId);
+      setSuccess('Notification marquee comme lue.');
+      await loadNotifications();
+    } catch (exception) {
+      setActionError(exception instanceof Error ? exception.message : 'Impossible de marquer la notification comme lue.');
+    } finally {
+      setActionId(null);
+    }
+  }
+
+  async function handleReadAll() {
+    try {
+      setActionId('read-all');
+      setActionError(null);
+      setSuccess(null);
+      await markAllNotificationsAsRead();
+      setSuccess('Toutes les notifications ont ete marquees comme lues.');
+      await loadNotifications();
+    } catch (exception) {
+      setActionError(exception instanceof Error ? exception.message : 'Impossible de marquer toutes les notifications comme lues.');
+    } finally {
+      setActionId(null);
+    }
+  }
 
   return (
     <div className="space-y-6">
@@ -50,12 +88,19 @@ export function NotificationsPage() {
         title="Notifications"
         description="Alertes applicatives liees aux rendez-vous et interventions."
         actions={(
-          <div className="inline-flex rounded-md border border-slate-200 bg-white p-1" aria-label="Filtrer les notifications">
-            <Button aria-pressed={filter === 'all'} type="button" variant={filter === 'all' ? 'primary' : 'ghost'} onClick={() => setFilter('all')}>Toutes</Button>
-            <Button aria-pressed={filter === 'unread'} type="button" variant={filter === 'unread' ? 'primary' : 'ghost'} onClick={() => setFilter('unread')}>Non lues</Button>
+          <div className="flex flex-wrap gap-2">
+            <div className="inline-flex rounded-md border border-slate-200 bg-white p-1" aria-label="Filtrer les notifications">
+              <Button aria-pressed={filter === 'all'} type="button" variant={filter === 'all' ? 'primary' : 'ghost'} onClick={() => setFilter('all')}>Toutes</Button>
+              <Button aria-pressed={filter === 'unread'} type="button" variant={filter === 'unread' ? 'primary' : 'ghost'} onClick={() => setFilter('unread')}>Non lues</Button>
+            </div>
+            <ActionButton disabled={unreadCount === 0} loading={actionId === 'read-all'} type="button" variant="secondary" onClick={() => void handleReadAll()}>
+              Tout marquer comme lu
+            </ActionButton>
           </div>
         )}
       />
+      <SuccessMessage message={success} />
+      <InlineError message={actionError} />
       {loading ? <LoadingState label="Chargement des notifications" /> : null}
       {error ? <ErrorState message={error} /> : null}
       {!loading && !error && displayedNotifications.length === 0 ? (
@@ -79,7 +124,11 @@ export function NotificationsPage() {
                   {notification.interventionId ? <span>Intervention #{notification.interventionId}</span> : null}
                 </div>
               </div>
-              <Button disabled type="button" variant="secondary">Marquer comme lue</Button>
+              {!notification.lu ? (
+                <ActionButton loading={actionId === `read-${notification.id}`} type="button" variant="secondary" onClick={() => void handleRead(notification.id)}>
+                  Marquer comme lue
+                </ActionButton>
+              ) : null}
             </div>
           </Card>
         )) : null}

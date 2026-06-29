@@ -83,11 +83,24 @@ Le dashboard garage charge maintenant les donnees du backend Symfony pour affich
 
 Le dashboard affiche les compteurs principaux du garage : rendez-vous en attente, rendez-vous confirmes, interventions en cours et notifications non lues. Il affiche aussi une liste courte des prochains rendez-vous et des dernieres interventions.
 
+
+## Actions garage
+
+Le frontend web permet maintenant au garage d'agir sur les donnees du backend sans modifier la logique metier cote client.
+
+* `AppointmentsPage` permet d'accepter ou de refuser un rendez-vous en attente, avec motif de refus optionnel.
+* `InterventionsPage` permet de changer le statut d'une intervention et d'ajouter un commentaire optionnel.
+* `InterventionsPage` affiche aussi les notes internes, non visibles par le client, avec ajout, modification et suppression.
+* `NotificationsPage` permet de marquer une notification comme lue ou de tout marquer comme lu.
+
+Les pages concernees rechargent leurs donnees apres chaque action pour garder les compteurs et les listes coherents avec le backend.
 ## Limites actuelles
 
-* L'acceptation ou le refus d'un rendez-vous depuis le frontend n'est pas encore branche.
-* Le changement de statut d'une intervention depuis le frontend n'est pas encore branche.
-* Le bouton "Marquer comme lue" des notifications est prepare visuellement mais desactive tant que l'endpoint PATCH n'est pas branche.
+* UI encore simple et volontairement orientee demonstration MVP.
+* Pas encore de design final avance.
+* Pas de temps reel WebSocket : les listes sont rafraichies apres action.
+* Le mobile client reste separe dans le dossier mobile/.
+
 ## Routes principales
 
 * `/login` : connexion garage.

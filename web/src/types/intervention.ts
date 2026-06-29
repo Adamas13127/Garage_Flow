@@ -1,6 +1,6 @@
 /*
  * Ce fichier declare les types d'intervention utilises par le frontend garage.
- * Il existe pour afficher le suivi atelier dans l'application web.
+ * Il existe pour afficher le suivi atelier et les notes internes dans l'application web.
  * Il communique avec InterventionsPage, DashboardPage et interventionApi.ts.
  */
 import type { User } from './auth';
@@ -11,6 +11,15 @@ export interface InterventionStatus {
   libelle?: string | null;
   ordreAffichage?: number;
   visibleClient?: boolean;
+}
+
+/** Ce type represente une note interne visible uniquement par le garage. */
+export interface InterventionNote {
+  id: number;
+  contenu: string;
+  createdAt?: string | null;
+  updatedAt?: string | null;
+  auteur?: User | null;
 }
 
 /** Ce type represente une intervention resumee pour les listes garage. */
