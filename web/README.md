@@ -45,7 +45,18 @@ npm test
 npm run preview
 ```
 
-## Structure
+
+## Depannage Windows
+
+Si `npm run build` ou `npm test` affiche `spawn EPERM` sur `esbuild.exe`, le probleme vient souvent de Windows Defender, d'un antivirus, d'un terminal sans droits suffisants ou d'une installation `node_modules` bloquee localement.
+
+```bash
+npm rebuild esbuild
+npm run build
+npm test
+```
+
+Si l'erreur continue, fermer les terminaux ouverts sur le projet, relancer un terminal en administrateur, supprimer seulement `node_modules/`, puis refaire `npm install` et `npm rebuild esbuild`.`r`n`r`n## Structure
 
 ```text
 src/
