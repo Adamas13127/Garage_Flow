@@ -84,6 +84,19 @@ Le dashboard garage charge maintenant les donnees du backend Symfony pour affich
 Le dashboard affiche les compteurs principaux du garage : rendez-vous en attente, rendez-vous confirmes, interventions en cours et notifications non lues. Il affiche aussi une liste courte des prochains rendez-vous et des dernieres interventions.
 
 
+
+## Configuration garage
+
+La route `/garage-settings` permet au gerant de configurer les donnees principales du garage depuis le dashboard web.
+
+Fonctionnalites disponibles :
+
+* modification des informations du garage : nom, adresse, ville, code postal, telephone, email, description, logo et etat actif ;
+* gestion des prestations : creation, modification et desactivation ;
+* gestion des horaires d'ouverture : creation, modification et desactivation des plages horaires ;
+* gestion des indisponibilites : creation, modification et suppression.
+
+Les formulaires appliquent une validation minimale cote frontend avant d'appeler l'API Symfony, puis affichent les messages de succes ou d'erreur retournes par le backend.
 ## Actions garage
 
 Le frontend web permet maintenant au garage d'agir sur les donnees du backend sans modifier la logique metier cote client.
@@ -98,6 +111,7 @@ Les pages concernees rechargent leurs donnees apres chaque action pour garder le
 
 * UI encore simple et volontairement orientee demonstration MVP.
 * Pas encore de design final avance.
+* Pas encore de CI dediee au frontend.
 * Pas de temps reel WebSocket : les listes sont rafraichies apres action.
 * Le mobile client reste separe dans le dossier mobile/.
 

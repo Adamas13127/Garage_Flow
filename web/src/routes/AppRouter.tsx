@@ -8,6 +8,7 @@ import { GarageLayout } from '../components/layout/GarageLayout';
 import { AppointmentsPage } from '../pages/AppointmentsPage';
 import { DashboardPage } from '../pages/DashboardPage';
 import { InterventionsPage } from '../pages/InterventionsPage';
+import { GarageSettingsPage } from '../pages/GarageSettingsPage';
 import { LoginPage } from '../pages/LoginPage';
 import { NotFoundPage } from '../pages/NotFoundPage';
 import { NotificationsPage } from '../pages/NotificationsPage';
@@ -25,6 +26,7 @@ export function AppRouter() {
           <Route path="/appointments" element={<AppointmentsPage />} />
           <Route path="/interventions" element={<InterventionsPage />} />
           <Route path="/notifications" element={<NotificationsPage />} />
+          <Route path="/garage-settings" element={<GarageSettingsPage />} />
         </Route>
       </Route>
       <Route path="*" element={<NotFoundPage />} />

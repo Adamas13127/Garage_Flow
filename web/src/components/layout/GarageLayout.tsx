@@ -3,7 +3,7 @@
  * Il existe pour fournir une navigation commune aux pages protegees du dashboard web.
  * Il communique avec React Router, useAuth et les pages metier garage.
  */
-import { Bell, CalendarDays, Gauge, LogOut, Menu, Wrench } from 'lucide-react';
+import { Bell, CalendarDays, Gauge, LogOut, Menu, Settings, Wrench } from 'lucide-react';
 import { NavLink, Outlet } from 'react-router-dom';
 import { Button } from '../ui/Button';
 import { useAuth } from '../../hooks/useAuth';
@@ -13,6 +13,7 @@ const links = [
   { to: '/appointments', label: 'Rendez-vous', icon: CalendarDays },
   { to: '/interventions', label: 'Interventions', icon: Wrench },
   { to: '/notifications', label: 'Notifications', icon: Bell },
+  { to: '/garage-settings', label: 'Configuration garage', icon: Settings },
 ];
 
 /** Ce layout encadre les pages garage avec une navigation et un bouton de deconnexion. */
