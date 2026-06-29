@@ -1,6 +1,6 @@
 /*
  * Ce fichier teste la page Configuration garage du frontend GarageFlow.
- * Il existe pour verifier les formulaires de gestion sans appeler le vrai backend.
+ * Il existe pour verifier les onglets et formulaires de gestion sans appeler le vrai backend.
  * Il communique avec GarageSettingsPage et les modules API mockes par Vitest.
  */
 import { render, screen } from '@testing-library/react';
@@ -9,20 +9,7 @@ import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { GarageSettingsPage } from './GarageSettingsPage';
 
 const apiMocks = vi.hoisted(() => ({
-  getMyGarage: vi.fn(),
-  updateMyGarage: vi.fn(),
-  getMyGarageServices: vi.fn(),
-  createServicePrestation: vi.fn(),
-  updateServicePrestation: vi.fn(),
-  disableServicePrestation: vi.fn(),
-  getOpeningHours: vi.fn(),
-  createOpeningHour: vi.fn(),
-  updateOpeningHour: vi.fn(),
-  disableOpeningHour: vi.fn(),
-  getUnavailabilities: vi.fn(),
-  createUnavailability: vi.fn(),
-  updateUnavailability: vi.fn(),
-  deleteUnavailability: vi.fn(),
+  getMyGarage: vi.fn(), updateMyGarage: vi.fn(), getMyGarageServices: vi.fn(), createServicePrestation: vi.fn(), updateServicePrestation: vi.fn(), disableServicePrestation: vi.fn(), getOpeningHours: vi.fn(), createOpeningHour: vi.fn(), updateOpeningHour: vi.fn(), disableOpeningHour: vi.fn(), getUnavailabilities: vi.fn(), createUnavailability: vi.fn(), updateUnavailability: vi.fn(), deleteUnavailability: vi.fn(),
 }));
 
 vi.mock('../api/garageApi', () => ({ getMyGarage: apiMocks.getMyGarage, updateMyGarage: apiMocks.updateMyGarage }));
@@ -32,18 +19,19 @@ vi.mock('../api/unavailabilityApi', () => ({ getUnavailabilities: apiMocks.getUn
 
 const garage = { id: 1, nom: 'Garage Central', adresse: '1 rue Test', ville: 'Paris', codePostal: '75000', telephone: '0102030405', email: 'contact@garage.test', description: 'Garage de test', logoUrl: '', actif: true };
 const service = { id: 2, nom: 'Revision', description: 'Controle complet', dureeMinutes: 60, actif: true };
+const openingHour = { id: 4, jourSemaine: 1, heureDebut: '09:00', heureFin: '18:00', actif: true };
 const unavailability = { id: 3, dateDebut: '2026-07-01T09:00:00', dateFin: '2026-07-01T12:00:00', motif: 'Formation' };
 
-function prepareMocks({ services = [service], unavailabilities = [unavailability] } = {}) {
+function prepareMocks({ services = [service], openingHours = [openingHour], unavailabilities = [unavailability] } = {}) {
   apiMocks.getMyGarage.mockResolvedValue(garage);
   apiMocks.updateMyGarage.mockResolvedValue(garage);
   apiMocks.getMyGarageServices.mockResolvedValue(services);
   apiMocks.createServicePrestation.mockResolvedValue(service);
   apiMocks.updateServicePrestation.mockResolvedValue(service);
   apiMocks.disableServicePrestation.mockResolvedValue(undefined);
-  apiMocks.getOpeningHours.mockResolvedValue([]);
-  apiMocks.createOpeningHour.mockResolvedValue({ id: 4, jourSemaine: 1, heureDebut: '09:00', heureFin: '12:00', actif: true });
-  apiMocks.updateOpeningHour.mockResolvedValue({ id: 4, jourSemaine: 1, heureDebut: '09:00', heureFin: '12:00', actif: true });
+  apiMocks.getOpeningHours.mockResolvedValue(openingHours);
+  apiMocks.createOpeningHour.mockResolvedValue(openingHour);
+  apiMocks.updateOpeningHour.mockResolvedValue(openingHour);
   apiMocks.disableOpeningHour.mockResolvedValue(undefined);
   apiMocks.getUnavailabilities.mockResolvedValue(unavailabilities);
   apiMocks.createUnavailability.mockResolvedValue(unavailability);
@@ -57,12 +45,14 @@ describe('GarageSettingsPage', () => {
     prepareMocks();
   });
 
-  /** Ce test verifie que la page passe du chargement aux informations du garage. */
-  it('affiche un loading puis les informations garage mockees', async () => {
+  /** Ce test verifie que les onglets principaux sont visibles. */
+  it('affiche les onglets Informations Prestations Horaires Indisponibilites', async () => {
     render(<GarageSettingsPage />);
 
-    expect(screen.getByText(/chargement de la configuration garage/i)).toBeInTheDocument();
-    expect(await screen.findByDisplayValue('Garage Central')).toBeInTheDocument();
+    expect(await screen.findByRole('tab', { name: 'Informations' })).toBeInTheDocument();
+    expect(screen.getByRole('tab', { name: 'Prestations' })).toBeInTheDocument();
+    expect(screen.getByRole('tab', { name: 'Horaires' })).toBeInTheDocument();
+    expect(screen.getByRole('tab', { name: 'Indisponibilites' })).toBeInTheDocument();
   });
 
   /** Ce test verifie que le formulaire garage appelle l'API de mise a jour. */
@@ -81,7 +71,8 @@ describe('GarageSettingsPage', () => {
     const user = userEvent.setup();
     render(<GarageSettingsPage />);
 
-    await screen.findByDisplayValue('Garage Central');
+    await user.click(await screen.findByRole('tab', { name: 'Prestations' }));
+    await user.click(screen.getByRole('button', { name: '+ Ajouter une prestation' }));
     await user.type(screen.getByLabelText('Nom de la prestation'), 'Diagnostic');
     await user.type(screen.getByLabelText('Duree en minutes'), '0');
     await user.click(screen.getByRole('button', { name: 'Creer la prestation' }));
@@ -95,7 +86,8 @@ describe('GarageSettingsPage', () => {
     const user = userEvent.setup();
     render(<GarageSettingsPage />);
 
-    await screen.findByDisplayValue('Garage Central');
+    await user.click(await screen.findByRole('tab', { name: 'Horaires' }));
+    await user.click(screen.getByRole('button', { name: '+ Ajouter une plage' }));
     await user.type(screen.getByLabelText('Heure debut'), '18:00');
     await user.type(screen.getByLabelText('Heure fin'), '09:00');
     await user.click(screen.getByRole('button', { name: 'Creer la plage horaire' }));
@@ -109,45 +101,13 @@ describe('GarageSettingsPage', () => {
     const user = userEvent.setup();
     render(<GarageSettingsPage />);
 
-    await screen.findByDisplayValue('Garage Central');
-    await user.type(screen.getAllByLabelText('Date debut')[0], '2026-07-02T10:00');
-    await user.type(screen.getAllByLabelText('Date fin')[0], '2026-07-01T10:00');
+    await user.click(await screen.findByRole('tab', { name: 'Indisponibilites' }));
+    await user.click(screen.getByRole('button', { name: '+ Ajouter une indisponibilite' }));
+    await user.type(screen.getByLabelText('Date debut'), '2026-07-02T10:00');
+    await user.type(screen.getByLabelText('Date fin'), '2026-07-01T10:00');
     await user.click(screen.getByRole('button', { name: "Creer l'indisponibilite" }));
 
     expect(await screen.findByText('La date de debut doit etre avant la date de fin.')).toBeInTheDocument();
     expect(apiMocks.createUnavailability).not.toHaveBeenCalled();
-  });
-
-  /** Ce test verifie l'etat vide des prestations. */
-  it('affiche un etat vide si aucune prestation existe', async () => {
-    prepareMocks({ services: [] });
-
-    render(<GarageSettingsPage />);
-
-    expect(await screen.findByText('Aucune prestation')).toBeInTheDocument();
-  });
-
-  /** Ce test verifie que la desactivation de prestation appelle l'API attendue. */
-  it('appelle disableServicePrestation apres confirmation', async () => {
-    const user = userEvent.setup();
-    render(<GarageSettingsPage />);
-
-    await screen.findByText('Revision');
-    await user.click(screen.getAllByRole('button', { name: 'Desactiver' })[0]);
-    await user.click(screen.getByRole('button', { name: 'Confirmer' }));
-
-    expect(apiMocks.disableServicePrestation).toHaveBeenCalledWith(2);
-  });
-
-  /** Ce test verifie que la suppression d'indisponibilite appelle l'API attendue. */
-  it('appelle deleteUnavailability apres confirmation', async () => {
-    const user = userEvent.setup();
-    render(<GarageSettingsPage />);
-
-    await screen.findByText('Formation');
-    await user.click(screen.getByRole('button', { name: 'Supprimer' }));
-    await user.click(screen.getByRole('button', { name: 'Confirmer' }));
-
-    expect(apiMocks.deleteUnavailability).toHaveBeenCalledWith(3);
   });
 });

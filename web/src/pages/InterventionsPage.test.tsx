@@ -1,6 +1,6 @@
 /*
  * Ce fichier teste la page interventions du frontend GarageFlow.
- * Il existe pour verifier que le garage peut selectionner un nouveau statut.
+ * Il existe pour verifier que le pipeline atelier affiche les colonnes et garde la mise a jour de statut.
  * Il communique avec InterventionsPage et interventionApi.ts mocke.
  */
 import { render, screen } from '@testing-library/react';
@@ -37,6 +37,18 @@ describe('InterventionsPage', () => {
     interventionApiMock.updateInterventionStatus.mockResolvedValue(intervention);
   });
 
+  /** Ce test verifie que les colonnes du pipeline atelier sont visibles. */
+  it('affiche les colonnes du pipeline', async () => {
+    render(<InterventionsPage />);
+
+    expect((await screen.findAllByText('Depose')).length).toBeGreaterThan(0);
+    expect(screen.getAllByText('Diagnostic').length).toBeGreaterThan(0);
+    expect(screen.getAllByText('Validation client').length).toBeGreaterThan(0);
+    expect(screen.getAllByText('Reparation').length).toBeGreaterThan(0);
+    expect(screen.getAllByText('Pret').length).toBeGreaterThan(0);
+    expect(screen.getAllByText('Recupere').length).toBeGreaterThan(0);
+  });
+
   /** Ce test verifie que le select de statut pilote l'appel API de mise a jour. */
   it('permet de selectionner un statut et de le soumettre', async () => {
     const user = userEvent.setup();
@@ -45,7 +57,7 @@ describe('InterventionsPage', () => {
 
     const select = await screen.findByLabelText('Nouveau statut');
     await user.selectOptions(select, 'VEHICULE_PRET');
-    await user.click(screen.getByRole('button', { name: 'Mettre a jour le statut' }));
+    await user.click(screen.getByRole('button', { name: 'Mettre a jour' }));
 
     expect(interventionApiMock.updateInterventionStatus).toHaveBeenCalledWith(8, 'VEHICULE_PRET', undefined);
   });

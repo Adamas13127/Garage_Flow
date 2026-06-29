@@ -1,20 +1,21 @@
 /*
  * Ce fichier declare la page dashboard du frontend web GarageFlow.
- * Il existe pour donner un resume reel du garage connecte a partir des donnees API.
+ * Il existe pour donner au gerant un cockpit de pilotage clair a partir des donnees API du garage.
  * Il communique avec les API garage, rendez-vous, interventions, notifications et AuthContext.
  */
-import { CalendarDays, Bell, Wrench, CheckCircle2 } from 'lucide-react';
+import { Bell, CalendarCheck2, Clock3, Wrench } from 'lucide-react';
 import { useEffect, useMemo, useState } from 'react';
 import { getGarageAppointments } from '../api/appointmentApi';
 import { getMyGarage } from '../api/garageApi';
 import { getGarageInterventions } from '../api/interventionApi';
 import { getNotifications } from '../api/notificationApi';
+import { DaySchedule } from '../components/appointments/DaySchedule';
+import { PriorityCard } from '../components/dashboard/PriorityCard';
 import { EmptyState } from '../components/feedback/EmptyState';
 import { ErrorState } from '../components/feedback/ErrorState';
 import { LoadingState } from '../components/feedback/LoadingState';
 import { Card } from '../components/ui/Card';
 import { PageHeader } from '../components/ui/PageHeader';
-import { StatCard } from '../components/ui/StatCard';
 import { StatusBadge } from '../components/ui/StatusBadge';
 import { useAuth } from '../hooks/useAuth';
 import type { Appointment } from '../types/appointment';
@@ -30,7 +31,14 @@ interface DashboardData {
   notifications: NotificationItem[];
 }
 
-/** Cette page charge les donnees essentielles pour piloter l'activite du garage. */
+const activeWorkshopStatuses = ['VEHICULE_DEPOSE', 'DIAGNOSTIC_EN_COURS', 'ATTENTE_VALIDATION_CLIENT', 'REPARATION_EN_COURS', 'VEHICULE_PRET'];
+
+/** Cette fonction dit si une intervention represente encore un vehicule utile a suivre en atelier. */
+function isWorkshopActive(intervention: Intervention): boolean {
+  return !intervention.closedAt && activeWorkshopStatuses.includes(intervention.statutActuel?.code ?? 'VEHICULE_DEPOSE');
+}
+
+/** Cette page charge les donnees essentielles et les presente comme un cockpit de priorites garage. */
 export function DashboardPage() {
   const { user } = useAuth();
   const [data, setData] = useState<DashboardData>({ garage: null, appointments: [], interventions: [], notifications: [] });
@@ -59,21 +67,19 @@ export function DashboardPage() {
     void loadDashboard();
   }, []);
 
-  const stats = useMemo(() => {
-    const pendingAppointments = data.appointments.filter((appointment) => appointment.statut === 'EN_ATTENTE').length;
-    const confirmedAppointments = data.appointments.filter((appointment) => appointment.statut === 'CONFIRME').length;
-    const activeInterventions = data.interventions.filter((intervention) => !intervention.closedAt).length;
-    const unreadNotifications = data.notifications.filter((notification) => !notification.lu).length;
+  const cockpit = useMemo(() => {
+    const pendingAppointments = data.appointments.filter((appointment) => appointment.statut === 'EN_ATTENTE');
+    const confirmedAppointments = data.appointments
+      .filter((appointment) => appointment.statut === 'CONFIRME')
+      .sort((first, second) => new Date(first.dateDebut).getTime() - new Date(second.dateDebut).getTime());
+    const workshopInterventions = data.interventions
+      .filter(isWorkshopActive)
+      .sort((first, second) => new Date(first.createdAt).getTime() - new Date(second.createdAt).getTime());
+    const readyInterventions = workshopInterventions.filter((intervention) => intervention.statutActuel?.code === 'VEHICULE_PRET');
+    const unreadNotifications = data.notifications.filter((notification) => !notification.lu);
 
-    return { pendingAppointments, confirmedAppointments, activeInterventions, unreadNotifications };
+    return { pendingAppointments, confirmedAppointments, workshopInterventions, readyInterventions, unreadNotifications };
   }, [data]);
-
-  const nextAppointments = [...data.appointments]
-    .sort((first, second) => new Date(first.dateDebut).getTime() - new Date(second.dateDebut).getTime())
-    .slice(0, 4);
-  const latestInterventions = [...data.interventions]
-    .sort((first, second) => new Date(second.createdAt).getTime() - new Date(first.createdAt).getTime())
-    .slice(0, 4);
 
   if (loading) {
     return <LoadingState label="Chargement du dashboard garage" />;
@@ -83,61 +89,46 @@ export function DashboardPage() {
     <div className="space-y-6">
       <PageHeader
         eyebrow={`Bonjour ${user?.prenom ?? 'garage'}`}
-        title="Dashboard garage"
-        description={data.garage ? `Vue d'ensemble de ${data.garage.nom}.` : 'Vue d ensemble du garage connecte.'}
+        title="Cockpit garage"
+        description={data.garage ? `${data.garage.nom} - priorites, planning et atelier.` : 'Priorites, planning et atelier du garage connecte.'}
       />
 
       {error ? <ErrorState message={error} /> : null}
-
       {!error && !data.garage ? <EmptyState title="Aucun garage rattache" description="Le backend n'a pas renvoye de garage pour ce compte." /> : null}
 
-      {data.garage ? (
-        <Card title={data.garage.nom} description={[data.garage.adresse, data.garage.codePostal, data.garage.ville].filter(Boolean).join(' ')}>
-          <p className="text-sm text-slate-600">Utilisateur connecte : {formatUserName(user)}</p>
-        </Card>
-      ) : null}
+      <section className="grid gap-4 md:grid-cols-2 xl:grid-cols-4" aria-label="Actions prioritaires">
+        <PriorityCard icon={<Clock3 aria-hidden="true" size={20} />} title="Demandes a valider" value={cockpit.pendingAppointments.length} description="Rendez-vous clients en attente de decision." tone="amber" />
+        <PriorityCard icon={<CalendarCheck2 aria-hidden="true" size={20} />} title="RDV confirmes a venir" value={cockpit.confirmedAppointments.length} description="Planning garage a preparer pour les prochains passages." tone="sky" />
+        <PriorityCard icon={<Wrench aria-hidden="true" size={20} />} title="Vehicules en atelier" value={cockpit.workshopInterventions.length} description="Interventions encore actives dans le parcours atelier." tone="slate" />
+        <PriorityCard icon={<Bell aria-hidden="true" size={20} />} title="Notifications non lues" value={cockpit.unreadNotifications.length} description="Informations recentes a consulter par l'equipe." tone="emerald" />
+      </section>
 
-      <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
-        <StatCard icon={<CalendarDays aria-hidden="true" size={20} />} label="Rendez-vous en attente" value={stats.pendingAppointments} />
-        <StatCard icon={<CheckCircle2 aria-hidden="true" size={20} />} label="Rendez-vous confirmes" value={stats.confirmedAppointments} />
-        <StatCard icon={<Wrench aria-hidden="true" size={20} />} label="Interventions en cours" value={stats.activeInterventions} />
-        <StatCard icon={<Bell aria-hidden="true" size={20} />} label="Notifications non lues" value={stats.unreadNotifications} />
-      </div>
+      <Card title="Actions prioritaires" description="Ce bloc transforme les compteurs en choses a traiter maintenant.">
+        <div className="grid gap-3 md:grid-cols-2 xl:grid-cols-4">
+          <p className="rounded-md bg-amber-50 p-3 text-sm text-amber-900">{cockpit.pendingAppointments.length} demande(s) de RDV a valider.</p>
+          <p className="rounded-md bg-emerald-50 p-3 text-sm text-emerald-900">{cockpit.readyInterventions.length} vehicule(s) pret(s) a restituer.</p>
+          <p className="rounded-md bg-sky-50 p-3 text-sm text-sky-900">{cockpit.unreadNotifications.length} notification(s) non lue(s).</p>
+          <p className="rounded-md bg-slate-50 p-3 text-sm text-slate-700">{cockpit.workshopInterventions.length} intervention(s) en cours.</p>
+        </div>
+      </Card>
 
-      <div className="grid gap-6 xl:grid-cols-2">
-        <Card title="Prochains rendez-vous" description="Les rendez-vous les plus proches pour organiser l'accueil atelier.">
-          {nextAppointments.length === 0 ? (
-            <EmptyState title="Aucun rendez-vous a afficher" description="Les prochains rendez-vous apparaitront ici." />
-          ) : (
-            <div className="space-y-4">
-              {nextAppointments.map((appointment) => (
-                <article className="rounded-md border border-slate-100 p-4" key={appointment.id}>
-                  <div className="flex flex-col gap-2 sm:flex-row sm:items-start sm:justify-between">
-                    <div>
-                      <h2 className="font-semibold text-slate-950">{formatUserName(appointment.client)}</h2>
-                      <p className="text-sm text-slate-500">{formatVehicle(appointment.vehicle ?? appointment.vehicule)}</p>
-                      <p className="text-sm text-slate-500">{formatService(appointment.service ?? appointment.prestation)} - {formatDateTime(appointment.dateDebut)}</p>
-                    </div>
-                    <StatusBadge status={appointment.statut} />
-                  </div>
-                </article>
-              ))}
-            </div>
-          )}
+      <div className="grid gap-6 xl:grid-cols-[1.2fr_0.8fr]">
+        <Card title="Planning du jour" description="Rendez-vous confirmes du jour ou prochains rendez-vous a preparer.">
+          <DaySchedule appointments={cockpit.confirmedAppointments.slice(0, 6)} emptyTitle="Aucun rendez-vous confirme a venir." />
         </Card>
 
-        <Card title="Dernieres interventions" description="Les interventions recentes pour suivre l'activite atelier.">
-          {latestInterventions.length === 0 ? (
-            <EmptyState title="Aucune intervention a afficher" description="Les interventions creees apparaitront ici." />
+        <Card title="Vehicules en atelier" description="Interventions en cours avec statut actuel visible.">
+          {cockpit.workshopInterventions.length === 0 ? (
+            <EmptyState title="Aucun vehicule en atelier" description="Les interventions actives apparaitront ici." />
           ) : (
-            <div className="space-y-4">
-              {latestInterventions.map((intervention) => (
-                <article className="rounded-md border border-slate-100 p-4" key={intervention.id}>
-                  <div className="flex flex-col gap-2 sm:flex-row sm:items-start sm:justify-between">
+            <div className="space-y-3">
+              {cockpit.workshopInterventions.slice(0, 6).map((intervention) => (
+                <article className="rounded-md border border-slate-200 bg-slate-50 p-3" key={intervention.id}>
+                  <div className="flex items-start justify-between gap-3">
                     <div>
-                      <h2 className="font-semibold text-slate-950">{formatUserName(intervention.client)}</h2>
-                      <p className="text-sm text-slate-500">{formatVehicle(intervention.vehicle ?? intervention.vehicule)}</p>
-                      <p className="text-sm text-slate-500">{formatService(intervention.service ?? intervention.prestation)} - creee le {formatDateTime(intervention.createdAt)}</p>
+                      <h2 className="text-sm font-semibold text-slate-950">{formatVehicle(intervention.vehicle ?? intervention.vehicule)}</h2>
+                      <p className="text-sm text-slate-600">{formatUserName(intervention.client)} - {formatService(intervention.service ?? intervention.prestation)}</p>
+                      <p className="text-xs text-slate-500">Creee le {formatDateTime(intervention.createdAt)}</p>
                     </div>
                     <StatusBadge status={intervention.statutActuel?.code} />
                   </div>

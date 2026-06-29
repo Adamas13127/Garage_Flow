@@ -1,12 +1,12 @@
 <!--
 Ce fichier documente le frontend web GarageFlow.
-Il existe pour expliquer au jury et aux developpeurs comment installer, lancer et tester le dashboard garage.
+Il existe pour expliquer au jury et aux developpeurs comment installer, lancer, tester et presenter le dashboard garage.
 Il communique avec Vite, React, Tailwind CSS et l'API Symfony du dossier backend.
 -->
 
 # GarageFlow Web
 
-Ce dossier contient le frontend web destine aux garages. Il permet aux gerants et employes d'acceder au dashboard, aux rendez-vous, aux interventions et aux notifications.
+Ce dossier contient le frontend web destine aux garages. Il permet aux gerants et employes d'acceder au cockpit garage, aux rendez-vous, au pipeline atelier, aux notifications et a la configuration du garage.
 
 ## Stack
 
@@ -45,18 +45,14 @@ npm test
 npm run preview
 ```
 
-
 ## Depannage Windows
 
-Si `npm run build` ou `npm test` affiche `spawn EPERM` sur `esbuild.exe`, le probleme vient souvent de Windows Defender, d'un antivirus, d'un terminal sans droits suffisants ou d'une installation `node_modules` bloquee localement.
+Si `npm test` affiche `spawn EPERM` sur `esbuild.exe` dans le sandbox Windows, relancer le test dans un terminal local autorise peut suffire. Si le probleme continue, fermer les terminaux ouverts sur le projet, verifier l'antivirus, puis relancer :
 
 ```bash
 npm rebuild esbuild
-npm run build
 npm test
 ```
-
-Si l'erreur continue, fermer les terminaux ouverts sur le projet, relancer un terminal en administrateur, supprimer seulement `node_modules/`, puis refaire `npm install` et `npm rebuild esbuild`.
 
 ## Structure
 
@@ -64,65 +60,47 @@ Si l'erreur continue, fermer les terminaux ouverts sur le projet, relancer un te
 src/
 |-- api/          -> client HTTP et appels API
 |-- assets/       -> futurs assets statiques
-|-- components/   -> layout, UI et feedback
+|-- components/   -> layout, UI, feedback, rendez-vous, dashboard et pipeline atelier
 |-- contexts/     -> contexte d'authentification
 |-- hooks/        -> hooks reutilisables
 |-- pages/        -> pages routees
 |-- routes/       -> routeur et routes protegees
 |-- types/        -> types TypeScript du domaine
-`-- utils/        -> utilitaires partages
+`-- utils/        -> utilitaires partages, formatage et roles
 ```
 
+## UX garage MVP
 
-## Pages connectees a l API
+### Dashboard cockpit
 
-Le dashboard garage charge maintenant les donnees du backend Symfony pour afficher le garage connecte, les rendez-vous, les interventions et les notifications. Les appels passent par les fichiers de `src/api/`, qui utilisent le client HTTP commun et ajoutent le token JWT automatiquement.
+La page `/dashboard` est organisee comme un cockpit garage. Elle affiche en haut les priorites : demandes de rendez-vous a valider, rendez-vous confirmes a venir, vehicules en atelier et notifications non lues. Elle montre aussi un planning simple et les vehicules en atelier.
 
-* `DashboardPage` utilise `/api/garage/me`, `/api/garage/me/appointments`, `/api/garage/me/interventions` et `/api/notifications`.
-* `AppointmentsPage` utilise `/api/garage/me/appointments`.
-* `InterventionsPage` utilise `/api/garage/me/interventions`.
-* `NotificationsPage` utilise `/api/notifications` avec un filtre toutes/non lues cote frontend.
+### Rendez-vous
 
-Le dashboard affiche les compteurs principaux du garage : rendez-vous en attente, rendez-vous confirmes, interventions en cours et notifications non lues. Il affiche aussi une liste courte des prochains rendez-vous et des dernieres interventions.
+La page `/appointments` separe maintenant trois zones :
 
+* demandes a traiter pour les rendez-vous `EN_ATTENTE` avec boutons Accepter et Refuser ;
+* planning des rendez-vous `CONFIRME`, groupe par jour avec filtres Aujourd'hui, Semaine et Tous ;
+* historique compact pour les rendez-vous refuses, annules ou termines.
 
+### Interventions
 
-## Configuration garage
+La page `/interventions` devient une vue atelier en pipeline. Les colonnes representent les statuts du MVP : depose, diagnostic, validation client, reparation, pret et recupere. Chaque carte garde le changement de statut et l'acces aux notes internes.
 
-La route `/garage-settings` permet au gerant de configurer les donnees principales du garage depuis le dashboard web.
+### Configuration garage
 
-Fonctionnalites disponibles :
+La page `/garage-settings` est organisee en onglets : Informations, Prestations, Horaires et Indisponibilites. Les formulaires d'ajout et de modification sont ouverts seulement quand le gerant en a besoin pour eviter une page trop longue.
 
-* modification des informations du garage : nom, adresse, ville, code postal, telephone, email, description, logo et etat actif ;
-* gestion des prestations : creation, modification et desactivation ;
-* gestion des horaires d'ouverture : creation, modification et desactivation des plages horaires ;
-* gestion des indisponibilites : creation, modification et suppression.
+### Protection des comptes client
 
-Les formulaires appliquent une validation minimale cote frontend avant d'appeler l'API Symfony, puis affichent les messages de succes ou d'erreur retournes par le backend.
-## Actions garage
-
-Le frontend web permet maintenant au garage d'agir sur les donnees du backend sans modifier la logique metier cote client.
-
-* `AppointmentsPage` permet d'accepter ou de refuser un rendez-vous en attente, avec motif de refus optionnel.
-* `InterventionsPage` permet de changer le statut d'une intervention et d'ajouter un commentaire optionnel.
-* `InterventionsPage` affiche aussi les notes internes, non visibles par le client, avec ajout, modification et suppression.
-* `NotificationsPage` permet de marquer une notification comme lue ou de tout marquer comme lu.
-
-Les pages concernees rechargent leurs donnees apres chaque action pour garder les compteurs et les listes coherents avec le backend.
-## Limites actuelles
-
-* UI encore simple et volontairement orientee demonstration MVP.
-* Pas encore de design final avance.
-* Pas encore de CI dediee au frontend.
-* Pas de temps reel WebSocket : les listes sont rafraichies apres action.
-* Le mobile client reste separe dans le dossier mobile/.
+Le web garage est reserve aux roles `ROLE_GERANT`, `ROLE_EMPLOYE` et `ROLE_ADMIN`. Si un compte `ROLE_CLIENT` se connecte au web, un message explique que ce compte est reserve a l'application mobile GarageFlow et propose la deconnexion.
 
 ## Routes principales
 
 * `/login` : connexion garage.
-* `/dashboard` : resume du garage connecte.
-* `/appointments` : liste des rendez-vous garage.
-* `/interventions` : liste des interventions atelier.
+* `/dashboard` : cockpit garage.
+* `/appointments` : demandes, planning et historique des rendez-vous.
+* `/interventions` : pipeline atelier et notes internes.
 * `/notifications` : notifications applicatives.
 * `/garage-settings` : configuration du garage, prestations, horaires et indisponibilites.
 
@@ -135,11 +113,18 @@ Gerant : gerant.demo@garageflow.local / Password123
 Employe : employe.demo@garageflow.local / Password123
 ```
 
-Ces comptes servent uniquement a presenter le MVP localement. Le compte client est reserve a l'application mobile.
+Le compte client `client.demo@garageflow.local` est reserve a l'application mobile.
 
 ## Lien avec le backend
 
-Le frontend appelle l'API Symfony avec `VITE_API_BASE_URL`. Le token JWT est stocke dans `localStorage` pour le MVP et envoye dans l'en-tete `Authorization: Bearer`. Pour une version production, une strategie plus robuste avec refresh token ou stockage plus securise serait preferable.
+Le frontend appelle l'API Symfony avec `VITE_API_BASE_URL`. Le token JWT est stocke dans `localStorage` pour le MVP et envoye dans l'en-tete `Authorization: Bearer`. Le backend reste responsable des droits et du filtrage des donnees.
+
+## Limites restantes
+
+* Pas de calendrier avance avec drag and drop.
+* Pas de temps reel WebSocket : les listes se rafraichissent apres action ou navigation.
+* Design encore MVP, optimise pour une demonstration jury.
+* Stockage token web en `localStorage`, acceptable pour le MVP mais a renforcer en production.
 
 ## Securite Git
 

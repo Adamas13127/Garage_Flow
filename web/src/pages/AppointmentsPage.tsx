@@ -1,32 +1,51 @@
 /*
  * Ce fichier declare la page des rendez-vous garage du frontend GarageFlow.
- * Il existe pour afficher les demandes et permettre au garage d'accepter ou refuser un rendez-vous.
- * Il communique avec appointmentApi.ts et le layout garage.
+ * Il existe pour organiser les demandes, le planning et l'historique comme un outil metier de garage.
+ * Il communique avec appointmentApi.ts, les cartes de rendez-vous et le layout garage.
  */
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { acceptAppointment, getGarageAppointments, refuseAppointment } from '../api/appointmentApi';
+import { AppointmentRequestCard } from '../components/appointments/AppointmentRequestCard';
+import { AppointmentTimelineList } from '../components/appointments/AppointmentTimelineList';
+import { DaySchedule } from '../components/appointments/DaySchedule';
 import { EmptyState } from '../components/feedback/EmptyState';
 import { ErrorState } from '../components/feedback/ErrorState';
 import { InlineError } from '../components/feedback/InlineError';
 import { LoadingState } from '../components/feedback/LoadingState';
 import { SuccessMessage } from '../components/feedback/SuccessMessage';
 import { ActionButton } from '../components/ui/ActionButton';
-import { DataTable } from '../components/ui/DataTable';
+import { Card } from '../components/ui/Card';
 import { FormTextarea } from '../components/ui/FormTextarea';
 import { PageHeader } from '../components/ui/PageHeader';
 import { SimpleModal } from '../components/ui/SimpleModal';
-import { StatusBadge } from '../components/ui/StatusBadge';
 import type { Appointment } from '../types/appointment';
-import { formatDateTime, formatService, formatUserName, formatVehicle } from '../utils/format';
 
 interface PendingAction {
   appointmentId: number;
   type: 'accept' | 'refuse';
 }
 
-/** Cette page charge les rendez-vous du garage et gere les actions simples de decision. */
+type QuickFilter = 'today' | 'week' | 'all';
+
+/** Cette fonction verifie si une date API correspond au jour courant du poste. */
+function isToday(value: string): boolean {
+  const date = new Date(value);
+  const now = new Date();
+  return date.toDateString() === now.toDateString();
+}
+
+/** Cette fonction garde les rendez-vous de la semaine courante approximative pour un filtre rapide MVP. */
+function isWithinSevenDays(value: string): boolean {
+  const dateTime = new Date(value).getTime();
+  const now = new Date();
+  const start = new Date(now.getFullYear(), now.getMonth(), now.getDate()).getTime();
+  return dateTime >= start && dateTime <= start + 7 * 24 * 60 * 60 * 1000;
+}
+
+/** Cette page charge les rendez-vous du garage et separe demandes, planning et historique. */
 export function AppointmentsPage() {
   const [appointments, setAppointments] = useState<Appointment[]>([]);
+  const [filter, setFilter] = useState<QuickFilter>('all');
   const [loading, setLoading] = useState(true);
   const [action, setAction] = useState<PendingAction | null>(null);
   const [refuseTarget, setRefuseTarget] = useState<Appointment | null>(null);
@@ -50,6 +69,20 @@ export function AppointmentsPage() {
   useEffect(() => {
     void loadAppointments();
   }, [loadAppointments]);
+
+  const sections = useMemo(() => {
+    const sorted = [...appointments].sort((first, second) => new Date(first.dateDebut).getTime() - new Date(second.dateDebut).getTime());
+    const pending = sorted.filter((appointment) => appointment.statut === 'EN_ATTENTE');
+    const confirmed = sorted.filter((appointment) => appointment.statut === 'CONFIRME');
+    const filteredConfirmed = confirmed.filter((appointment) => {
+      if (filter === 'today') return isToday(appointment.dateDebut);
+      if (filter === 'week') return isWithinSevenDays(appointment.dateDebut);
+      return true;
+    });
+    const history = sorted.filter((appointment) => ['REFUSE', 'ANNULE', 'TERMINE'].includes(appointment.statut));
+
+    return { pending, confirmed: filteredConfirmed, history };
+  }, [appointments, filter]);
 
   async function handleAccept(appointment: Appointment) {
     try {
@@ -89,39 +122,58 @@ export function AppointmentsPage() {
 
   return (
     <div className="space-y-6">
-      <PageHeader title="Rendez-vous" description="Demandes et rendez-vous du garage connecte." />
+      <PageHeader title="Rendez-vous" description="Planning et demandes clients du garage." />
       <SuccessMessage message={success} />
       <InlineError message={actionError} />
       {loading ? <LoadingState label="Chargement des rendez-vous" /> : null}
       {error ? <ErrorState message={error} /> : null}
       {!loading && !error && appointments.length === 0 ? <EmptyState title="Aucun rendez-vous" description="Les demandes clients apparaitront ici des qu'elles seront creees." /> : null}
+
       {!loading && !error && appointments.length > 0 ? (
-        <DataTable
-          columns={[
-            { key: 'client', header: 'Client', render: (appointment) => <span className="font-medium text-slate-950">{formatUserName(appointment.client)}</span> },
-            { key: 'vehicle', header: 'Vehicule', render: (appointment) => formatVehicle(appointment.vehicle ?? appointment.vehicule) },
-            { key: 'service', header: 'Prestation', render: (appointment) => formatService(appointment.service ?? appointment.prestation) },
-            { key: 'date', header: 'Date debut', render: (appointment) => formatDateTime(appointment.dateDebut) },
-            { key: 'status', header: 'Statut', render: (appointment) => <StatusBadge status={appointment.statut} /> },
-            { key: 'comment', header: 'Commentaire', render: (appointment) => appointment.commentaireClient ?? <span className="text-slate-400">Aucun</span> },
-            {
-              key: 'actions',
-              header: 'Actions',
-              render: (appointment) => appointment.statut === 'EN_ATTENTE' ? (
-                <div className="flex flex-wrap gap-2">
-                  <ActionButton loading={action?.appointmentId === appointment.id && action.type === 'accept'} loadingLabel="Acceptation..." type="button" onClick={() => void handleAccept(appointment)}>
-                    Accepter
-                  </ActionButton>
-                  <ActionButton loading={action?.appointmentId === appointment.id && action.type === 'refuse'} type="button" variant="secondary" onClick={() => { setActionError(null); setRefuseTarget(appointment); }}>
-                    Refuser
-                  </ActionButton>
-                </div>
-              ) : <span className="text-sm text-slate-400">Aucune action</span>,
-            },
-          ]}
-          getKey={(appointment) => appointment.id}
-          items={appointments}
-        />
+        <>
+          <Card title="Demandes a traiter" description="Les rendez-vous en attente sont prioritaires car ils demandent une decision du garage.">
+            {sections.pending.length === 0 ? (
+              <EmptyState title="Aucune demande en attente" description="Les nouvelles demandes clients apparaitront ici." />
+            ) : (
+              <div className="space-y-3">
+                {sections.pending.map((appointment) => (
+                  <AppointmentRequestCard
+                    accepting={action?.appointmentId === appointment.id && action.type === 'accept'}
+                    appointment={appointment}
+                    key={appointment.id}
+                    refusing={action?.appointmentId === appointment.id && action.type === 'refuse'}
+                    onAccept={(selectedAppointment) => void handleAccept(selectedAppointment)}
+                    onRefuse={(selectedAppointment) => { setActionError(null); setRefuseTarget(selectedAppointment); }}
+                  />
+                ))}
+              </div>
+            )}
+          </Card>
+
+          <Card title="Planning" description="Rendez-vous confirmes regroupes par jour.">
+            <div className="mb-4 flex flex-wrap gap-2" aria-label="Filtres rapides rendez-vous">
+              {[
+                { id: 'today', label: 'Aujourd hui' },
+                { id: 'week', label: 'Semaine' },
+                { id: 'all', label: 'Tous' },
+              ].map((item) => (
+                <button
+                  className={`rounded-md px-3 py-2 text-sm font-semibold ${filter === item.id ? 'bg-sky-800 text-white' : 'bg-slate-100 text-slate-700 hover:bg-slate-200'}`}
+                  key={item.id}
+                  type="button"
+                  onClick={() => setFilter(item.id as QuickFilter)}
+                >
+                  {item.label}
+                </button>
+              ))}
+            </div>
+            <DaySchedule appointments={sections.confirmed} emptyTitle="Aucun rendez-vous confirme pour ce filtre." />
+          </Card>
+
+          <Card title="Historique" description="Rendez-vous refuses, annules ou termines en consultation rapide.">
+            <AppointmentTimelineList appointments={sections.history} />
+          </Card>
+        </>
       ) : null}
 
       <SimpleModal

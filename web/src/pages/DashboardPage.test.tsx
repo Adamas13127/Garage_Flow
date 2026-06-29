@@ -1,6 +1,6 @@
 /*
- * Ce fichier teste le dashboard garage connecte a des donnees mockees.
- * Il existe pour verifier que la page affiche le chargement puis les cartes metier.
+ * Ce fichier teste le dashboard cockpit garage connecte a des donnees mockees.
+ * Il existe pour verifier que la page affiche les priorites metier et les listes utiles au gerant.
  * Il communique avec DashboardPage et les modules API mockes par Vitest.
  */
 import { render, screen, waitForElementToBeRemoved } from '@testing-library/react';
@@ -8,7 +8,7 @@ import { describe, expect, it, vi } from 'vitest';
 import { DashboardPage } from './DashboardPage';
 
 vi.mock('../hooks/useAuth', () => ({
-  useAuth: () => ({ user: { id: 1, prenom: 'Yannis', nom: 'Semmache', email: 'yannis@example.test' } }),
+  useAuth: () => ({ user: { id: 1, prenom: 'Yannis', nom: 'Semmache', email: 'yannis@example.test', roles: ['ROLE_GERANT'] } }),
 }));
 
 vi.mock('../api/garageApi', () => ({
@@ -35,17 +35,17 @@ vi.mock('../api/notificationApi', () => ({
 }));
 
 describe('DashboardPage', () => {
-  /** Ce test verifie que le dashboard passe du chargement aux statistiques principales. */
-  it('affiche un loading puis les cartes avec les donnees mockees', async () => {
+  /** Ce test verifie que le dashboard affiche les actions prioritaires avec donnees mockees. */
+  it('affiche les actions prioritaires avec les donnees mockees', async () => {
     render(<DashboardPage />);
 
     expect(screen.getByText(/chargement du dashboard garage/i)).toBeInTheDocument();
     await waitForElementToBeRemoved(() => screen.queryByText(/chargement du dashboard garage/i));
 
-    expect(screen.getByText('Garage Central')).toBeInTheDocument();
-    expect(screen.getByText('Rendez-vous en attente')).toBeInTheDocument();
-    expect(screen.getByText('Rendez-vous confirmes')).toBeInTheDocument();
-    expect(screen.getByText('Interventions en cours')).toBeInTheDocument();
-    expect(screen.getByText('Notifications non lues')).toBeInTheDocument();
+    expect(screen.getByText('Cockpit garage')).toBeInTheDocument();
+    expect(screen.getByText('Demandes a valider')).toBeInTheDocument();
+    expect(screen.getByText('Planning du jour')).toBeInTheDocument();
+    expect(screen.getAllByText('Vehicules en atelier').length).toBeGreaterThan(0);
+    expect(screen.getByText(/1 demande\(s\) de RDV a valider/i)).toBeInTheDocument();
   });
 });

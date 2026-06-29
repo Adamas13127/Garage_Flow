@@ -16,14 +16,14 @@ Il communique avec les donnees de demonstration, le dashboard web, l'application
 
 ## Partie 1 - Web garage
 
-Compte conseille : `gerant.demo@garageflow.local` / `Password123`.
+Compte conseille : `gerant.demo@garageflow.local` / `Password123`. Le web garage est reserve aux roles gerant, employe et admin ; un compte client doit utiliser l application mobile.
 
 1. Se connecter au dashboard web.
-2. Montrer le dashboard rempli : rendez-vous, interventions et notifications.
-3. Ouvrir la page des rendez-vous.
+2. Montrer le cockpit garage : priorites du jour, demandes a valider, planning et vehicules en atelier.
+3. Ouvrir la page des rendez-vous et montrer la separation entre demandes a traiter, planning et historique.
 4. Accepter un rendez-vous en attente.
 5. Expliquer que le backend cree l'intervention associee apres confirmation.
-6. Ouvrir la page des interventions.
+6. Ouvrir la page des interventions et montrer le pipeline atelier par statut.
 7. Changer le statut d'une intervention.
 8. Consulter ou ajouter une note interne garage.
 9. Ouvrir les notifications et marquer une notification comme lue.
