@@ -146,6 +146,16 @@ Mot de passe: Password123
 
 Ces identifiants sont uniquement destines au developpement local.
 
+
+## Donnees de demonstration completes
+
+La commande suivante prepare une base locale avec comptes demo, garage, prestations, horaires, vehicules, rendez-vous, interventions, notes internes et notifications. Elle est idempotente et peut etre relancee sans creer de doublons incoherents.
+
+```bash
+php bin/console app:create-demo-data
+```
+
+Consulter aussi `docs/DEMO_DATA.md` pour le scenario de presentation jury.
 ## Lancer le backend localement
 
 Avec le serveur PHP integre :
