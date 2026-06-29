@@ -8,12 +8,12 @@
 export interface Garage {
   id: number;
   nom: string;
-  adresse: string;
-  ville: string;
-  codePostal: string;
+  adresse?: string | null;
+  ville?: string | null;
+  codePostal?: string | null;
   telephone?: string | null;
   email?: string | null;
   description?: string | null;
   logoUrl?: string | null;
-  actif: boolean;
+  actif?: boolean;
 }

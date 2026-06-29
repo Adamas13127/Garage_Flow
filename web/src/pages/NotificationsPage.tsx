@@ -1,26 +1,34 @@
 /*
  * Ce fichier declare la page notifications du frontend web GarageFlow.
  * Il existe pour afficher les notifications applicatives de l'utilisateur connecte.
- * Il communique avec /api/notifications via le client HTTP.
+ * Il communique avec notificationApi.ts et les pages liees aux rendez-vous/interventions.
  */
-import { useEffect, useState } from 'react';
-import { apiRequest } from '../api/httpClient';
-import { ErrorMessage } from '../components/feedback/ErrorMessage';
+import { useEffect, useMemo, useState } from 'react';
+import { getNotifications } from '../api/notificationApi';
+import { EmptyState } from '../components/feedback/EmptyState';
+import { ErrorState } from '../components/feedback/ErrorState';
 import { LoadingState } from '../components/feedback/LoadingState';
+import { Button } from '../components/ui/Button';
 import { Card } from '../components/ui/Card';
+import { PageHeader } from '../components/ui/PageHeader';
 import type { NotificationItem } from '../types/notification';
+import { formatDateTime } from '../utils/format';
 
-/** Cette page liste les notifications recentes du compte garage connecte. */
+type NotificationFilter = 'all' | 'unread';
+
+/** Cette page charge les notifications et permet de filtrer les non lues. */
 export function NotificationsPage() {
   const [notifications, setNotifications] = useState<NotificationItem[]>([]);
+  const [filter, setFilter] = useState<NotificationFilter>('all');
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     async function loadNotifications() {
       try {
-        const response = await apiRequest<{ items: NotificationItem[] }>('/api/notifications');
-        setNotifications(response.items);
+        setLoading(true);
+        setError(null);
+        setNotifications(await getNotifications());
       } catch (exception) {
         setError(exception instanceof Error ? exception.message : 'Impossible de charger les notifications.');
       } finally {
@@ -31,29 +39,50 @@ export function NotificationsPage() {
     void loadNotifications();
   }, []);
 
+  const displayedNotifications = useMemo(
+    () => (filter === 'unread' ? notifications.filter((notification) => !notification.lu) : notifications),
+    [filter, notifications],
+  );
+
   return (
     <div className="space-y-6">
-      <div>
-        <h1 className="text-2xl font-bold text-slate-950">Notifications</h1>
-        <p className="text-sm text-slate-500">Alertes applicatives liees aux rendez-vous et interventions.</p>
-      </div>
+      <PageHeader
+        title="Notifications"
+        description="Alertes applicatives liees aux rendez-vous et interventions."
+        actions={(
+          <div className="inline-flex rounded-md border border-slate-200 bg-white p-1" aria-label="Filtrer les notifications">
+            <Button aria-pressed={filter === 'all'} type="button" variant={filter === 'all' ? 'primary' : 'ghost'} onClick={() => setFilter('all')}>Toutes</Button>
+            <Button aria-pressed={filter === 'unread'} type="button" variant={filter === 'unread' ? 'primary' : 'ghost'} onClick={() => setFilter('unread')}>Non lues</Button>
+          </div>
+        )}
+      />
       {loading ? <LoadingState label="Chargement des notifications" /> : null}
-      {error ? <ErrorMessage message={error} /> : null}
-      {!loading && !error && notifications.length === 0 ? <Card>Aucune notification pour le moment.</Card> : null}
+      {error ? <ErrorState message={error} /> : null}
+      {!loading && !error && displayedNotifications.length === 0 ? (
+        <EmptyState title="Aucune notification" description={filter === 'unread' ? 'Toutes les notifications sont lues.' : 'Les alertes du backend apparaitront ici.'} />
+      ) : null}
       <div className="space-y-3">
-        {notifications.map((notification) => (
+        {!loading && !error ? displayedNotifications.map((notification) => (
           <Card key={notification.id}>
-            <div className="flex flex-col gap-2 sm:flex-row sm:items-start sm:justify-between">
-              <div>
-                <p className="font-semibold text-slate-950">{notification.type}</p>
-                <p className="mt-1 text-sm text-slate-600">{notification.contenu}</p>
+            <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
+              <div className="space-y-1">
+                <div className="flex flex-wrap items-center gap-2">
+                  <h2 className="font-semibold text-slate-950">{notification.type}</h2>
+                  <span className={`rounded-md px-2 py-1 text-xs font-semibold ${notification.lu ? 'bg-slate-100 text-slate-600' : 'bg-sky-50 text-sky-800'}`}>
+                    {notification.lu ? 'Lue' : 'Non lue'}
+                  </span>
+                </div>
+                <p className="text-sm text-slate-600">{notification.contenu}</p>
+                <p className="text-xs text-slate-500">Creee le {formatDateTime(notification.createdAt)}</p>
+                <div className="flex flex-wrap gap-2 text-xs text-slate-500">
+                  {notification.appointmentId ? <span>Rendez-vous #{notification.appointmentId}</span> : null}
+                  {notification.interventionId ? <span>Intervention #{notification.interventionId}</span> : null}
+                </div>
               </div>
-              <span className={`w-fit rounded-md px-3 py-1 text-sm font-medium ${notification.lu ? 'bg-slate-100 text-slate-600' : 'bg-sky-50 text-sky-800'}`}>
-                {notification.lu ? 'Lue' : 'Non lue'}
-              </span>
+              <Button disabled type="button" variant="secondary">Marquer comme lue</Button>
             </div>
           </Card>
-        ))}
+        )) : null}
       </div>
     </div>
   );

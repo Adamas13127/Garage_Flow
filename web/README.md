@@ -71,6 +71,23 @@ src/
 `-- utils/        -> utilitaires partages
 ```
 
+
+## Pages connectees a l API
+
+Le dashboard garage charge maintenant les donnees du backend Symfony pour afficher le garage connecte, les rendez-vous, les interventions et les notifications. Les appels passent par les fichiers de `src/api/`, qui utilisent le client HTTP commun et ajoutent le token JWT automatiquement.
+
+* `DashboardPage` utilise `/api/garage/me`, `/api/garage/me/appointments`, `/api/garage/me/interventions` et `/api/notifications`.
+* `AppointmentsPage` utilise `/api/garage/me/appointments`.
+* `InterventionsPage` utilise `/api/garage/me/interventions`.
+* `NotificationsPage` utilise `/api/notifications` avec un filtre toutes/non lues cote frontend.
+
+Le dashboard affiche les compteurs principaux du garage : rendez-vous en attente, rendez-vous confirmes, interventions en cours et notifications non lues. Il affiche aussi une liste courte des prochains rendez-vous et des dernieres interventions.
+
+## Limites actuelles
+
+* L'acceptation ou le refus d'un rendez-vous depuis le frontend n'est pas encore branche.
+* Le changement de statut d'une intervention depuis le frontend n'est pas encore branche.
+* Le bouton "Marquer comme lue" des notifications est prepare visuellement mais desactive tant que l'endpoint PATCH n'est pas branche.
 ## Routes principales
 
 * `/login` : connexion garage.
