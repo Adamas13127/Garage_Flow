@@ -1,10 +1,11 @@
-﻿/*
+/*
  * Ce fichier declare la page interventions du frontend web GarageFlow.
- * Il existe pour afficher le suivi atelier sous forme de pipeline lisible et garder les actions de statut et notes internes.
- * Il communique avec interventionApi.ts, WorkshopPipeline et le layout garage.
+ * Il existe pour afficher l'atelier sous forme de liste filtrable avec detail, timeline, statut et notes internes.
+ * Il communique avec interventionApi.ts, InterventionListCard et le layout garage.
  */
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { getGarageInterventions, updateInterventionStatus } from '../api/interventionApi';
+import { InterventionListCard } from '../components/interventions/InterventionListCard';
 import { EmptyState } from '../components/feedback/EmptyState';
 import { ErrorState } from '../components/feedback/ErrorState';
 import { InlineError } from '../components/feedback/InlineError';
@@ -12,16 +13,37 @@ import { LoadingState } from '../components/feedback/LoadingState';
 import { SuccessMessage } from '../components/feedback/SuccessMessage';
 import { Card } from '../components/ui/Card';
 import { PageHeader } from '../components/ui/PageHeader';
-import { WorkshopPipeline } from '../components/workshop/WorkshopPipeline';
 import type { Intervention } from '../types/intervention';
 
-/** Cette page charge les interventions et permet au garage de piloter leur suivi en atelier. */
+type InterventionFilter = 'all' | 'todo' | 'active' | 'ready' | 'done';
+
+const filters: Array<{ id: InterventionFilter; label: string }> = [
+  { id: 'all', label: 'Tous' },
+  { id: 'todo', label: 'A traiter' },
+  { id: 'active', label: 'En cours' },
+  { id: 'ready', label: 'Prets' },
+  { id: 'done', label: 'Termines' },
+];
+
+/** Cette fonction verifie si une intervention correspond au filtre atelier choisi. */
+function matchesFilter(intervention: Intervention, filter: InterventionFilter): boolean {
+  const status = intervention.statutActuel?.code ?? 'VEHICULE_DEPOSE';
+  if (filter === 'todo') return ['ATTENTE_VALIDATION_CLIENT', 'VEHICULE_PRET'].includes(status);
+  if (filter === 'active') return ['VEHICULE_DEPOSE', 'DIAGNOSTIC_EN_COURS', 'REPARATION_EN_COURS'].includes(status);
+  if (filter === 'ready') return status === 'VEHICULE_PRET';
+  if (filter === 'done') return status === 'VEHICULE_RECUPERE';
+  return true;
+}
+
+/** Cette page charge les interventions et permet au garage de piloter leur suivi en liste lisible. */
 export function InterventionsPage() {
   const [interventions, setInterventions] = useState<Intervention[]>([]);
+  const [filter, setFilter] = useState<InterventionFilter>('all');
   const [statusDrafts, setStatusDrafts] = useState<Record<number, string>>({});
   const [commentDrafts, setCommentDrafts] = useState<Record<number, string>>({});
   const [openedNotesId, setOpenedNotesId] = useState<number | null>(null);
   const [openedStatusId, setOpenedStatusId] = useState<number | null>(null);
+  const [openedDetailId, setOpenedDetailId] = useState<number | null>(null);
   const [updatingId, setUpdatingId] = useState<number | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -55,6 +77,11 @@ export function InterventionsPage() {
       waitingClient: interventions.filter((intervention) => intervention.statutActuel?.code === 'ATTENTE_VALIDATION_CLIENT').length,
     };
   }, [interventions]);
+
+  const filteredInterventions = useMemo(
+    () => interventions.filter((intervention) => matchesFilter(intervention, filter)),
+    [filter, interventions],
+  );
 
   async function handleUpdateStatus(intervention: Intervention) {
     const statusCode = statusDrafts[intervention.id] ?? intervention.statutActuel?.code ?? 'VEHICULE_DEPOSE';
@@ -92,20 +119,44 @@ export function InterventionsPage() {
             <Card className="p-4" title="En reparation"><p className="text-3xl font-bold text-purple-700">{summary.repairing}</p></Card>
             <Card className="p-4" title="En attente client"><p className="text-3xl font-bold text-amber-700">{summary.waitingClient}</p></Card>
           </section>
-          <WorkshopPipeline
-            commentDrafts={commentDrafts}
-            interventions={interventions}
-            openedNotesId={openedNotesId}
-            openedStatusId={openedStatusId}
-            statusDrafts={statusDrafts}
-            updatingId={updatingId}
-            onCancelStatusChange={() => setOpenedStatusId(null)}
-            onCommentDraftChange={(interventionId, comment) => setCommentDrafts((current) => ({ ...current, [interventionId]: comment }))}
-            onStatusDraftChange={(interventionId, status) => setStatusDrafts((current) => ({ ...current, [interventionId]: status }))}
-            onToggleNotes={(interventionId) => setOpenedNotesId((current) => current === interventionId ? null : interventionId)}
-            onToggleStatus={(interventionId) => setOpenedStatusId((current) => current === interventionId ? null : interventionId)}
-            onUpdateStatus={(intervention) => void handleUpdateStatus(intervention)}
-          />
+
+          <Card title="Interventions" description="Filtrez les vehicules puis ouvrez le detail, le statut ou les notes au besoin.">
+            <div className="mb-4 flex flex-wrap gap-2" aria-label="Filtres interventions">
+              {filters.map((item) => (
+                <button
+                  className={`rounded-md px-3 py-2 text-sm font-semibold ${filter === item.id ? 'bg-sky-800 text-white' : 'bg-slate-100 text-slate-700 hover:bg-slate-200'}`}
+                  key={item.id}
+                  type="button"
+                  onClick={() => setFilter(item.id)}
+                >
+                  {item.label}
+                </button>
+              ))}
+            </div>
+
+            {filteredInterventions.length === 0 ? <EmptyState title="Aucune intervention dans cette categorie." description="Changez de filtre pour consulter les autres vehicules." /> : null}
+            <div className="space-y-4">
+              {filteredInterventions.map((intervention) => (
+                <InterventionListCard
+                  commentDraft={commentDrafts[intervention.id] ?? ''}
+                  detailOpen={openedDetailId === intervention.id}
+                  intervention={intervention}
+                  key={intervention.id}
+                  notesOpen={openedNotesId === intervention.id}
+                  statusDraft={statusDrafts[intervention.id] ?? intervention.statutActuel?.code ?? 'VEHICULE_DEPOSE'}
+                  statusOpen={openedStatusId === intervention.id}
+                  updating={updatingId === intervention.id}
+                  onCancelStatus={() => setOpenedStatusId(null)}
+                  onCommentDraftChange={(interventionId, comment) => setCommentDrafts((current) => ({ ...current, [interventionId]: comment }))}
+                  onStatusDraftChange={(interventionId, status) => setStatusDrafts((current) => ({ ...current, [interventionId]: status }))}
+                  onToggleDetail={(interventionId) => setOpenedDetailId((current) => current === interventionId ? null : interventionId)}
+                  onToggleNotes={(interventionId) => setOpenedNotesId((current) => current === interventionId ? null : interventionId)}
+                  onToggleStatus={(interventionId) => setOpenedStatusId((current) => current === interventionId ? null : interventionId)}
+                  onUpdateStatus={(selectedIntervention) => void handleUpdateStatus(selectedIntervention)}
+                />
+              ))}
+            </div>
+          </Card>
         </>
       ) : null}
     </div>

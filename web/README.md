@@ -6,7 +6,7 @@ Il communique avec Vite, React, Tailwind CSS et l'API Symfony du dossier backend
 
 # GarageFlow Web
 
-Ce dossier contient le frontend web destine aux garages. Il permet aux gerants et employes d'acceder au cockpit garage, aux rendez-vous, au pipeline atelier, aux notifications et a la configuration du garage.
+Ce dossier contient le frontend web destine aux garages. Il permet aux gerants et employes d'acceder au cockpit garage, aux rendez-vous, a la liste Atelier filtrable, aux notifications et a la configuration du garage.
 
 ## Stack
 
@@ -60,7 +60,7 @@ npm test
 src/
 |-- api/          -> client HTTP et appels API
 |-- assets/       -> futurs assets statiques
-|-- components/   -> layout, UI, feedback, rendez-vous, dashboard et pipeline atelier
+|-- components/   -> layout, UI, feedback, rendez-vous, dashboard et atelier
 |-- contexts/     -> contexte d'authentification
 |-- hooks/        -> hooks reutilisables
 |-- pages/        -> pages routees
@@ -100,7 +100,7 @@ Le web garage est reserve aux roles `ROLE_GERANT`, `ROLE_EMPLOYE` et `ROLE_ADMIN
 * `/login` : connexion garage.
 * `/dashboard` : cockpit garage.
 * `/appointments` : demandes, planning et historique des rendez-vous.
-* `/interventions` : pipeline atelier et notes internes.
+* `/interventions` : liste Atelier filtrable, detail intervention, timeline, changement de statut et notes internes.
 * `/notifications` : notifications applicatives.
 * `/garage-settings` : configuration du garage, prestations, horaires et indisponibilites.
 
