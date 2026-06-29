@@ -1,13 +1,13 @@
 /*
  * Ce fichier declare les onglets principaux de GarageFlow mobile.
  * Il existe pour organiser les ecrans client une fois connecte.
- * Il communique avec AppNavigator et les screens client.
+ * Il communique avec AppNavigator et les navigateurs de parcours client.
  */
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
-import { AppointmentsScreen } from '../screens/AppointmentsScreen';
+import { AppointmentsStackNavigator } from './AppointmentsStackNavigator';
 import { GaragesStackNavigator } from './GaragesStackNavigator';
 import { HomeScreen } from '../screens/HomeScreen';
-import { InterventionsScreen } from '../screens/InterventionsScreen';
+import { InterventionsStackNavigator } from './InterventionsStackNavigator';
 import { NotificationsScreen } from '../screens/NotificationsScreen';
 import { ProfileScreen } from '../screens/ProfileScreen';
 import { VehiclesScreen } from '../screens/VehiclesScreen';
@@ -24,8 +24,8 @@ export function MainTabs() {
       <Tab.Screen name="Home" component={HomeScreen} options={{ title: 'Accueil' }} />
       <Tab.Screen name="Garages" component={GaragesStackNavigator} options={{ title: 'Garages', headerShown: false }} />
       <Tab.Screen name="Vehicles" component={VehiclesScreen} options={{ title: 'Vehicules' }} />
-      <Tab.Screen name="Appointments" component={AppointmentsScreen} options={{ title: 'Rendez-vous' }} />
-      <Tab.Screen name="Interventions" component={InterventionsScreen} options={{ title: 'Reparations' }} />
+      <Tab.Screen name="Appointments" component={AppointmentsStackNavigator} options={{ title: 'Rendez-vous', headerShown: false }} />
+      <Tab.Screen name="Interventions" component={InterventionsStackNavigator} options={{ title: 'Reparations', headerShown: false }} />
       <Tab.Screen name="Notifications" component={NotificationsScreen} options={{ title: 'Notifications' }} />
       <Tab.Screen name="Profile" component={ProfileScreen} options={{ title: 'Profil' }} />
     </Tab.Navigator>

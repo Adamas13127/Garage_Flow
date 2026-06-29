@@ -12,6 +12,8 @@ export interface Appointment {
   dateDebut: string;
   dateFin?: string | null;
   commentaireClient?: string | null;
+  motif?: string | null;
+  createdAt?: string | null;
   garage?: Garage | null;
   vehicle?: Vehicle | null;
   vehicule?: Vehicle | null;
@@ -25,4 +27,6 @@ export interface CreateAppointmentPayload {
   vehicleId: number;
   dateHeure: string;
   commentaireClient?: string | null;
+  motif?: string | null;
+  createdAt?: string | null;
 }

@@ -12,6 +12,8 @@ jest.mock('../api/appointmentApi', () => ({ cancelAppointment: jest.fn(), getCli
 
 const mockCancelAppointment = cancelAppointment as jest.MockedFunction<typeof cancelAppointment>;
 const mockGetClientAppointments = getClientAppointments as jest.MockedFunction<typeof getClientAppointments>;
+const navigation = { navigate: jest.fn() } as never;
+const route = { key: 'AppointmentsList', name: 'AppointmentsList' } as never;
 
 describe('AppointmentsScreen', () => {
   beforeEach(() => { jest.clearAllMocks(); });
@@ -22,14 +24,14 @@ describe('AppointmentsScreen', () => {
   /** Ce test verifie qu'un rendez-vous en attente affiche l'action d'annulation. */
   it('affiche le bouton annuler pour un rendez-vous en attente', async () => {
     mockGetClientAppointments.mockResolvedValue([pendingAppointment]);
-    render(<AppointmentsScreen />);
+    render(<AppointmentsScreen navigation={navigation} route={route} />);
     expect(await screen.findByText('Annuler')).toBeTruthy();
   });
 
   /** Ce test verifie qu'un rendez-vous termine ne peut plus etre annule. */
   it('ne montre pas le bouton annuler pour un rendez-vous termine', async () => {
     mockGetClientAppointments.mockResolvedValue([{ ...pendingAppointment, id: 8, statut: 'TERMINE' }]);
-    render(<AppointmentsScreen />);
+    render(<AppointmentsScreen navigation={navigation} route={route} />);
     await screen.findByText('Garage Central');
     expect(screen.queryByText('Annuler')).toBeNull();
   });
@@ -39,7 +41,7 @@ describe('AppointmentsScreen', () => {
     mockGetClientAppointments.mockResolvedValue([pendingAppointment]);
     mockCancelAppointment.mockResolvedValue({ ...pendingAppointment });
     jest.spyOn(Alert, 'alert').mockImplementation((title, message, buttons) => { buttons?.[1]?.onPress?.(); });
-    render(<AppointmentsScreen />);
+    render(<AppointmentsScreen navigation={navigation} route={route} />);
     fireEvent.press(await screen.findByText('Annuler'));
     await waitFor(() => expect(mockCancelAppointment).toHaveBeenCalledWith(7));
   });

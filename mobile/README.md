@@ -6,7 +6,7 @@ Il communique avec le projet Expo, l'API Symfony et les futurs developpeurs du m
 
 # GarageFlow Mobile
 
-Ce dossier contient l'application mobile client GarageFlow. Elle servira aux clients pour gerer leurs vehicules, consulter les garages, prendre rendez-vous, suivre leurs interventions et lire leurs notifications.
+Ce dossier contient l'application mobile client GarageFlow. Elle permet aux clients de gerer leurs vehicules, consulter les garages, prendre rendez-vous, suivre leurs reparations et lire leurs notifications.
 
 ## Stack
 
@@ -48,7 +48,7 @@ npm run android
 npm run ios
 npm run lint
 npm test
-npx expo start --help
+npx tsc --noEmit
 npm audit --omit=dev
 ```
 
@@ -57,10 +57,10 @@ npm audit --omit=dev
 ```text
 src/
 |-- api/          -> client HTTP et appels API mobiles
-|-- components/   -> composants UI, layout et feedback
+|-- components/   -> composants UI, layout, feedback, cartes et timeline
 |-- contexts/     -> AuthContext mobile
 |-- hooks/        -> hooks reutilisables
-|-- navigation/   -> navigation auth et onglets client
+|-- navigation/   -> navigation auth, onglets et piles de detail
 |-- screens/      -> ecrans de l'application
 |-- types/        -> types TypeScript
 `-- utils/        -> theme, stockage et formatage
@@ -68,19 +68,36 @@ src/
 
 ## Ecrans disponibles
 
-* Login
-* Register
-* Home
-* Garages
-* Vehicles
-* Appointments
-* Interventions
-* Notifications
+* Login et Register
+* Home avec resume client et raccourcis
+* Garages avec detail des prestations
+* Reservation avec vehicule, date et creneau disponible
+* Vehicles avec creation, modification et suppression
+* Appointments avec liste, detail et annulation des rendez-vous annulables
+* Interventions avec liste, detail et timeline de suivi reparation
+* Notifications avec filtre toutes/non lues et actions de lecture
 * Profile
 
 ## Parcours client MVP
 
-L'application mobile permet maintenant au client de gerer ses vehicules, de consulter les garages, de choisir une prestation et de demander un rendez-vous sur un creneau disponible. Les rendez-vous au statut EN_ATTENTE ou CONFIRME peuvent etre annules depuis l'ecran des rendez-vous.
+L'application mobile permet au client de gerer ses vehicules, de consulter les garages, de choisir une prestation et de demander un rendez-vous sur un creneau disponible. Le client peut aussi consulter le detail d'un rendez-vous, annuler un rendez-vous au statut `EN_ATTENTE` ou `CONFIRME`, suivre une intervention avec une timeline et gerer ses notifications lues ou non lues.
+
+## Suivi reparation
+
+La timeline client affiche les etapes MVP suivantes :
+
+* `VEHICULE_DEPOSE`
+* `DIAGNOSTIC_EN_COURS`
+* `ATTENTE_VALIDATION_CLIENT`
+* `REPARATION_EN_COURS`
+* `VEHICULE_PRET`
+* `VEHICULE_RECUPERE`
+
+Si le backend renvoie un historique de statuts, l'application l'utilise. Sinon, elle affiche une timeline simplifiee selon le statut actuel. Les notes internes garage ne sont jamais affichees cote client.
+
+## Notifications
+
+L'ecran Notifications permet de consulter toutes les notifications ou seulement les non lues. Une notification non lue peut etre marquee comme lue, et un bouton permet de tout marquer comme lu.
 
 ## Securite
 
@@ -88,8 +105,8 @@ Le token JWT est stocke avec AsyncStorage pour le MVP. Pour une application en p
 
 ## Limites actuelles
 
-* Pas encore de CRUD complet vehicule.
-* Pas encore de parcours complet de reservation.
-* Pas encore de design final avance.
+* Pas de notifications push.
 * Pas de temps reel WebSocket.
-* Les tests couvrent seulement le socle initial.
+* Pas de paiement en ligne.
+* Stockage token AsyncStorage adapte au MVP, SecureStore recommande en production.
+* Design encore MVP, optimise pour une presentation jury.
