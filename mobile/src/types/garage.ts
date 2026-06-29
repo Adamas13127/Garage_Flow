@@ -1,7 +1,7 @@
 /*
  * Ce fichier declare les types garage utilises par l'application mobile GarageFlow.
- * Il existe pour afficher les garages et leurs prestations aux clients.
- * Il communique avec garageApi.ts et GaragesScreen.
+ * Il existe pour afficher les garages, prestations et creneaux disponibles aux clients.
+ * Il communique avec garageApi.ts, GaragesScreen, GarageDetailScreen et BookingScreen.
  */
 export interface Garage {
   id: number;
@@ -20,4 +20,12 @@ export interface ServicePrestation {
   description?: string | null;
   dureeMinutes?: number | null;
   actif?: boolean;
+}
+
+export interface AvailableSlot {
+  id?: string | number;
+  dateHeure?: string;
+  startAt?: string;
+  endAt?: string | null;
+  label?: string;
 }

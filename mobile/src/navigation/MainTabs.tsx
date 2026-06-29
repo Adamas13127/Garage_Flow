@@ -5,7 +5,7 @@
  */
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { AppointmentsScreen } from '../screens/AppointmentsScreen';
-import { GaragesScreen } from '../screens/GaragesScreen';
+import { GaragesStackNavigator } from './GaragesStackNavigator';
 import { HomeScreen } from '../screens/HomeScreen';
 import { InterventionsScreen } from '../screens/InterventionsScreen';
 import { NotificationsScreen } from '../screens/NotificationsScreen';
@@ -22,7 +22,7 @@ export function MainTabs() {
   return (
     <Tab.Navigator screenOptions={{ tabBarActiveTintColor: colors.primary, tabBarLabelStyle: { fontSize: 11 }, headerTitleStyle: { color: colors.text } }}>
       <Tab.Screen name="Home" component={HomeScreen} options={{ title: 'Accueil' }} />
-      <Tab.Screen name="Garages" component={GaragesScreen} options={{ title: 'Garages' }} />
+      <Tab.Screen name="Garages" component={GaragesStackNavigator} options={{ title: 'Garages', headerShown: false }} />
       <Tab.Screen name="Vehicles" component={VehiclesScreen} options={{ title: 'Vehicules' }} />
       <Tab.Screen name="Appointments" component={AppointmentsScreen} options={{ title: 'Rendez-vous' }} />
       <Tab.Screen name="Interventions" component={InterventionsScreen} options={{ title: 'Reparations' }} />

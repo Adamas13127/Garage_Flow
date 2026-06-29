@@ -14,7 +14,7 @@ export function AppInput({ label, ...props }: AppInputProps) {
   return (
     <View style={styles.container}>
       <Text style={styles.label}>{label}</Text>
-      <TextInput autoCapitalize="none" placeholderTextColor="#94a3b8" style={styles.input} {...props} />
+      <TextInput accessibilityLabel={label} autoCapitalize="none" placeholderTextColor="#94a3b8" style={styles.input} {...props} />
     </View>
   );
 }

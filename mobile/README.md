@@ -78,6 +78,10 @@ src/
 * Notifications
 * Profile
 
+## Parcours client MVP
+
+L'application mobile permet maintenant au client de gerer ses vehicules, de consulter les garages, de choisir une prestation et de demander un rendez-vous sur un creneau disponible. Les rendez-vous au statut EN_ATTENTE ou CONFIRME peuvent etre annules depuis l'ecran des rendez-vous.
+
 ## Securite
 
 Le token JWT est stocke avec AsyncStorage pour le MVP. Pour une application en production, une solution plus securisee comme SecureStore serait preferable.
