@@ -23,9 +23,9 @@ Compte conseille : `gerant.demo@garageflow.local` / `Password123`. Le web garage
 3. Ouvrir la page des rendez-vous et montrer la separation entre demandes a traiter, planning et historique.
 4. Accepter un rendez-vous en attente.
 5. Expliquer que le backend cree l'intervention associee apres confirmation.
-6. Ouvrir la page des interventions et montrer le pipeline atelier par statut.
-7. Changer le statut d'une intervention.
-8. Consulter ou ajouter une note interne garage.
+6. Ouvrir la page Atelier et montrer le resume des vehicules puis le pipeline par statut.
+7. Cliquer sur Changer statut, montrer que le formulaire apparait a la demande, puis confirmer un changement de statut.
+8. Cliquer sur Notes, rappeler que les notes internes ne sont pas visibles par le client, puis consulter ou ajouter une note interne garage.
 9. Ouvrir les notifications et marquer une notification comme lue.
 10. Montrer la configuration garage : informations, prestations, horaires et indisponibilites.
 
