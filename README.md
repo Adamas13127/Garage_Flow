@@ -66,3 +66,17 @@ npm test
 ```
 
 Le frontend utilise `VITE_API_BASE_URL` pour joindre le backend Symfony. Le fichier local `.env.local` ne doit pas etre commite.
+
+## Mobile client
+
+Le dossier `mobile/` contient l'application client Expo/React Native. Commandes principales :
+
+```bash
+cd mobile
+npm install
+npm start
+npm run lint
+npm test
+```
+
+Le mobile utilise `EXPO_PUBLIC_API_BASE_URL` pour joindre l'API Symfony. Sur telephone reel, utiliser l'IP locale du PC plutot que `127.0.0.1`.

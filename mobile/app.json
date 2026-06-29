@@ -1,0 +1,13 @@
+{
+  "expo": {
+    "name": "GarageFlow Client",
+    "slug": "garageflow-client",
+    "version": "0.1.0",
+    "orientation": "portrait",
+    "userInterfaceStyle": "light",
+    "scheme": "garageflow",
+    "assetBundlePatterns": ["**/*"],
+    "ios": { "supportsTablet": true },
+    "android": { "adaptiveIcon": { "backgroundColor": "#0f172a" } }
+  }
+}
