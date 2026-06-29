@@ -96,6 +96,16 @@ src/
 * Notifications avec filtre toutes/non lues et actions de lecture
 * Profile
 
+
+## Compte de demonstration
+
+Apres execution de `php bin/console app:create-demo-data` dans `backend/`, l'application mobile peut etre testee avec le compte client suivant :
+
+```text
+Client : client.demo@garageflow.local / Password123
+```
+
+Ce compte sert uniquement a presenter le parcours client du MVP localement.
 ## Parcours client MVP
 
 L'application mobile permet au client de gerer ses vehicules, de consulter les garages, de choisir une prestation et de demander un rendez-vous sur un creneau disponible. Le client peut aussi consulter le detail d'un rendez-vous, annuler un rendez-vous au statut `EN_ATTENTE` ou `CONFIRME`, suivre une intervention avec une timeline et gerer ses notifications lues ou non lues.

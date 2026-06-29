@@ -1,82 +1,87 @@
+<!--
+Ce fichier presente le projet GarageFlow a la racine du depot.
+Il existe pour donner au jury et aux developpeurs une vue rapide du MVP, de son architecture et de ses commandes principales.
+Il communique avec les dossiers backend, web, mobile et docs qui composent le monorepo.
+-->
+
 # GarageFlow
 
 GarageFlow est une plateforme web et mobile de prise de rendez-vous et de suivi d'intervention pour garages automobiles independants.
 
 ## Objectif du MVP
 
-Le MVP doit permettre aux clients de gerer leurs vehicules, prendre rendez-vous et suivre leurs interventions.
-Il doit aussi permettre aux garages de gerer leurs prestations, horaires, rendez-vous, interventions, statuts, notes internes et notifications.
+Le MVP permet aux clients de gerer leurs vehicules, prendre rendez-vous et suivre leurs interventions. Il permet aussi aux garages de gerer leurs prestations, horaires, indisponibilites, rendez-vous, interventions, statuts, notes internes et notifications.
 
-## Architecture prevue
+## Architecture
 
 ```text
 garageflow/
-|-- backend/  -> API Symfony REST
-|-- web/      -> dashboard web garage avec React
-|-- mobile/   -> application mobile client avec Expo
-`-- docs/     -> documentation fonctionnelle et technique
+|-- backend/  -> API Symfony REST, Doctrine ORM, MySQL et JWT
+|-- web/      -> dashboard web garage avec React, Vite et Tailwind CSS
+|-- mobile/   -> application mobile client avec Expo SDK 54
+|-- docs/     -> documentation fonctionnelle, technique et supports d'oral
+|-- README.md -> presentation globale du projet
+`-- AGENTS.md -> regles de developpement du projet
 ```
 
 ## Stack technique
 
 * Backend : Symfony API REST
 * ORM : Doctrine ORM
-* Base de donnees : MySQL
+* Base de donnees : MySQL avec Docker
 * Authentification : JWT
 * Frontend web : React + Vite + Tailwind CSS
-* Mobile : React Native + Expo
+* Mobile : React Native + Expo SDK 54
 * Documentation : Markdown
 * Versioning : GitHub
 
 ## Statut du projet
 
-Le repository est en phase de preparation.
-Aucune fonctionnalite metier n'est encore developpee.
+Le MVP est fonctionnel pour une demonstration locale : backend API, dashboard web garage, application mobile client, donnees de demonstration et tests automatises sont en place. Les fonctionnalites hors MVP comme paiement, facturation, stock pieces, SMS, chat temps reel et marketplace ne sont pas developpees.
 
-## Installation
+## Lancement rapide
 
-Les commandes d'installation seront completees lorsque les applications backend, web et mobile seront initialisees.
+Consulter `docs/oral/FICHE_LANCEMENT_LOCAL.md` pour le demarrage complet. Resume :
 
 ```bash
-# Backend Symfony
-# A completer plus tard
-
-# Frontend web React
-# A completer plus tard
-
-# Mobile Expo
-# A completer plus tard
+cd backend
+docker compose up -d database
+php bin/console doctrine:migrations:migrate
+php bin/console app:create-demo-data
+php -S 127.0.0.1:8000 -t public
 ```
-
-## Documentation
-
-La documentation du projet se trouve dans le dossier `docs/`.
-Le fichier `AGENTS.md` a la racine reste la source de verite principale pour les prochaines missions.
-## Frontend web
-
-Le dossier `web/` contient le dashboard garage React/Vite. Commandes principales :
 
 ```bash
 cd web
 npm install
 npm run dev
-npm run build
-npm run lint
-npm test
 ```
-
-Le frontend utilise `VITE_API_BASE_URL` pour joindre le backend Symfony. Le fichier local `.env.local` ne doit pas etre commite.
-
-## Mobile client
-
-Le dossier `mobile/` contient l'application client Expo/React Native. Commandes principales :
 
 ```bash
 cd mobile
 npm install
-npm start
-npm run lint
-npm test
+npx expo start -c
 ```
 
-Le mobile utilise `EXPO_PUBLIC_API_BASE_URL` pour joindre l'API Symfony. Sur telephone reel, utiliser l'IP locale du PC plutot que `127.0.0.1`.
+## Comptes de demonstration
+
+Mot de passe commun : `Password123`.
+
+| Interface | Role | Email |
+| --- | --- | --- |
+| Web garage | Gerant | `gerant.demo@garageflow.local` |
+| Web garage | Employe | `employe.demo@garageflow.local` |
+| Mobile client | Client | `client.demo@garageflow.local` |
+
+## Documentation utile
+
+* `backend/README.md` : installation et commandes backend.
+* `backend/docs/API.md` : routes API principales.
+* `backend/docs/DEMO_DATA.md` : donnees de demonstration.
+* `docs/oral/AUDIT_FINAL_MVP.md` : etat final du MVP.
+* `docs/oral/FICHE_LANCEMENT_LOCAL.md` : fiche de lancement local.
+* `docs/oral/SCENARIO_DEMO_JURY.md` : parcours conseille pour l'oral.
+
+## Securite Git
+
+Ne jamais commiter `.env.local`, `.env.test.local`, fichiers `.pem`, `node_modules/`, `vendor/`, `var/`, `dist/`, `build/` ou fichiers temporaires.

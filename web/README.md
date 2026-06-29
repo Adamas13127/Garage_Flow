@@ -56,7 +56,9 @@ npm run build
 npm test
 ```
 
-Si l'erreur continue, fermer les terminaux ouverts sur le projet, relancer un terminal en administrateur, supprimer seulement `node_modules/`, puis refaire `npm install` et `npm rebuild esbuild`.`r`n`r`n## Structure
+Si l'erreur continue, fermer les terminaux ouverts sur le projet, relancer un terminal en administrateur, supprimer seulement `node_modules/`, puis refaire `npm install` et `npm rebuild esbuild`.
+
+## Structure
 
 ```text
 src/
@@ -122,6 +124,18 @@ Les pages concernees rechargent leurs donnees apres chaque action pour garder le
 * `/appointments` : liste des rendez-vous garage.
 * `/interventions` : liste des interventions atelier.
 * `/notifications` : notifications applicatives.
+* `/garage-settings` : configuration du garage, prestations, horaires et indisponibilites.
+
+## Comptes de demonstration
+
+Apres execution de `php bin/console app:create-demo-data` dans `backend/`, le dashboard web peut etre teste avec les comptes garage suivants :
+
+```text
+Gerant : gerant.demo@garageflow.local / Password123
+Employe : employe.demo@garageflow.local / Password123
+```
+
+Ces comptes servent uniquement a presenter le MVP localement. Le compte client est reserve a l'application mobile.
 
 ## Lien avec le backend
 
