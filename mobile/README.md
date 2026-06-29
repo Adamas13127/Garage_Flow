@@ -40,6 +40,24 @@ Attention : sur telephone reel, `127.0.0.1` pointe vers le telephone, pas vers l
 * Telephone physique : utiliser l'IP locale du PC, par exemple `http://192.168.x.x:8000`.
 * Simulateur iOS local : `127.0.0.1` peut fonctionner selon la configuration.
 
+
+## Compatibilite Expo Go
+
+Le projet mobile est aligne avec Expo SDK 54 pour rester compatible avec Expo Go 54 sur l'iPhone de test.
+
+```bash
+npx expo start -c
+```
+
+Pour scanner le QR code avec Expo Go, le PC et l'iPhone doivent etre connectes au meme reseau Wi-Fi. Ne pas utiliser `--tunnel` sauf si le reseau local bloque la connexion.
+
+Sur iPhone physique, l'API Symfony doit etre appelee avec l'adresse IP locale du PC, pas avec `127.0.0.1`. Exemple local possible :
+
+```env
+EXPO_PUBLIC_API_BASE_URL=http://192.168.1.144:8000
+```
+
+Cette IP depend du PC et du reseau. Elle peut etre placee dans `.env.local`, mais ce fichier ne doit jamais etre commite.
 ## Commandes
 
 ```bash
