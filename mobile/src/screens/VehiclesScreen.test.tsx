@@ -1,6 +1,6 @@
-/*
+﻿/*
  * Ce fichier teste l'ecran vehicules mobile GarageFlow.
- * Il existe pour verifier l'etat vide et la validation du formulaire vehicule.
+ * Il existe pour verifier l'etat vide et l'ouverture volontaire du formulaire vehicule.
  * Il communique avec VehiclesScreen et vehicleApi.ts mocke.
  */
 import { fireEvent, render, screen } from '@testing-library/react-native';
@@ -23,10 +23,20 @@ describe('VehiclesScreen', () => {
     expect(await screen.findByText('Aucun vehicule')).toBeTruthy();
   });
 
-  /** Ce test verifie que la plaque vide bloque la creation cote UI. */
-  it('refuse une plaque vide', async () => {
+  /** Ce test verifie que le formulaire n'est pas visible avant l'action ajouter. */
+  it('cache puis ouvre le formulaire vehicule', async () => {
     render(<VehiclesScreen />);
     await screen.findByText('Aucun vehicule');
+    expect(screen.queryByLabelText('Marque')).toBeNull();
+    fireEvent.press(screen.getByText('+ Ajouter un vehicule'));
+    expect(screen.getByLabelText('Marque')).toBeTruthy();
+  });
+
+  /** Ce test verifie que la plaque vide bloque la creation cote UI. */
+  it('refuse une plaque vide apres ouverture du formulaire', async () => {
+    render(<VehiclesScreen />);
+    await screen.findByText('Aucun vehicule');
+    fireEvent.press(screen.getByText('+ Ajouter un vehicule'));
     fireEvent.changeText(screen.getByLabelText('Marque'), 'Renault');
     fireEvent.changeText(screen.getByLabelText('Modele'), 'Clio');
     fireEvent.press(screen.getByText('Ajouter le vehicule'));

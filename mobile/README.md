@@ -1,4 +1,4 @@
-<!--
+﻿<!--
 Ce fichier documente l'application mobile client GarageFlow.
 Il existe pour expliquer l'installation, la configuration API et les limites du socle Expo.
 Il communique avec le projet Expo, l'API Symfony et les futurs developpeurs du mobile.
@@ -87,14 +87,14 @@ src/
 ## Ecrans disponibles
 
 * Login et Register
-* Home avec resume client et raccourcis
-* Garages avec detail des prestations
+* Home marketplace avec CTA reservation, categories, garages recommandes et suivis
+* Garages avec recherche, categories, filtres et detail des prestations
 * Reservation avec vehicule, date et creneau disponible
-* Vehicles avec creation, modification et suppression
+* Vehicles avec liste prioritaire, formulaire masquable, creation, modification et suppression
 * Appointments avec liste, detail et annulation des rendez-vous annulables
 * Interventions avec liste, detail et timeline de suivi reparation
 * Notifications avec filtre toutes/non lues et actions de lecture
-* Profile
+* Profile avec acces vehicules, notifications et deconnexion
 
 
 ## Compte de demonstration
@@ -133,6 +133,12 @@ L'ecran Notifications permet de consulter toutes les notifications ou seulement 
 L'interface mobile utilise un theme centralise pour les couleurs, espacements, tailles de texte et ombres legeres. Les choix restent sobres pour une presentation jury : fond clair, bleu GarageFlow, cartes compactes, boutons moins hauts et onglets courts (`Autos`, `RDV`, `Suivi`, `Alertes`) pour eviter les labels tronques sur iPhone.
 
 Limites assumees : le design reste MVP, sans animations avancees, sans design system complet de production et sans notifications push.
+
+## Experience marketplace mobile
+
+La refonte UX mobile presente le parcours client dans un ordre plus naturel : decouvrir les categories, comparer les garages, choisir une prestation, reserver un rendez-vous puis suivre l'intervention. Les cartes sont compactes, les garages ont une couverture visuelle de remplacement et les actions principales restent lisibles sur iPhone.
+
+La barre du bas garde volontairement cinq entrees visibles : `Accueil`, `Garages`, `RDV`, `Suivi` et `Profil`. Les ecrans `Vehicules` et `Notifications` ne disparaissent pas : ils sont accessibles depuis l'accueil, le profil et la cloche de notifications lorsque l'ecran l'affiche.
 ## Securite
 
 Le token JWT est stocke avec AsyncStorage pour le MVP. Pour une application en production, une solution plus securisee comme SecureStore serait preferable.
@@ -144,3 +150,4 @@ Le token JWT est stocke avec AsyncStorage pour le MVP. Pour une application en p
 * Pas de paiement en ligne.
 * Stockage token AsyncStorage adapte au MVP, SecureStore recommande en production.
 * Design encore MVP, optimise pour une presentation jury.
+

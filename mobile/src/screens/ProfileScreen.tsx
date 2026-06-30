@@ -1,19 +1,40 @@
-/*
+﻿/*
  * Ce fichier declare l'ecran profil client mobile GarageFlow.
- * Il existe pour afficher les informations utilisateur et proposer la deconnexion.
- * Il communique avec AuthContext.
+ * Il existe pour afficher les informations utilisateur et les acces de compte.
+ * Il communique avec AuthContext et MainTabs.
  */
-import { StyleSheet, Text } from 'react-native';
+import type { BottomTabScreenProps } from '@react-navigation/bottom-tabs';
+import { StyleSheet, Text, View } from 'react-native';
+import { MobileHeader } from '../components/common/MobileHeader';
 import { ScreenContainer } from '../components/layout/ScreenContainer';
 import { AppButton } from '../components/ui/AppButton';
 import { AppCard } from '../components/ui/AppCard';
 import { useAuth } from '../hooks/useAuth';
-import { colors, typography } from '../utils/theme';
+import type { MainTabsParamList } from '../navigation/MainTabs';
+import { colors, spacing, typography } from '../utils/theme';
 
-/** Cet ecran affiche le compte client connecte. */
-export function ProfileScreen() {
+type ProfileScreenProps = BottomTabScreenProps<MainTabsParamList, 'Profile'>;
+
+/** Cet ecran affiche le compte client connecte et les raccourcis personnels. */
+export function ProfileScreen({ navigation }: ProfileScreenProps) {
   const { logout, user } = useAuth();
-  return <ScreenContainer><AppCard title={`${user?.prenom ?? ''} ${user?.nom ?? ''}`} subtitle={user?.email}><Text style={styles.text}>{user?.telephone ?? 'Telephone non renseigne'}</Text></AppCard><AppButton variant="secondary" onPress={() => void logout()}>Se deconnecter</AppButton></ScreenContainer>;
+  const fullName = `${user?.prenom ?? ''} ${user?.nom ?? ''}`.trim() || 'Client GarageFlow';
+  return (
+    <ScreenContainer>
+      <MobileHeader title="Profil" subtitle="Compte client" onNotifications={() => navigation.navigate('Notifications')} />
+      <AppCard title={fullName} subtitle={user?.email}>
+        <Text style={styles.text}>{user?.telephone ?? 'Telephone non renseigne'}</Text>
+      </AppCard>
+      <View style={styles.actions}>
+        <AppButton variant="secondary" onPress={() => navigation.navigate('Vehicles')}>Mes vehicules</AppButton>
+        <AppButton variant="secondary" onPress={() => navigation.navigate('Notifications')}>Notifications</AppButton>
+        <AppButton variant="ghost" onPress={() => void logout()}>Se deconnecter</AppButton>
+      </View>
+    </ScreenContainer>
+  );
 }
 
-const styles = StyleSheet.create({ text: { color: colors.muted, fontSize: typography.body } });
+const styles = StyleSheet.create({
+  actions: { gap: spacing.sm },
+  text: { color: colors.muted, fontSize: typography.body },
+});

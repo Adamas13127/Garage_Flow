@@ -1,6 +1,6 @@
-/*
+﻿/*
  * Ce fichier teste l'ecran detail garage mobile GarageFlow.
- * Il existe pour verifier que les prestations d'un garage sont affichees.
+ * Il existe pour verifier que les prestations d'un garage sont affichees avec reservation.
  * Il communique avec GarageDetailScreen et garageApi.ts mocke.
  */
 import { render, screen } from '@testing-library/react-native';
@@ -11,14 +11,15 @@ jest.mock('../api/garageApi', () => ({ getGarage: jest.fn(), getGarageServices: 
 
 const mockGetGarage = getGarage as jest.MockedFunction<typeof getGarage>;
 const mockGetGarageServices = getGarageServices as jest.MockedFunction<typeof getGarageServices>;
-const navigation = { navigate: jest.fn() } as never;
+const navigation = { goBack: jest.fn(), navigate: jest.fn() } as never;
 
 describe('GarageDetailScreen', () => {
   beforeEach(() => { jest.clearAllMocks(); mockGetGarage.mockResolvedValue({ id: 1, nom: 'Garage Central' }); mockGetGarageServices.mockResolvedValue([{ id: 2, nom: 'Revision', actif: true }]); });
 
-  /** Ce test verifie que les prestations actives sont visibles. */
-  it('affiche les prestations', async () => {
+  /** Ce test verifie que les prestations actives sont visibles avec le bouton reserver. */
+  it('affiche les prestations et le bouton reserver', async () => {
     render(<GarageDetailScreen navigation={navigation} route={{ key: 'GarageDetail', name: 'GarageDetail', params: { garageId: 1 } }} />);
     expect(await screen.findByText('Revision')).toBeTruthy();
+    expect(screen.getByText('Reserver')).toBeTruthy();
   });
 });

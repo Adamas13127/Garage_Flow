@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Ce fichier declare la pile de navigation des garages mobile GarageFlow.
  * Il existe pour organiser le parcours Garages -> Detail -> Reservation.
  * Il communique avec MainTabs, GaragesScreen, GarageDetailScreen et BookingScreen.
@@ -18,5 +18,5 @@ const Stack = createNativeStackNavigator<GaragesStackParamList>();
 
 /** Cette stack garde le parcours de reservation clair et demonstrable. */
 export function GaragesStackNavigator() {
-  return <Stack.Navigator><Stack.Screen name="GaragesList" component={GaragesScreen} options={{ title: 'Garages' }} /><Stack.Screen name="GarageDetail" component={GarageDetailScreen} options={{ title: 'Detail garage' }} /><Stack.Screen name="Booking" component={BookingScreen} options={{ title: 'Reservation' }} /></Stack.Navigator>;
+  return <Stack.Navigator><Stack.Screen name="GaragesList" component={GaragesScreen} options={{ headerShown: false, title: 'Garages' }} /><Stack.Screen name="GarageDetail" component={GarageDetailScreen} options={{ headerShown: false, title: 'Detail garage' }} /><Stack.Screen name="Booking" component={BookingScreen} options={{ title: 'Reservation' }} /></Stack.Navigator>;
 }

@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Ce fichier declare la pile de navigation des rendez-vous GarageFlow mobile.
  * Il existe pour passer de la liste au detail d'un rendez-vous client.
  * Il communique avec MainTabs, AppointmentsScreen et AppointmentDetailScreen.
@@ -13,5 +13,5 @@ const Stack = createNativeStackNavigator<AppointmentsStackParamList>();
 
 /** Cette pile garde le parcours rendez-vous dans l'onglet rendez-vous. */
 export function AppointmentsStackNavigator() {
-  return <Stack.Navigator><Stack.Screen name="AppointmentsList" component={AppointmentsScreen} options={{ title: 'Rendez-vous' }} /><Stack.Screen name="AppointmentDetail" component={AppointmentDetailScreen} options={{ title: 'Detail rendez-vous' }} /></Stack.Navigator>;
+  return <Stack.Navigator><Stack.Screen name="AppointmentsList" component={AppointmentsScreen} options={{ headerShown: false, title: 'Rendez-vous' }} /><Stack.Screen name="AppointmentDetail" component={AppointmentDetailScreen} options={{ title: 'Detail rendez-vous' }} /></Stack.Navigator>;
 }
