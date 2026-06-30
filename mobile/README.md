@@ -89,7 +89,7 @@ src/
 * Login et Register
 * Home marketplace avec CTA reservation, categories, garages recommandes et suivis
 * Garages avec recherche, categories, filtres et detail des prestations
-* Reservation avec vehicule, date et creneau disponible
+* Reservation guidee avec vehicule, date cliquable et creneaux disponibles groupes
 * Vehicles avec liste prioritaire, formulaire masquable, creation, modification et suppression
 * Appointments avec liste, detail et annulation des rendez-vous annulables
 * Interventions avec liste, detail et timeline de suivi reparation
@@ -142,9 +142,9 @@ La barre du bas garde volontairement cinq entrees visibles : `Accueil`, `Garages
 
 ## Reservation mobile
 
-Le parcours de reservation part de la fiche garage : le client choisit une prestation, selectionne un vehicule, saisit une date, charge les creneaux disponibles puis confirme le rendez-vous. Les creneaux affiches viennent de la valeur `dateDebut` renvoyee par l'API de disponibilite et sont presentes en heure lisible, par exemple `09:00 - 09:30`.
+Le parcours de reservation part de la fiche garage : le client choisit une prestation, selectionne un vehicule, choisit une date dans une liste de jours cliquables, consulte les creneaux disponibles puis confirme le rendez-vous. Il n y a plus de saisie manuelle de date. Les creneaux affiches viennent de la valeur `dateDebut` renvoyee par l'API de disponibilite et sont presentes en heure lisible, par exemple `09:00 - 09:30`.
 
-Lors de la creation du rendez-vous, le mobile envoie `garageId`, `serviceId`, `vehicleId`, `dateDebut` et `commentaireClient`. `dateDebut` doit rester une date ISO compatible avec le backend Symfony. Si aucun vehicule n'existe, le mobile affiche `Ajoutez un vehicule avant de reserver.` et ne montre pas un formulaire inutilisable.
+Les creneaux sont groupes par moment de journee : Matin, Apres-midi et Soir si necessaire. Si aucun creneau n est disponible aujourd hui, le mobile affiche `Aucun creneau restant aujourd hui.` puis propose de tester le jour suivant. Pour les autres dates, il affiche `Aucun creneau disponible pour cette date.` et invite le client a essayer une autre date.`r`n`r`nLors de la creation du rendez-vous, le mobile envoie `garageId`, `serviceId`, `vehicleId`, `dateDebut` et `commentaireClient`. `dateDebut` doit rester une date ISO compatible avec le backend Symfony. Si aucun vehicule n'existe, le mobile affiche `Ajoutez un vehicule avant de reserver.` et ne montre pas un formulaire inutilisable.
 ## Securite
 
 Le token JWT est stocke avec AsyncStorage pour le MVP. Pour une application en production, une solution plus securisee comme SecureStore serait preferable.

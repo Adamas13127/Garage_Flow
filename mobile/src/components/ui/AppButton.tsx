@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Ce fichier declare le composant AppButton de GarageFlow mobile.
  * Il existe pour garder des boutons accessibles, compacts et coherents.
  * Il communique avec les ecrans et formulaires React Native.
@@ -18,7 +18,7 @@ interface AppButtonProps {
 export function AppButton({ children, disabled, loading, onPress, variant = 'primary' }: PropsWithChildren<AppButtonProps>) {
   const isPrimary = variant === 'primary';
   return (
-    <Pressable accessibilityRole="button" disabled={disabled || loading} onPress={onPress} style={[styles.button, styles[variant], (disabled || loading) && styles.disabled]}>
+    <Pressable accessibilityRole="button" accessibilityState={{ disabled: disabled || loading }} disabled={disabled || loading} onPress={onPress} style={[styles.button, styles[variant], (disabled || loading) && styles.disabled]}>
       {loading ? <ActivityIndicator color={isPrimary ? '#fff' : colors.primary} /> : <Text style={[styles.text, isPrimary ? styles.primaryText : styles.secondaryText, variant === 'danger' && styles.dangerText]}>{children}</Text>}
     </Pressable>
   );
