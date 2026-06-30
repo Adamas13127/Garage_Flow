@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Ce fichier declare les types rendez-vous utilises par l'application mobile GarageFlow.
  * Il existe pour afficher et creer des demandes de rendez-vous client.
  * Il communique avec appointmentApi.ts, AppointmentsScreen et BookingScreen.
@@ -25,7 +25,7 @@ export interface CreateAppointmentPayload {
   garageId: number;
   serviceId: number;
   vehicleId: number;
-  dateHeure: string;
+  dateDebut: string;
   commentaireClient?: string | null;
   motif?: string | null;
   createdAt?: string | null;

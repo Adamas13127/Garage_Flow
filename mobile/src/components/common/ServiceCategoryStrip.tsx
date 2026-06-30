@@ -57,9 +57,9 @@ export function getServiceCategoryLabel(serviceName?: string | null): string {
 }
 
 const styles = StyleSheet.create({
-  chip: { alignItems: 'center', backgroundColor: colors.surface, borderColor: colors.border, borderRadius: 8, borderWidth: 1, gap: spacing.xs, minWidth: 74, padding: spacing.sm },
+  chip: { alignItems: 'center', backgroundColor: colors.surface, borderColor: colors.border, borderRadius: 8, borderWidth: 1, gap: spacing.xs, minWidth: 68, paddingHorizontal: spacing.sm, paddingVertical: spacing.xs },
   icon: { color: colors.primary, fontSize: 12, fontWeight: '900' },
-  iconBox: { alignItems: 'center', backgroundColor: colors.primarySoft, borderRadius: 16, height: 32, justifyContent: 'center', width: 32 },
+  iconBox: { alignItems: 'center', backgroundColor: colors.primarySoft, borderRadius: 16, height: 28, justifyContent: 'center', width: 28 },
   label: { color: colors.text, fontSize: typography.secondary, fontWeight: '800' },
   row: { gap: spacing.sm, paddingVertical: spacing.xs },
   selected: { backgroundColor: colors.primary, borderColor: colors.primary },

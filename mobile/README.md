@@ -1,4 +1,4 @@
-﻿<!--
+<!--
 Ce fichier documente l'application mobile client GarageFlow.
 Il existe pour expliquer l'installation, la configuration API et les limites du socle Expo.
 Il communique avec le projet Expo, l'API Symfony et les futurs developpeurs du mobile.
@@ -139,6 +139,12 @@ Limites assumees : le design reste MVP, sans animations avancees, sans design sy
 La refonte UX mobile presente le parcours client dans un ordre plus naturel : decouvrir les categories, comparer les garages, choisir une prestation, reserver un rendez-vous puis suivre l'intervention. Les cartes sont compactes, les garages ont une couverture visuelle de remplacement et les actions principales restent lisibles sur iPhone.
 
 La barre du bas garde volontairement cinq entrees visibles : `Accueil`, `Garages`, `RDV`, `Suivi` et `Profil`. Les ecrans `Vehicules` et `Notifications` ne disparaissent pas : ils sont accessibles depuis l'accueil, le profil et la cloche de notifications lorsque l'ecran l'affiche.
+
+## Reservation mobile
+
+Le parcours de reservation part de la fiche garage : le client choisit une prestation, selectionne un vehicule, saisit une date, charge les creneaux disponibles puis confirme le rendez-vous. Les creneaux affiches viennent de la valeur `dateDebut` renvoyee par l'API de disponibilite et sont presentes en heure lisible, par exemple `09:00 - 09:30`.
+
+Lors de la creation du rendez-vous, le mobile envoie `garageId`, `serviceId`, `vehicleId`, `dateDebut` et `commentaireClient`. `dateDebut` doit rester une date ISO compatible avec le backend Symfony. Si aucun vehicule n'existe, le mobile affiche `Ajoutez un vehicule avant de reserver.` et ne montre pas un formulaire inutilisable.
 ## Securite
 
 Le token JWT est stocke avec AsyncStorage pour le MVP. Pour une application en production, une solution plus securisee comme SecureStore serait preferable.
@@ -150,4 +156,3 @@ Le token JWT est stocke avec AsyncStorage pour le MVP. Pour une application en p
 * Pas de paiement en ligne.
 * Stockage token AsyncStorage adapte au MVP, SecureStore recommande en production.
 * Design encore MVP, optimise pour une presentation jury.
-

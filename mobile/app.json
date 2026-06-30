@@ -8,6 +8,7 @@
     "scheme": "garageflow",
     "assetBundlePatterns": ["**/*"],
     "ios": { "supportsTablet": true },
-    "android": { "adaptiveIcon": { "backgroundColor": "#0f172a" } }
+    "android": { "adaptiveIcon": { "backgroundColor": "#0f172a" } },
+    "plugins": ["expo-font"]
   }
 }

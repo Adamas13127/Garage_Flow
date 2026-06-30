@@ -1,4 +1,4 @@
-﻿<!--
+<!--
 Ce fichier propose un scenario de demonstration jury pour GarageFlow.
 Il existe pour presenter le MVP dans un ordre clair, en separant le parcours garage, le parcours client et l'explication technique.
 Il communique avec les donnees de demonstration, le dashboard web, l'application mobile et l'API Symfony.
@@ -38,7 +38,7 @@ Compte conseille : `client.demo@garageflow.local` / `Password123`.
 3. Consulter la liste des garages : recherche, categories, filtres et cartes garage.
 4. Ouvrir un garage et montrer la banniere, les informations et les prestations avec le bouton Reserver.
 5. Consulter les vehicules du client puis ouvrir le formulaire uniquement avec + Ajouter un vehicule.
-6. Montrer le parcours de reservation d'un rendez-vous.
+6. Montrer le parcours de reservation depuis la fiche garage : prestation, vehicule, date, creneau puis confirmation du RDV.
 7. Consulter la liste des rendez-vous.
 8. Annuler un rendez-vous annulable si la base de demo en contient un adapte.
 9. Ouvrir le suivi d'une intervention et montrer la timeline.
@@ -58,4 +58,3 @@ Compte conseille : `client.demo@garageflow.local` / `Password123`.
 ## Message de conclusion
 
 GarageFlow montre un MVP coherent : le garage gere son activite depuis le web, le client suit son parcours depuis le mobile, et le backend reste la source de verite pour les droits, les donnees et les regles metier.
-
