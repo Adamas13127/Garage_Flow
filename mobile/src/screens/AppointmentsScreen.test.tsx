@@ -1,4 +1,4 @@
-﻿/*
+/*
  * Ce fichier teste l'ecran des rendez-vous client mobile GarageFlow.
  * Il existe pour verifier les filtres RDV, l'action detail et l'annulation.
  * Il communique avec AppointmentsScreen et appointmentApi.ts mocke.
@@ -18,7 +18,7 @@ describe('AppointmentsScreen', () => {
   beforeEach(() => { jest.clearAllMocks(); });
 
   /** Ce rendez-vous mocke represente une demande encore annulable par le client. */
-  const pendingAppointment = { id: 7, statut: 'EN_ATTENTE', dateDebut: '2026-07-01T10:00:00+02:00', garage: { id: 1, nom: 'Garage Central' }, service: { id: 2, nom: 'Revision' }, vehicle: { id: 3, marque: 'Renault', modele: 'Clio' } };
+  const pendingAppointment = { id: 7, statut: 'EN_ATTENTE', dateDebut: '2030-07-01T10:00:00+02:00', garage: { id: 1, nom: 'Garage Central' }, service: { id: 2, nom: 'Revision' }, vehicle: { id: 3, marque: 'Renault', modele: 'Clio' } };
 
   /** Ce test verifie que les filtres RDV principaux sont visibles. */
   it('affiche les filtres de rendez-vous', async () => {
