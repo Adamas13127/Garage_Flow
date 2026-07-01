@@ -3,7 +3,7 @@
 /*
  * Ce fichier declare le service GarageInterventionService du backend GarageFlow.
  * Il existe pour gerer le suivi des interventions par le garage connecte.
- * Il communique avec InterventionRepository, InterventionStatusRepository, InterventionStatusHistoryRepository, NotificationService et Doctrine ORM.
+ * Il communique avec InterventionRepository, InterventionStatusRepository, InterventionStatusHistoryRepository, NotificationService, EmailNotificationService et Doctrine ORM.
  */
 
 namespace App\Service;
@@ -22,6 +22,7 @@ use App\Repository\InterventionStatusRepository;
 use App\Security\InterventionNotFoundException;
 use App\Security\InterventionStatusNotFoundException;
 use App\Security\InvalidAppointmentRequestException;
+use App\Service\Email\EmailNotificationService;
 use Doctrine\ORM\EntityManagerInterface;
 
 /** Ce service verifie qu'un garage ne peut consulter ou modifier que ses propres interventions. */
@@ -33,6 +34,7 @@ class GarageInterventionService
         private readonly InterventionStatusRepository $statusRepository,
         private readonly InterventionStatusHistoryRepository $historyRepository,
         private readonly NotificationService $notificationService,
+        private readonly EmailNotificationService $emailNotificationService,
     ) {
     }
 
@@ -90,6 +92,11 @@ class GarageInterventionService
 
         $this->entityManager->persist($history);
         $this->notificationService->notifyInterventionStatusChanged($intervention);
+        if ($status->getCode() === 'VEHICULE_PRET') {
+            $this->emailNotificationService->sendVehicleReadyEmail($intervention);
+        } else {
+            $this->emailNotificationService->sendInterventionStatusChangedEmail($intervention, $request->commentaire);
+        }
         $this->entityManager->flush();
 
         return $intervention;

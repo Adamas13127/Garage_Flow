@@ -3,7 +3,7 @@
 /*
  * Ce fichier declare le service AppointmentService du backend GarageFlow.
  * Il existe pour gerer les demandes de rendez-vous creees par les clients connectes.
- * Il communique avec AvailabilityService, NotificationService, les repositories, Doctrine ORM et les entites Appointment, User et Vehicle.
+ * Il communique avec AvailabilityService, NotificationService, EmailNotificationService, les repositories, Doctrine ORM et les entites Appointment, User et Vehicle.
  */
 
 namespace App\Service;
@@ -17,6 +17,7 @@ use App\Repository\VehicleRepository;
 use App\Security\AppointmentConflictException;
 use App\Security\AppointmentNotFoundException;
 use App\Security\VehicleNotFoundException;
+use App\Service\Email\EmailNotificationService;
 use Doctrine\ORM\EntityManagerInterface;
 
 /** Ce service contient la logique metier de prise, consultation et annulation de rendez-vous client. */
@@ -28,6 +29,7 @@ class AppointmentService
         private readonly VehicleRepository $vehicleRepository,
         private readonly AvailabilityService $availabilityService,
         private readonly NotificationService $notificationService,
+        private readonly EmailNotificationService $emailNotificationService,
     ) {
     }
 
@@ -91,6 +93,7 @@ class AppointmentService
         $appointment->setStatut(Appointment::STATUT_ANNULE);
         $appointment->setUpdatedAt(new \DateTimeImmutable());
         $this->notificationService->notifyAppointmentCancelled($appointment);
+        $this->emailNotificationService->sendAppointmentCancelledEmail($appointment);
         $this->entityManager->flush();
 
         return $appointment;

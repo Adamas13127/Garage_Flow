@@ -1,4 +1,4 @@
-﻿<!--
+<!--
 Ce fichier prepare les questions et reponses probables du jury pour GarageFlow.
 Il existe pour aider a repondre clairement sur les choix produit, techniques, securite, qualite et limites du MVP.
 Il communique avec les fiches d'architecture, de limites et l'audit final du dossier docs/oral.
@@ -65,6 +65,15 @@ Doctrine permet de mapper les entites PHP vers les tables MySQL. Cela facilite l
 ### Pourquoi separer web garage et mobile client ?
 
 Les besoins sont differents. Le garage a besoin d'un dashboard plus large pour gerer son activite. Le client a besoin d'une application mobile simple pour reserver et suivre son vehicule.
+
+
+### Pourquoi Mailtrap pour les emails ?
+
+Mailtrap permet de tester un vrai flux SMTP sans envoyer de messages a de vraies adresses. Cela securise la demonstration : je peux montrer les emails generes par GarageFlow tout en gardant les identifiants dans `.env.local` et hors du depot Git.
+
+### Les notes internes peuvent-elles partir par email ?
+
+Non. Le service email construit des messages clients simples a partir du rendez-vous, du vehicule, du garage et du statut visible. Les notes internes garage ne sont pas ajoutees dans les emails clients.
 
 ## Securite
 

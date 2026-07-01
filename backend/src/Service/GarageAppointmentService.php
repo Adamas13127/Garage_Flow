@@ -3,7 +3,7 @@
 /*
  * Ce fichier declare le service GarageAppointmentService du backend GarageFlow.
  * Il existe pour gerer les rendez-vous recus par le garage connecte.
- * Il communique avec AppointmentRepository, AvailabilityService, InterventionCreationService, NotificationService et Doctrine ORM.
+ * Il communique avec AppointmentRepository, AvailabilityService, InterventionCreationService, NotificationService, EmailNotificationService et Doctrine ORM.
  */
 
 namespace App\Service;
@@ -18,6 +18,7 @@ use App\Repository\AppointmentRepository;
 use App\Security\AppointmentConflictException;
 use App\Security\AppointmentNotFoundException;
 use App\Security\InvalidAppointmentRequestException;
+use App\Service\Email\EmailNotificationService;
 use Doctrine\ORM\EntityManagerInterface;
 
 /** Ce service contient la logique metier qui verifie qu'un rendez-vous appartient bien au garage connecte. */
@@ -29,6 +30,7 @@ class GarageAppointmentService
         private readonly AvailabilityService $availabilityService,
         private readonly InterventionCreationService $interventionCreationService,
         private readonly NotificationService $notificationService,
+        private readonly EmailNotificationService $emailNotificationService,
     ) {
     }
 
@@ -63,6 +65,7 @@ class GarageAppointmentService
         $appointment->setUpdatedAt(new \DateTimeImmutable());
         $intervention = $this->interventionCreationService->createForAcceptedAppointment($appointment, $changedBy);
         $this->notificationService->notifyAppointmentAccepted($appointment);
+        $this->emailNotificationService->sendAppointmentAcceptedEmail($appointment);
         $this->entityManager->flush();
 
         return ['appointment' => $appointment, 'intervention' => $intervention];
@@ -76,6 +79,7 @@ class GarageAppointmentService
         $appointment->setStatut(Appointment::STATUT_REFUSE);
         $appointment->setUpdatedAt(new \DateTimeImmutable());
         $this->notificationService->notifyAppointmentRefused($appointment);
+        $this->emailNotificationService->sendAppointmentRefusedEmail($appointment, $request->motifRefus);
         $this->entityManager->flush();
 
         return $appointment;

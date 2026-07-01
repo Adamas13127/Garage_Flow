@@ -80,6 +80,22 @@ class AuthApiTest extends BaseApiTestCase
         $this->assertJsonDoesNotExposePassword();
     }
 
+    /** Cette methode documente la recette complete inscription, connexion puis role client. */
+    public function testRegisterClientThenLoginReturnsClientRole(): void
+    {
+        $email = 'client.recette@garageflow.test';
+        $this->requestJson('POST', '/api/auth/register/client', $this->registrationPayload($email));
+        $this->assertResponseStatus(201);
+
+        $login = $this->requestJson('POST', '/api/auth/login', ['email' => $email, 'password' => TestDataFactory::DEFAULT_PASSWORD]);
+        $this->assertResponseStatus(200);
+        self::assertArrayHasKey('token', $login);
+
+        $this->requestJson('GET', '/api/me', null, (string) $login['token']);
+        $this->assertResponseStatus(200);
+        self::assertSame('ROLE_CLIENT', $this->lastJson['role'] ?? null);
+    }
+
     /** Cette methode construit un body d'inscription reutilisable par les tests. */
     private function registrationPayload(string $email): array
     {

@@ -22,12 +22,13 @@ Compte conseille : `gerant.demo@garageflow.local` / `Password123`. Le web garage
 2. Montrer le cockpit garage : priorites du jour, demandes a valider, planning et vehicules en atelier.
 3. Ouvrir la page des rendez-vous et montrer la separation entre demandes a traiter, planning et historique.
 4. Accepter un rendez-vous en attente.
-5. Expliquer que le backend cree l'intervention associee apres confirmation.
-6. Ouvrir la page Atelier, montrer le resume des vehicules puis filtrer la liste par statut.
-7. Ouvrir le detail d une intervention, montrer la timeline, puis cliquer sur Changer statut et confirmer une mise a jour.
-8. Cliquer sur Notes, rappeler que les notes internes ne sont pas visibles par le client, puis consulter ou ajouter une note interne garage.
-9. Ouvrir les notifications et marquer une notification comme lue.
-10. Montrer la configuration garage : informations, prestations, horaires et indisponibilites.
+5. Ouvrir Mailtrap et montrer l'email de confirmation capture sans envoi reel.
+6. Expliquer que le backend cree l'intervention associee apres confirmation.
+7. Ouvrir la page Atelier, montrer le resume des vehicules puis filtrer la liste par statut.
+8. Ouvrir le detail d une intervention, montrer la timeline, puis cliquer sur Changer statut et confirmer une mise a jour.
+9. Cliquer sur Notes, rappeler que les notes internes ne sont pas visibles par le client ni dans les emails, puis consulter ou ajouter une note interne garage.
+10. Ouvrir les notifications et marquer une notification comme lue.
+11. Montrer la configuration garage : informations, prestations, horaires et indisponibilites.
 
 ## Partie 2 - Mobile client
 
@@ -53,7 +54,8 @@ Compte conseille : `client.demo@garageflow.local` / `Password123`.
 4. Web React : le dashboard garage consomme l'API avec `VITE_API_BASE_URL`.
 5. Mobile Expo : l'application client consomme la meme API avec `EXPO_PUBLIC_API_BASE_URL`.
 6. Donnees de demonstration : la commande `app:create-demo-data` cree un parcours coherent et idempotent.
-7. Tests : backend, web et mobile disposent de commandes de validation adaptees au MVP.
+7. Emails : Symfony Mailer envoie les messages clients et Mailtrap les capture pour la demonstration sans vrai envoi.
+8. Tests : backend, web et mobile disposent de commandes de validation adaptees au MVP.
 
 ## Message de conclusion
 
