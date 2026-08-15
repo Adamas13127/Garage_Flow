@@ -79,24 +79,123 @@ Ces elements peuvent etre mentionnes comme evolutions futures mais ne doivent pa
 
 ## Regles de commentaires obligatoires
 
+Cible : 8 a 15 % de lignes de commentaire dans le code source (mesure par fichier avec
+`# lignes de commentaire / # lignes de code source`, commentaires et code comptes hors lignes
+vides -- voir la methode de calcul detaillee dans le rapport de refactoring qui a etabli cette
+cible). Au-dela de 15 %, les commentaires paraphrasent generalement le code au lieu de lui
+apporter une information qu'il ne porte pas deja ; en dessous de 8 %, les regles metier
+non triviales risquent de ne plus etre documentees.
+
 Chaque fichier cree ou modifie doit commencer par un commentaire d'en-tete expliquant :
 
 * le role du fichier ;
 * pourquoi il existe dans le projet ;
 * avec quelles parties du projet il communique si necessaire.
 
-Chaque classe, fonction, methode importante ou service doit avoir un commentaire simple et pedagogique.
+Un commentaire de methode n'est ajoute que si la methode porte une regle metier ou un
+comportement non evident a la seule lecture de sa signature et de son nom : un calcul avec un
+cas limite, une contrainte imposee par le referentiel MVP, un `@throws` explicatif, un
+contournement technique documente. **Aucun commentaire qui se contente de reformuler le nom de
+la methode.**
 
-Les commentaires doivent etre ecrits comme si un etudiant expliquait son code a un jury.
+Mauvais exemple (paraphrase, a bannir) :
 
-Exemples :
+```php
+/** Cette methode recupere l'utilisateur connecte. */
+private function user(): User
+```
 
-* "Cette fonction sert a recuperer les utilisateurs depuis la base de donnees."
-* "Ce service contient la logique metier liee a la creation d'un rendez-vous."
-* "Ce controleur recoit la requete HTTP et appelle le service adapte."
-* "Ce repository centralise les requetes vers la table des rendez-vous."
+Bon exemple (le commentaire apporte une information absente du code) :
 
-Les commentaires doivent aider a comprendre le code.
+```php
+/**
+ * Le firewall Lexik authentifie via JWT mais n'attache jamais le role symfony natif :
+ * on retombe systematiquement sur l'entite User pour lire son role metier reel.
+ */
+private function user(): User
+```
+
+Bon exemple (regle metier non evidente) :
+
+```php
+/** Une prestation desactivee (actif=false) n'est jamais supprimee : les rendez-vous passes doivent
+ * pouvoir continuer a l'afficher dans leur historique. */
+public function disable(Garage $garage, int $id): void
+```
+
+Les commentaires doivent aider a comprendre une decision, jamais repeter ce que le code dit deja.
+
+## Charte de nommage
+
+Convention reellement appliquee dans le code existant, a poursuivre :
+
+* **Vocabulaire metier en francais** : proprietes d'entites, champs de DTO, messages utilisateur,
+  codes de statut. Exemples reels : `Appointment::$dateDebut`, `$commentaireClient`, `$statut` ;
+  `ServicePrestation::$dureeMinutes` ; `Unavailability::$motif` ; statuts d'intervention
+  `VEHICULE_DEPOSE`, `DIAGNOSTIC_EN_COURS`, `ATTENTE_VALIDATION_CLIENT`, `REPARATION_EN_COURS`,
+  `VEHICULE_PRET`, `VEHICULE_RECUPERE` ; roles `ROLE_GERANT`, `ROLE_EMPLOYE`, `ROLE_CLIENT`,
+  `ROLE_ADMIN`.
+* **Structure technique en anglais** : noms de classes, suffixes d'architecture, verbes
+  d'action, noms de routes. Exemples reels : `GarageNotFoundException`,
+  `AppointmentConflictException` ; suffixes `Controller` / `Service` / `Repository` / `DTO` ;
+  methodes `create`, `update`, `delete`, `list`, `find...` ; routes
+  `api_garage_me_appointments_accept`.
+* Consequence pratique : une entite ou un service porte un nom de classe anglais (`Appointment`,
+  `Garage`, `Intervention`) mais ses champs metier sensibles a la reglementation ou au vocabulaire
+  du garage restent en francais. Ne pas traduire les champs metier en anglais, et ne pas nommer
+  une classe ou une methode technique en francais.
+* Cas limite assume : `ServicePrestation` melange les deux langues dans son propre nom de classe
+  (anglais `Service` + francais `Prestation`). C'est une exception historique, pas un modele a
+  reproduire pour une nouvelle entite.
+
+## Strategie de branches et format des commits
+
+* `main` reste toujours deployable et presentable au jury.
+* Le travail se fait sur des branches courtes prefixees par leur nature :
+  `feat/...`, `fix/...`, `chore/...`, `refactor/...`, `docs/...`, `test/...`.
+* Une branche est fusionnee dans `main` via pull request une fois la Definition of Done (voir
+  ci-dessous) satisfaite, jamais par commit direct sur `main` pour un changement non trivial.
+* Un commit correspond a un changement logique unique et suit la convention
+  `type(scope): description au present` :
+  * `feat(scope): ...` -- nouvelle fonctionnalite ;
+  * `fix(scope): ...` -- correction de bug ou d'incoherence ;
+  * `docs(scope): ...` -- documentation uniquement ;
+  * `chore(scope): ...` -- outillage, dependances, configuration ;
+  * `test(scope): ...` -- ajout ou modification de tests uniquement ;
+  * `refactor(scope): ...` -- changement de structure du code sans changement de comportement.
+* Le `scope` designe la partie du projet touchee (`backend`, `web`, `mobile`, `docs`, `oral`,
+  `agents`, ...).
+* Ne jamais antidater ou reordonner un commit apres coup : l'historique Git reflete l'ordre reel
+  du travail, y compris pour les livrables presentes au jury.
+* Ne jamais commiter : `.env` reel, secrets, `vendor/`, `node_modules/`, fichiers generes inutiles.
+
+## Definition of Done
+
+Un changement est considere termine seulement si, au moment du commit ou de la PR :
+
+* les tests concernes passent (`php bin/phpunit` pour le backend, `npm test` pour web et mobile) ;
+* `vendor/bin/phpstan analyse` passe sans erreur au niveau configure dans `backend/phpstan.neon`
+  (ce niveau ne doit jamais baisser sans decision explicite documentee) ;
+* `vendor/bin/php-cs-fixer fix --dry-run --diff` ne signale plus rien sur les fichiers touches
+  (ou `php-cs-fixer fix` a ete applique) ;
+* la documentation impactee (README, `backend/docs/API.md`, fiches `docs/oral/`) est mise a jour
+  dans le meme lot si le comportement documente a change ;
+* aucune regression n'a ete introduite sur un perimetre qui fonctionnait avant le changement.
+
+## Politique de tests
+
+* **Tests unitaires** (`backend/tests/Unit/`) : logique metier pure, isolable sans base de
+  donnees ni conteneur Symfony, dependances simulees par des mocks PHPUnit. Cible naturelle :
+  les services contenant des calculs ou des regles (ex. `AvailabilityService` et le calcul de
+  creneaux disponibles). Rapides, executables sans Docker.
+* **Tests fonctionnels** (`backend/tests/`, `WebTestCase`) : comportement de bout en bout d'une
+  route HTTP -- authentification, autorisation par role, persistance reelle via Doctrine/MySQL,
+  format de reponse JSON. Necessaires des qu'un test verifie l'integration entre plusieurs
+  couches (controleur + service + base de donnees), pas seulement un calcul isole.
+* Une regle metier testable en isolation (un calcul, une validation, une transformation de
+  donnees) merite un test unitaire dedie plutot qu'un detour par un test fonctionnel plus lent et
+  plus couteux a maintenir. Un test fonctionnel reste necessaire pour verifier qu'une route est
+  effectivement protegee par le bon role et qu'elle persiste correctement en base.
 
 ## Utilisation des documents de reference
 
@@ -124,20 +223,3 @@ Regles :
 * demander confirmation si un document semble contradictoire avec le scope MVP.
 
 AGENTS.md reste la source de verite principale.
-
-## Regles Git
-
-Utiliser des commits clairs :
-
-* feat(auth): add JWT login endpoint
-* feat(appointments): create appointment request
-* fix(security): restrict garage data access
-* docs(mcd): add data model documentation
-
-Ne pas commit :
-
-* .env reel ;
-* secrets ;
-* vendor/ ;
-* node_modules/ ;
-* fichiers generes inutiles.
