@@ -14,7 +14,7 @@ Lancer le backend Symfony avec php -S 0.0.0.0:8000 -t public
    - Resultat attendu : un token JWT client est obtenu.
 
 2. Creer ou utiliser un garage de demonstration
-   - Endpoint : commande `php bin/console app:create-demo-garage`
+   - Endpoint : commande `php bin/console app:create-demo-data`
    - Role : developpement local
    - Resultat attendu : un garage actif et un gerant sont disponibles.
 

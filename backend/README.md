@@ -96,16 +96,6 @@ Verifier le schema :
 php bin/console doctrine:schema:validate
 ```
 
-## Fixtures de reference
-
-Les fixtures chargent les donnees indispensables au fonctionnement de base : roles Symfony et statuts d'intervention du MVP.
-
-```bash
-php bin/console doctrine:fixtures:load --append --no-interaction
-```
-
-Les roles charges sont `ROLE_ADMIN`, `ROLE_GERANT`, `ROLE_EMPLOYE` et `ROLE_CLIENT`.
-
 ## Authentification JWT
 
 Le backend utilise JWT pour proteger les routes privees. Les cles locales ne doivent jamais etre commitees.
@@ -145,24 +135,6 @@ Consulter les emails captures sur l'interface web Mailpit : `http://127.0.0.1:80
 Les emails sont declenches lors de l'acceptation, du refus ou de l'annulation d'un rendez-vous, ainsi que lors des changements de statut d'intervention. Le statut `VEHICULE_PRET` envoie un email specifique pour prevenir le client que son vehicule peut etre recupere.
 
 Consulter aussi `backend/docs/EMAILS.md` pour la recette Mailpit et les limites MVP.
-
-## Commande de demonstration garage
-
-La commande suivante cree localement un garage actif et un compte gerant pour tester les routes protegees du garage. Elle est idempotente : si les donnees existent deja, elle les reutilise.
-
-```bash
-php bin/console app:create-demo-garage
-```
-
-Identifiants locaux crees par la commande :
-
-```text
-Email: gerant.demo@garageflow.local
-Mot de passe: Password123
-```
-
-Ces identifiants sont uniquement destines au developpement local.
-
 
 ## Donnees de demonstration completes
 
@@ -528,7 +500,7 @@ composer install
 docker compose up -d database
 php bin/console doctrine:database:create --if-not-exists
 php bin/console doctrine:migrations:migrate
-php bin/console doctrine:fixtures:load --append --no-interaction
+php bin/console app:create-demo-data
 ```
 
 ### Configuration MySQL Docker
