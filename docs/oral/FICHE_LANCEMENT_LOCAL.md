@@ -135,15 +135,9 @@ npm install
 npm run dev
 ```
 
-**Si `npm install` echoue avec une erreur `ERESOLVE` / conflit de peer dependency** (vitest 2.x
-face a vite 7 tant que la tache de resolution du conflit n'a pas ete menee a bien) :
-
-```bash
-npm install --legacy-peer-deps
-```
-
-**Resultat attendu** : le serveur Vite demarre et annonce une URL locale (`http://127.0.0.1:5173`
-par defaut).
+**Resultat attendu** : `npm install` se termine sans conflit de peer dependency (vitest 4 declare
+officiellement vite 7), le serveur Vite demarre et annonce une URL locale
+(`http://127.0.0.1:5173` par defaut).
 
 La variable utile est :
 
@@ -251,5 +245,9 @@ Cette fiche a ete deroulee integralement (etapes 1 a 9) depuis un clone Git prop
 sans reutiliser d'environnement backend/web deja configure : creation de `.env` depuis
 `.env.example`, `composer install`, generation des cles JWT (repli OpenSSL inclus, la commande
 Lexik ayant echoue sur ce poste), migrations, donnees de demo, demarrage de l'API et appel
-`/api/auth/login` avec succes, puis `npm install` web (`--legacy-peer-deps` necessaire) et mobile
-(sans probleme). Toutes les etapes sont passees.
+`/api/auth/login` avec succes, puis `npm install` web et mobile sans aucun probleme. Toutes les
+etapes sont passees.
+
+Note : au moment de cette validation, `npm install` web necessitait encore
+`--legacy-peer-deps` (conflit vitest 2.x / vite 7). Ce conflit a depuis ete resolu (vitest 4.1.10,
+cf. historique Git) et l'etape ci-dessus reflete l'etat actuel, sans ce contournement.
