@@ -275,7 +275,8 @@ avant d'atteindre un controleur (token absent, invalide ou expire) : format diff
 **3. Erreurs non interceptees par l'application** (route inexistante -> 404, acces refuse par
 `#[IsGranted]` sans catch dans le controleur -> 403, exception non prevue -> 500) : aucun
 listener JSON dedie n'est configure (`config/packages/` ne definit pas de format d'erreur global,
-et `src/EventSubscriber/` est vide). Le comportement retombe sur celui par defaut de Symfony :
+et le projet ne declare aucun `EventSubscriber` d'exception). Le comportement retombe sur celui
+par defaut de Symfony :
 
 - Sans en-tete `Accept: application/json`, Symfony renvoie une page HTML de debug.
 - Avec `Accept: application/json`, Symfony renvoie un format "probleme" generique :
