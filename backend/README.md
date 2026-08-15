@@ -130,19 +130,21 @@ curl -X POST http://127.0.0.1:8000/api/auth/login \
 ```
 
 
-## Emails et Mailtrap
+## Emails et Mailpit
 
-Le backend utilise Symfony Mailer pour envoyer les emails clients importants du MVP. En local, Mailtrap permet de capturer les messages dans une boite de test sans envoyer de vrais emails.
+Le backend utilise Symfony Mailer pour envoyer les emails clients importants du MVP. En local, Mailpit (conteneur Docker lance par `compose.override.yaml`) capture les messages dans une boite de test sans envoyer de vrais emails, sans identifiant a configurer.
 
-Dans `backend/.env.local`, configurer le DSN fourni par Mailtrap :
+Dans `backend/.env` ou `backend/.env.local` :
 
 ```env
-MAILER_DSN=smtp://USERNAME:PASSWORD@sandbox.smtp.mailtrap.io:2525
+MAILER_DSN=smtp://127.0.0.1:1025
 ```
+
+Consulter les emails captures sur l'interface web Mailpit : `http://127.0.0.1:8025`.
 
 Les emails sont declenches lors de l'acceptation, du refus ou de l'annulation d'un rendez-vous, ainsi que lors des changements de statut d'intervention. Le statut `VEHICULE_PRET` envoie un email specifique pour prevenir le client que son vehicule peut etre recupere.
 
-Consulter aussi `backend/docs/EMAILS.md` pour la recette Mailtrap et les limites MVP.
+Consulter aussi `backend/docs/EMAILS.md` pour la recette Mailpit et les limites MVP.
 
 ## Commande de demonstration garage
 
@@ -176,7 +178,7 @@ Consulter aussi `docs/DEMO_DATA.md` pour le scenario de presentation jury.
 Avec le serveur PHP integre :
 
 ```bash
-php -S 127.0.0.1:8000 -t public
+php -S 0.0.0.0:8000 -t public
 ```
 
 Avec la CLI Symfony si elle est installee :

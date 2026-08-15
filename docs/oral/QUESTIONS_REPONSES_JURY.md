@@ -67,9 +67,9 @@ Doctrine permet de mapper les entites PHP vers les tables MySQL. Cela facilite l
 Les besoins sont differents. Le garage a besoin d'un dashboard plus large pour gerer son activite. Le client a besoin d'une application mobile simple pour reserver et suivre son vehicule.
 
 
-### Pourquoi Mailtrap pour les emails ?
+### Pourquoi Mailpit pour les emails ?
 
-Mailtrap permet de tester un vrai flux SMTP sans envoyer de messages a de vraies adresses. Cela securise la demonstration : je peux montrer les emails generes par GarageFlow tout en gardant les identifiants dans `.env.local` et hors du depot Git.
+Mailpit permet de tester un vrai flux SMTP sans envoyer de messages a de vraies adresses, entierement en local via Docker. Cela securise la demonstration : aucun compte externe ni identifiant a gerer, et je peux montrer les emails generes par GarageFlow directement dans son interface web.
 
 ### Les notes internes peuvent-elles partir par email ?
 

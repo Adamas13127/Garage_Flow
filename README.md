@@ -48,7 +48,7 @@ cd backend
 docker compose up -d database
 php bin/console doctrine:migrations:migrate
 php bin/console app:create-demo-data
-php -S 127.0.0.1:8000 -t public
+php -S 0.0.0.0:8000 -t public
 ```
 
 ```bash

@@ -9,7 +9,7 @@ Il communique avec les donnees de demonstration, le dashboard web, l'application
 ## Preparation
 
 1. Lancer MySQL avec Docker.
-2. Lancer le backend Symfony sur `http://127.0.0.1:8000`.
+2. Lancer le backend Symfony avec php -S 0.0.0.0:8000 -t public
 3. Executer `php bin/console app:create-demo-data`.
 4. Lancer le web avec `npm run dev`.
 5. Lancer le mobile avec `npx expo start -c`.
@@ -22,7 +22,7 @@ Compte conseille : `gerant.demo@garageflow.local` / `Password123`. Le web garage
 2. Montrer le cockpit garage : priorites du jour, demandes a valider, planning et vehicules en atelier.
 3. Ouvrir la page des rendez-vous et montrer la separation entre demandes a traiter, planning et historique.
 4. Accepter un rendez-vous en attente.
-5. Ouvrir Mailtrap et montrer l'email de confirmation capture sans envoi reel.
+5. Ouvrir Mailpit (`http://127.0.0.1:8025`) et montrer l'email de confirmation capture sans envoi reel.
 6. Expliquer que le backend cree l'intervention associee apres confirmation.
 7. Ouvrir la page Atelier, montrer le resume des vehicules puis filtrer la liste par statut.
 8. Ouvrir le detail d une intervention, montrer la timeline, puis cliquer sur Changer statut et confirmer une mise a jour.
@@ -54,7 +54,7 @@ Compte conseille : `client.demo@garageflow.local` / `Password123`.
 4. Web React : le dashboard garage consomme l'API avec `VITE_API_BASE_URL`.
 5. Mobile Expo : l'application client consomme la meme API avec `EXPO_PUBLIC_API_BASE_URL`.
 6. Donnees de demonstration : la commande `app:create-demo-data` cree un parcours coherent et idempotent.
-7. Emails : Symfony Mailer envoie les messages clients et Mailtrap les capture pour la demonstration sans vrai envoi.
+7. Emails : Symfony Mailer envoie les messages clients et Mailpit les capture localement pour la demonstration sans vrai envoi.
 8. Tests : backend, web et mobile disposent de commandes de validation adaptees au MVP.
 
 ## Message de conclusion

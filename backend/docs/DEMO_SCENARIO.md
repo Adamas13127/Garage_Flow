@@ -6,7 +6,7 @@ Il communique indirectement avec les endpoints API et les roles de securite Symf
 
 # Scenario de demonstration MVP
 
-Base locale : `http://127.0.0.1:8000`
+Lancer le backend Symfony avec php -S 0.0.0.0:8000 -t public
 
 1. Creer ou utiliser un client
    - Endpoint : `POST /api/auth/register/client`, puis `POST /api/auth/login`
