@@ -8,7 +8,6 @@
 
 namespace App\Security;
 
-/** Cette exception indique qu'une donnee de rendez-vous ne peut pas etre interpretee correctement. */
 class InvalidAppointmentRequestException extends \RuntimeException
 {
 }

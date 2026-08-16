@@ -10,7 +10,6 @@ namespace App\DTO;
 
 use Symfony\Component\Validator\Constraints as Assert;
 
-/** Ce DTO represente les champs modifiables d'une plage horaire. */
 class UpdateOpeningHourRequest
 {
     #[Assert\Range(min: 1, max: 7, notInRangeMessage: 'Le jour doit etre entre {{ min }} et {{ max }}.')]

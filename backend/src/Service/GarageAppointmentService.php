@@ -35,8 +35,6 @@ class GarageAppointmentService
     }
 
     /**
-     * Cette methode liste les rendez-vous du garage connecte avec les filtres demandes.
-     *
      * @return Appointment[]
      */
     public function listForGarage(Garage $garage, GarageAppointmentFilterRequest $request): array
@@ -44,7 +42,6 @@ class GarageAppointmentService
         return $this->appointmentRepository->findByGarageWithFilters($garage, $request->statut, $this->parseOptionalDate($request->date));
     }
 
-    /** Cette methode retourne un rendez-vous seulement s'il appartient au garage connecte. */
     public function getForGarage(Garage $garage, int $id): Appointment
     {
         $appointment = $this->appointmentRepository->findOneByGarageAndId($garage, $id);
@@ -56,8 +53,6 @@ class GarageAppointmentService
     }
 
     /**
-     * Cette methode confirme un rendez-vous en attente et cree l'intervention associee.
-     *
      * @return array{appointment: Appointment, intervention: Intervention}
      */
     public function accept(Garage $garage, int $id, User $changedBy): array
@@ -93,7 +88,6 @@ class GarageAppointmentService
         return $appointment;
     }
 
-    /** Cette methode bloque les transitions depuis un statut autre que EN_ATTENTE. */
     private function assertPending(Appointment $appointment): void
     {
         if (Appointment::STATUT_EN_ATTENTE !== $appointment->getStatut()) {
@@ -101,7 +95,6 @@ class GarageAppointmentService
         }
     }
 
-    /** Cette methode convertit le filtre date YYYY-MM-DD si le garage l'a fourni. */
     private function parseOptionalDate(?string $date): ?\DateTimeImmutable
     {
         if (null === $date || '' === trim($date)) {

@@ -28,7 +28,6 @@ use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 
-/** Ce controleur recoit les requetes HTTP des gerants et employes pour traiter les rendez-vous du garage. */
 #[Route('/api/garage/me/appointments')]
 #[IsGranted('ROLE_EMPLOYE')]
 class GarageAppointmentController extends AbstractController
@@ -40,7 +39,6 @@ class GarageAppointmentController extends AbstractController
     ) {
     }
 
-    /** Cette route liste les rendez-vous du garage rattache a l'utilisateur connecte. */
     #[Route('', name: 'api_garage_me_appointments_list', methods: ['GET'])]
     public function list(Request $request): JsonResponse
     {
@@ -67,7 +65,6 @@ class GarageAppointmentController extends AbstractController
         }
     }
 
-    /** Cette route retourne le detail d'un rendez-vous du garage connecte. */
     #[Route('/{id}', name: 'api_garage_me_appointments_show', methods: ['GET'])]
     public function show(int $id): JsonResponse
     {
@@ -78,7 +75,6 @@ class GarageAppointmentController extends AbstractController
         }
     }
 
-    /** Cette route confirme un rendez-vous et cree l'intervention si elle n'existe pas deja. */
     #[Route('/{id}/accept', name: 'api_garage_me_appointments_accept', methods: ['PATCH'])]
     public function accept(int $id): JsonResponse
     {
@@ -122,7 +118,6 @@ class GarageAppointmentController extends AbstractController
         }
     }
 
-    /** Cette methode recupere l'utilisateur connecte sous forme d'entite User. */
     private function user(): User
     {
         $user = $this->getUser();
@@ -133,7 +128,6 @@ class GarageAppointmentController extends AbstractController
         return $user;
     }
 
-    /** Cette methode recupere le garage rattache au gerant ou employe connecte. */
     private function garage(): Garage
     {
         return $this->garageManagementService->getGarageForUser($this->user());
@@ -159,7 +153,6 @@ class GarageAppointmentController extends AbstractController
         return is_array($payload) ? $payload : $this->json(['message' => 'Les donnees envoyees sont invalides.'], Response::HTTP_BAD_REQUEST);
     }
 
-    /** Cette methode transforme les erreurs de validation Symfony en reponse JSON lisible. */
     private function validateDto(object $dto): ?JsonResponse
     {
         $errors = $this->validator->validate($dto);
@@ -176,8 +169,6 @@ class GarageAppointmentController extends AbstractController
     }
 
     /**
-     * Cette methode prepare la reponse JSON d'un rendez-vous garage sans exposer le mot de passe du client.
-     *
      * @return array<string, mixed>
      */
     private function serializeAppointment(Appointment $appointment): array
@@ -213,8 +204,6 @@ class GarageAppointmentController extends AbstractController
     }
 
     /**
-     * Cette methode prepare la reponse JSON de l'intervention creee automatiquement.
-     *
      * @return array<string, mixed>
      */
     private function serializeIntervention(Intervention $intervention): array

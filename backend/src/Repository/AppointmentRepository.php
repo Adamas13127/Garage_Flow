@@ -15,21 +15,16 @@ use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 
 /**
- * Ce repository centralise les requetes vers la table des rendez-vous.
- *
  * @extends ServiceEntityRepository<Appointment>
  */
 class AppointmentRepository extends ServiceEntityRepository
 {
-    /** Cette methode connecte le repository a Doctrine pour l'entite Appointment. */
     public function __construct(ManagerRegistry $registry)
     {
         parent::__construct($registry, Appointment::class);
     }
 
     /**
-     * Cette methode retrouve les rendez-vous qui bloquent une periode pour un garage donne.
-     *
      * @return Appointment[]
      */
     public function findBlockingAppointmentsForGarageBetween(Garage $garage, \DateTimeImmutable $start, \DateTimeImmutable $end): array
@@ -38,8 +33,6 @@ class AppointmentRepository extends ServiceEntityRepository
     }
 
     /**
-     * Cette methode retrouve les rendez-vous bloquants en excluant le rendez-vous en cours de decision.
-     *
      * @return Appointment[]
      */
     public function findBlockingAppointmentsForGarageBetweenExcludingAppointment(Garage $garage, \DateTimeImmutable $start, \DateTimeImmutable $end, ?Appointment $excludedAppointment): array
@@ -65,8 +58,6 @@ class AppointmentRepository extends ServiceEntityRepository
     }
 
     /**
-     * Cette methode retourne tous les rendez-vous appartenant au client connecte.
-     *
      * @return Appointment[]
      */
     public function findByClient(User $client): array
@@ -79,7 +70,6 @@ class AppointmentRepository extends ServiceEntityRepository
             ->getResult();
     }
 
-    /** Cette methode retrouve un rendez-vous uniquement s'il appartient au client donne. */
     public function findOneByClientAndId(User $client, int $id): ?Appointment
     {
         return $this->createQueryBuilder('appointment')
@@ -92,8 +82,6 @@ class AppointmentRepository extends ServiceEntityRepository
     }
 
     /**
-     * Cette methode retourne les rendez-vous d'un garage avec des filtres simples de statut et de date.
-     *
      * @return Appointment[]
      */
     public function findByGarageWithFilters(Garage $garage, ?string $statut, ?\DateTimeImmutable $date): array
@@ -120,7 +108,6 @@ class AppointmentRepository extends ServiceEntityRepository
         return $queryBuilder->getQuery()->getResult();
     }
 
-    /** Cette methode retrouve un rendez-vous uniquement s'il appartient au garage donne. */
     public function findOneByGarageAndId(Garage $garage, int $id): ?Appointment
     {
         return $this->createQueryBuilder('appointment')

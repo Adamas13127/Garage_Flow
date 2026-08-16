@@ -11,9 +11,6 @@ namespace App\DTO;
 use Symfony\Component\Validator\Constraints as Assert;
 use Symfony\Component\Validator\Context\ExecutionContextInterface;
 
-/**
- * Ce DTO represente les champs modifiables d'un vehicule, tous optionnels pour une requete PATCH.
- */
 class UpdateVehicleRequest
 {
     #[Assert\Length(max: 100, maxMessage: 'La marque ne doit pas depasser {{ limit }} caracteres.')]
@@ -37,13 +34,11 @@ class UpdateVehicleRequest
     /** @var array<string, bool> */
     private array $providedFields = [];
 
-    /** Cette methode memorise quels champs etaient presents dans la requete PATCH. */
     public function markProvided(string $field): void
     {
         $this->providedFields[$field] = true;
     }
 
-    /** Cette methode indique au service si un champ doit vraiment etre modifie. */
     public function hasProvided(string $field): bool
     {
         return isset($this->providedFields[$field]);

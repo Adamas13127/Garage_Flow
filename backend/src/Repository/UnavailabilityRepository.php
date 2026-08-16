@@ -14,21 +14,16 @@ use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 
 /**
- * Ce repository centralise les requetes vers la table des indisponibilites.
- *
  * @extends ServiceEntityRepository<Unavailability>
  */
 class UnavailabilityRepository extends ServiceEntityRepository
 {
-    /** Cette methode connecte le repository a Doctrine pour l'entite Unavailability. */
     public function __construct(ManagerRegistry $registry)
     {
         parent::__construct($registry, Unavailability::class);
     }
 
     /**
-     * Cette methode retourne les indisponibilites futures visibles dans le detail d'un garage.
-     *
      * @return Unavailability[]
      */
     public function findFutureByGarage(Garage $garage): array
@@ -44,8 +39,6 @@ class UnavailabilityRepository extends ServiceEntityRepository
     }
 
     /**
-     * Cette methode retourne toutes les indisponibilites du garage rattache au gerant.
-     *
      * @return Unavailability[]
      */
     public function findByGarage(Garage $garage): array
@@ -58,7 +51,6 @@ class UnavailabilityRepository extends ServiceEntityRepository
             ->getResult();
     }
 
-    /** Cette methode retrouve une indisponibilite seulement si elle appartient au garage donne. */
     public function findOneByGarageAndId(Garage $garage, int $id): ?Unavailability
     {
         return $this->createQueryBuilder('unavailability')
@@ -71,8 +63,6 @@ class UnavailabilityRepository extends ServiceEntityRepository
     }
 
     /**
-     * Cette methode retrouve les indisponibilites qui chevauchent une periode precise.
-     *
      * @return Unavailability[]
      */
     public function findForGarageBetween(Garage $garage, \DateTimeImmutable $start, \DateTimeImmutable $end): array

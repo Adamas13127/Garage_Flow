@@ -33,25 +33,21 @@ class Role
     #[ORM\OneToMany(mappedBy: 'role', targetEntity: User::class)]
     private Collection $users;
 
-    /** Cette methode prepare la collection des utilisateurs qui possedent ce role. */
     public function __construct()
     {
         $this->users = new ArrayCollection();
     }
 
-    /** Cette methode retourne l'identifiant technique du role. */
     public function getId(): ?int
     {
         return $this->id;
     }
 
-    /** Cette methode retourne le code technique du role. */
     public function getCode(): ?string
     {
         return $this->code;
     }
 
-    /** Cette methode modifie le code technique du role. */
     public function setCode(string $code): static
     {
         $this->code = $code;
@@ -59,13 +55,11 @@ class Role
         return $this;
     }
 
-    /** Cette methode retourne le libelle lisible du role. */
     public function getLibelle(): ?string
     {
         return $this->libelle;
     }
 
-    /** Cette methode modifie le libelle lisible du role. */
     public function setLibelle(string $libelle): static
     {
         $this->libelle = $libelle;
@@ -74,8 +68,6 @@ class Role
     }
 
     /**
-     * Cette methode retourne les utilisateurs lies a ce role.
-     *
      * @return Collection<int, User>
      */
     public function getUsers(): Collection
@@ -83,7 +75,6 @@ class Role
         return $this->users;
     }
 
-    /** Cette methode ajoute un utilisateur dans la liste du role. */
     public function addUser(User $user): static
     {
         if (!$this->users->contains($user)) {
@@ -91,16 +82,15 @@ class Role
             $user->setRole($this);
         }
 
-return $this;
+        return $this;
     }
 
-    /** Cette methode retire un utilisateur de la liste du role. */
     public function removeUser(User $user): static
     {
         if ($this->users->removeElement($user) && $user->getRole() === $this) {
             $user->setRole(null);
         }
 
-return $this;
+        return $this;
     }
 }

@@ -14,21 +14,16 @@ use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 
 /**
- * Ce repository centralise les requetes vers la table des utilisateurs.
- *
  * @extends ServiceEntityRepository<User>
  */
 class UserRepository extends ServiceEntityRepository
 {
-    /** Cette methode connecte le repository a Doctrine pour l'entite User. */
     public function __construct(ManagerRegistry $registry)
     {
         parent::__construct($registry, User::class);
     }
 
     /**
-     * Cette methode retrouve les gerants actifs d'un garage pour leur envoyer une notification.
-     *
      * @return User[]
      */
     public function findActiveManagersByGarage(Garage $garage): array

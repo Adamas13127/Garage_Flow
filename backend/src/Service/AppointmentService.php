@@ -20,7 +20,6 @@ use App\Security\VehicleNotFoundException;
 use App\Service\Email\EmailNotificationService;
 use Doctrine\ORM\EntityManagerInterface;
 
-/** Ce service contient la logique metier de prise, consultation et annulation de rendez-vous client. */
 class AppointmentService
 {
     public function __construct(
@@ -33,7 +32,6 @@ class AppointmentService
     ) {
     }
 
-    /** Cette methode cree une demande de rendez-vous en verifiant que le client utilise son propre vehicule. */
     public function createAppointment(User $client, CreateAppointmentRequest $request): Appointment
     {
         $garage = $this->availabilityService->getActiveGarage((int) $request->garageId);
@@ -66,8 +64,6 @@ class AppointmentService
     }
 
     /**
-     * Cette methode liste uniquement les rendez-vous du client connecte.
-     *
      * @return Appointment[]
      */
     public function getAppointmentsForClient(User $client): array
@@ -75,7 +71,6 @@ class AppointmentService
         return $this->appointmentRepository->findByClient($client);
     }
 
-    /** Cette methode retourne un rendez-vous seulement s'il appartient au client connecte. */
     public function getAppointmentForClient(User $client, int $id): Appointment
     {
         $appointment = $this->appointmentRepository->findOneByClientAndId($client, $id);
@@ -86,7 +81,6 @@ class AppointmentService
         return $appointment;
     }
 
-    /** Cette methode annule un rendez-vous client si son statut permet encore cette action. */
     public function cancelAppointment(User $client, int $id): Appointment
     {
         $appointment = $this->getAppointmentForClient($client, $id);
@@ -103,7 +97,6 @@ class AppointmentService
         return $appointment;
     }
 
-    /** Cette methode verifie que le vehicule appartient bien au client connecte. */
     private function getVehicleForClient(User $client, int $vehicleId): Vehicle
     {
         $vehicle = $this->vehicleRepository->findOneByClientAndId($client, $vehicleId);

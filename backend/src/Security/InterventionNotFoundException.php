@@ -8,7 +8,6 @@
 
 namespace App\Security;
 
-/** Cette exception indique qu'une intervention est introuvable dans le perimetre autorise. */
 class InterventionNotFoundException extends \RuntimeException
 {
 }

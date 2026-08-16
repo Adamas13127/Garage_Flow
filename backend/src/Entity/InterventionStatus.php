@@ -25,7 +25,6 @@ class InterventionStatus
     #[ORM\Column(options: ['default' => true])] private bool $visibleClient = true;
     /** @var Collection<int, Intervention> */ #[ORM\OneToMany(mappedBy: 'statutActuel', targetEntity: Intervention::class)] private Collection $interventions;
     /** @var Collection<int, InterventionStatusHistory> */ #[ORM\OneToMany(mappedBy: 'status', targetEntity: InterventionStatusHistory::class)] private Collection $histories;
-    /** Cette methode initialise les interventions et historiques lies a ce statut. */
     public function __construct()
     {
         $this->interventions = new ArrayCollection();
@@ -98,7 +97,7 @@ class InterventionStatus
             $intervention->setStatutActuel($this);
         }
 
-return $this;
+        return $this;
     }
 
     public function removeIntervention(Intervention $intervention): static
@@ -107,7 +106,7 @@ return $this;
             $intervention->setStatutActuel(null);
         }
 
-return $this;
+        return $this;
     }
 
     /** @return Collection<int, InterventionStatusHistory> */
@@ -123,7 +122,7 @@ return $this;
             $history->setStatus($this);
         }
 
-return $this;
+        return $this;
     }
 
     public function removeHistory(InterventionStatusHistory $history): static
@@ -132,6 +131,6 @@ return $this;
             $history->setStatus(null);
         }
 
-return $this;
+        return $this;
     }
 }

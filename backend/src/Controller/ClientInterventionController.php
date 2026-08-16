@@ -20,7 +20,6 @@ use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Security\Core\Exception\AccessDeniedException;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
 
-/** Ce controleur expose les routes client de consultation du suivi de reparation. */
 #[Route('/api/client/interventions')]
 #[IsGranted('ROLE_CLIENT')]
 class ClientInterventionController extends AbstractController
@@ -29,7 +28,6 @@ class ClientInterventionController extends AbstractController
     {
     }
 
-    /** Cette route liste les interventions liees aux rendez-vous du client connecte. */
     #[Route('', name: 'api_client_interventions_list', methods: ['GET'])]
     public function list(): JsonResponse
     {
@@ -39,7 +37,6 @@ class ClientInterventionController extends AbstractController
         )]);
     }
 
-    /** Cette route retourne le detail d'une intervention du client connecte. */
     #[Route('/{id}', name: 'api_client_interventions_show', methods: ['GET'])]
     public function show(int $id): JsonResponse
     {
@@ -50,7 +47,6 @@ class ClientInterventionController extends AbstractController
         }
     }
 
-    /** Cette methode recupere l'utilisateur connecte en imposant un role client reel. */
     private function client(): User
     {
         $user = $this->getUser();
@@ -66,8 +62,6 @@ class ClientInterventionController extends AbstractController
     }
 
     /**
-     * Cette methode prepare l'intervention visible par le client sans notes internes.
-     *
      * @return array<string, mixed>
      */
     private function serializeIntervention(Intervention $intervention, bool $withHistory): array
@@ -97,8 +91,6 @@ class ClientInterventionController extends AbstractController
     }
 
     /**
-     * Cette methode prepare une ligne d'historique autorisee pour le client.
-     *
      * @return array<string, mixed>
      */
     private function serializeVisibleHistory(InterventionStatusHistory $history): array

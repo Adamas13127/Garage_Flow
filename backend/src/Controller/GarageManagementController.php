@@ -35,7 +35,6 @@ use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 
-/** Ce controleur recoit les requetes HTTP de gestion garage et appelle les services adaptes. */
 #[Route('/api/garage/me')]
 class GarageManagementController extends AbstractController
 {
@@ -48,7 +47,6 @@ class GarageManagementController extends AbstractController
     ) {
     }
 
-    /** Cette route retourne le garage rattache a l'utilisateur connecte. */
     #[Route('', name: 'api_garage_me_show', methods: ['GET'])]
     #[IsGranted('ROLE_EMPLOYE')]
     public function show(): JsonResponse
@@ -60,7 +58,6 @@ class GarageManagementController extends AbstractController
         }
     }
 
-    /** Cette route modifie les informations principales du garage connecte. */
     #[Route('', name: 'api_garage_me_update', methods: ['PATCH'])]
     #[IsGranted('ROLE_GERANT')]
     public function updateGarage(Request $request): JsonResponse
@@ -85,7 +82,6 @@ class GarageManagementController extends AbstractController
         }
     }
 
-    /** Cette route liste les prestations du garage connecte. */
     #[Route('/services', name: 'api_garage_me_services_list', methods: ['GET'])]
     #[IsGranted('ROLE_EMPLOYE')]
     public function listServices(): JsonResponse
@@ -96,7 +92,6 @@ class GarageManagementController extends AbstractController
         ));
     }
 
-    /** Cette route cree une prestation pour le garage connecte. */
     #[Route('/services', name: 'api_garage_me_services_create', methods: ['POST'])]
     #[IsGranted('ROLE_GERANT')]
     public function createService(Request $request): JsonResponse
@@ -120,7 +115,6 @@ class GarageManagementController extends AbstractController
         return $this->json($this->serializeService($this->servicePrestationService->create($this->garage(), $dto)), Response::HTTP_CREATED);
     }
 
-    /** Cette route modifie une prestation appartenant au garage connecte. */
     #[Route('/services/{id}', name: 'api_garage_me_services_update', methods: ['PATCH'])]
     #[IsGranted('ROLE_GERANT')]
     public function updateService(int $id, Request $request): JsonResponse
@@ -159,7 +153,6 @@ class GarageManagementController extends AbstractController
         }
     }
 
-    /** Cette route liste les horaires du garage connecte. */
     #[Route('/opening-hours', name: 'api_garage_me_opening_hours_list', methods: ['GET'])]
     #[IsGranted('ROLE_EMPLOYE')]
     public function listOpeningHours(): JsonResponse
@@ -170,7 +163,6 @@ class GarageManagementController extends AbstractController
         ));
     }
 
-    /** Cette route cree une plage horaire recurrente pour le garage connecte. */
     #[Route('/opening-hours', name: 'api_garage_me_opening_hours_create', methods: ['POST'])]
     #[IsGranted('ROLE_GERANT')]
     public function createOpeningHour(Request $request): JsonResponse
@@ -198,7 +190,6 @@ class GarageManagementController extends AbstractController
         }
     }
 
-    /** Cette route modifie une plage horaire appartenant au garage connecte. */
     #[Route('/opening-hours/{id}', name: 'api_garage_me_opening_hours_update', methods: ['PATCH'])]
     #[IsGranted('ROLE_GERANT')]
     public function updateOpeningHour(int $id, Request $request): JsonResponse
@@ -239,7 +230,6 @@ class GarageManagementController extends AbstractController
         }
     }
 
-    /** Cette route liste les indisponibilites du garage connecte. */
     #[Route('/unavailabilities', name: 'api_garage_me_unavailabilities_list', methods: ['GET'])]
     #[IsGranted('ROLE_EMPLOYE')]
     public function listUnavailabilities(): JsonResponse
@@ -250,7 +240,6 @@ class GarageManagementController extends AbstractController
         ));
     }
 
-    /** Cette route cree une indisponibilite exceptionnelle pour le garage connecte. */
     #[Route('/unavailabilities', name: 'api_garage_me_unavailabilities_create', methods: ['POST'])]
     #[IsGranted('ROLE_GERANT')]
     public function createUnavailability(Request $request): JsonResponse
@@ -277,7 +266,6 @@ class GarageManagementController extends AbstractController
         }
     }
 
-    /** Cette route modifie une indisponibilite appartenant au garage connecte. */
     #[Route('/unavailabilities/{id}', name: 'api_garage_me_unavailabilities_update', methods: ['PATCH'])]
     #[IsGranted('ROLE_GERANT')]
     public function updateUnavailability(int $id, Request $request): JsonResponse
@@ -318,7 +306,6 @@ class GarageManagementController extends AbstractController
         }
     }
 
-    /** Cette methode recupere l'utilisateur connecte sous forme d'entite User. */
     private function user(): User
     {
         $user = $this->getUser();
@@ -329,15 +316,12 @@ class GarageManagementController extends AbstractController
         return $user;
     }
 
-    /** Cette methode recupere le garage rattache a l'utilisateur connecte. */
     private function garage(): Garage
     {
         return $this->garageManagementService->getGarageForUser($this->user());
     }
 
     /**
-     * Cette methode transforme le JSON recu en tableau PHP utilisable par les DTO.
-     *
      * @return array<string, mixed>|JsonResponse
      */
     private function payload(Request $request): array|JsonResponse
@@ -352,8 +336,6 @@ class GarageManagementController extends AbstractController
     }
 
     /**
-     * Cette methode remplit le DTO de modification du garage avec les champs reellement envoyes.
-     *
      * @param array<string, mixed> $payload
      */
     private function fillUpdateGarageRequest(UpdateGarageRequest $dto, array $payload): void
@@ -369,8 +351,6 @@ class GarageManagementController extends AbstractController
     }
 
     /**
-     * Cette methode remplit le DTO de modification d'une prestation avec les bons types.
-     *
      * @param array<string, mixed> $payload
      */
     private function fillUpdateServiceRequest(UpdateServicePrestationRequest $dto, array $payload): void
@@ -394,8 +374,6 @@ class GarageManagementController extends AbstractController
     }
 
     /**
-     * Cette methode remplit le DTO de modification d'un horaire avec les bons types.
-     *
      * @param array<string, mixed> $payload
      */
     private function fillUpdateOpeningHourRequest(UpdateOpeningHourRequest $dto, array $payload): void
@@ -419,8 +397,6 @@ class GarageManagementController extends AbstractController
     }
 
     /**
-     * Cette methode remplit le DTO de modification d'une indisponibilite.
-     *
      * @param array<string, mixed> $payload
      */
     private function fillUpdateUnavailabilityRequest(UpdateUnavailabilityRequest $dto, array $payload): void
@@ -435,7 +411,6 @@ class GarageManagementController extends AbstractController
         }
     }
 
-    /** Cette methode lance la validation Symfony et retourne une erreur lisible si besoin. */
     private function validateDto(object $dto): ?JsonResponse
     {
         $errors = $this->validator->validate($dto);
@@ -451,15 +426,12 @@ class GarageManagementController extends AbstractController
         return $this->json(['message' => 'Les donnees envoyees sont invalides.', 'errors' => $details], Response::HTTP_BAD_REQUEST);
     }
 
-    /** Cette methode convertit une valeur JSON en chaine ou null. */
     private function nullableString(mixed $value): ?string
     {
         return null === $value ? null : (string) $value;
     }
 
     /**
-     * Cette methode prepare la reponse JSON d'un garage.
-     *
      * @return array<string, mixed>
      */
     private function serializeGarage(Garage $garage): array
@@ -479,8 +451,6 @@ class GarageManagementController extends AbstractController
     }
 
     /**
-     * Cette methode prepare la reponse JSON d'une prestation.
-     *
      * @return array<string, mixed>
      */
     private function serializeService(ServicePrestation $service): array
@@ -497,8 +467,6 @@ class GarageManagementController extends AbstractController
     }
 
     /**
-     * Cette methode prepare la reponse JSON d'un horaire.
-     *
      * @return array<string, mixed>
      */
     private function serializeOpeningHour(OpeningHour $hour): array
@@ -513,8 +481,6 @@ class GarageManagementController extends AbstractController
     }
 
     /**
-     * Cette methode prepare la reponse JSON d'une indisponibilite.
-     *
      * @return array<string, mixed>
      */
     private function serializeUnavailability(Unavailability $unavailability): array

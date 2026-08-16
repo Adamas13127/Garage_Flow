@@ -14,23 +14,16 @@ use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 
 /**
- * Ce repository centralise les requetes vers la table des vehicules.
- *
  * @extends ServiceEntityRepository<Vehicle>
  */
 class VehicleRepository extends ServiceEntityRepository
 {
-    /**
-     * Cette methode connecte le repository a Doctrine pour l'entite Vehicle.
-     */
     public function __construct(ManagerRegistry $registry)
     {
         parent::__construct($registry, Vehicle::class);
     }
 
     /**
-     * Cette methode recupere tous les vehicules appartenant au client connecte.
-     *
      * @return list<Vehicle>
      */
     public function findByClient(User $client): array
@@ -43,9 +36,6 @@ class VehicleRepository extends ServiceEntityRepository
             ->getResult();
     }
 
-    /**
-     * Cette methode recupere un vehicule uniquement s'il appartient au client donne.
-     */
     public function findOneByClientAndId(User $client, int $id): ?Vehicle
     {
         return $this->createQueryBuilder('vehicle')
@@ -57,9 +47,6 @@ class VehicleRepository extends ServiceEntityRepository
             ->getOneOrNullResult();
     }
 
-    /**
-     * Cette methode verifie qu'un client n'a pas deja enregistre un vehicule avec la meme plaque.
-     */
     public function existsByClientAndPlate(User $client, string $plate, ?Vehicle $excludedVehicle = null): bool
     {
         $queryBuilder = $this->createQueryBuilder('vehicle')

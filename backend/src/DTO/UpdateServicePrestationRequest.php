@@ -11,7 +11,6 @@ namespace App\DTO;
 use Symfony\Component\Validator\Constraints as Assert;
 use Symfony\Component\Validator\Context\ExecutionContextInterface;
 
-/** Ce DTO represente les champs modifiables d'une prestation. */
 class UpdateServicePrestationRequest
 {
     #[Assert\Length(max: 150)] public ?string $nom = null;
@@ -31,7 +30,6 @@ class UpdateServicePrestationRequest
         return isset($this->providedFields[$field]);
     }
 
-    /** Cette methode refuse un nom vide quand il est fourni dans la modification. */
     #[Assert\Callback]
     public function validateProvidedName(ExecutionContextInterface $context): void
     {

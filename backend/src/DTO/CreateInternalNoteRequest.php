@@ -10,7 +10,6 @@ namespace App\DTO;
 
 use Symfony\Component\Validator\Constraints as Assert;
 
-/** Ce DTO represente le formulaire API de creation d'une note interne. */
 class CreateInternalNoteRequest
 {
     #[Assert\NotBlank(message: 'Le contenu de la note est obligatoire.')]

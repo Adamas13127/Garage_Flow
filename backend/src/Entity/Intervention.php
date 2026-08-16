@@ -27,7 +27,6 @@ class Intervention
     /** @var Collection<int, InterventionStatusHistory> */ #[ORM\OneToMany(mappedBy: 'intervention', targetEntity: InterventionStatusHistory::class, orphanRemoval: true)] private Collection $statusHistories;
     /** @var Collection<int, InternalNote> */ #[ORM\OneToMany(mappedBy: 'intervention', targetEntity: InternalNote::class, orphanRemoval: true)] private Collection $internalNotes;
     /** @var Collection<int, Notification> */ #[ORM\OneToMany(mappedBy: 'intervention', targetEntity: Notification::class)] private Collection $notifications;
-    /** Cette methode initialise les collections de suivi et la date de creation. */
     public function __construct()
     {
         $this->createdAt = new \DateTimeImmutable();
@@ -114,7 +113,7 @@ class Intervention
             $history->setIntervention($this);
         }
 
-return $this;
+        return $this;
     }
 
     public function removeStatusHistory(InterventionStatusHistory $history): static
@@ -123,7 +122,7 @@ return $this;
             $history->setIntervention(null);
         }
 
-return $this;
+        return $this;
     }
 
     /** @return Collection<int, InternalNote> */
@@ -139,7 +138,7 @@ return $this;
             $note->setIntervention($this);
         }
 
-return $this;
+        return $this;
     }
 
     public function removeInternalNote(InternalNote $note): static
@@ -148,7 +147,7 @@ return $this;
             $note->setIntervention(null);
         }
 
-return $this;
+        return $this;
     }
 
     /** @return Collection<int, Notification> */
@@ -164,7 +163,7 @@ return $this;
             $notification->setIntervention($this);
         }
 
-return $this;
+        return $this;
     }
 
     public function removeNotification(Notification $notification): static
@@ -173,6 +172,6 @@ return $this;
             $notification->setIntervention(null);
         }
 
-return $this;
+        return $this;
     }
 }

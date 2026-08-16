@@ -10,7 +10,6 @@ namespace App\DTO;
 
 use Symfony\Component\Validator\Constraints as Assert;
 
-/** Ce DTO represente les donnees necessaires pour creer une indisponibilite. */
 class CreateUnavailabilityRequest
 {
     #[Assert\NotBlank(message: 'La date de debut est obligatoire.')]

@@ -11,9 +11,6 @@ namespace App;
 use Symfony\Bundle\FrameworkBundle\Kernel\MicroKernelTrait;
 use Symfony\Component\HttpKernel\Kernel as BaseKernel;
 
-/**
- * Cette classe represente le point central qui demarre l'application Symfony.
- */
 class Kernel extends BaseKernel
 {
     use MicroKernelTrait;

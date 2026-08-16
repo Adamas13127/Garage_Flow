@@ -24,7 +24,6 @@ class ActionLog
     #[ORM\Column(nullable: true)] private ?int $idEntiteConcernee = null;
     #[ORM\Column(type: 'text', nullable: true)] private ?string $description = null;
     #[ORM\Column] private ?\DateTimeImmutable $createdAt = null;
-    /** Cette methode initialise la date de creation du log d'action. */
     public function __construct()
     {
         $this->createdAt = new \DateTimeImmutable();

@@ -14,21 +14,16 @@ use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 
 /**
- * Ce repository centralise les requetes vers la table d'historique des statuts.
- *
  * @extends ServiceEntityRepository<InterventionStatusHistory>
  */
 class InterventionStatusHistoryRepository extends ServiceEntityRepository
 {
-    /** Cette methode connecte le repository a Doctrine pour l'entite InterventionStatusHistory. */
     public function __construct(ManagerRegistry $registry)
     {
         parent::__construct($registry, InterventionStatusHistory::class);
     }
 
     /**
-     * Cette methode retourne tout l'historique d'une intervention pour le garage.
-     *
      * @return InterventionStatusHistory[]
      */
     public function findHistoryByIntervention(Intervention $intervention): array
@@ -42,8 +37,6 @@ class InterventionStatusHistoryRepository extends ServiceEntityRepository
     }
 
     /**
-     * Cette methode retourne seulement l'historique visible par le client.
-     *
      * @return InterventionStatusHistory[]
      */
     public function findVisibleHistoryByIntervention(Intervention $intervention): array

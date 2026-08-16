@@ -10,7 +10,6 @@ namespace App\DTO;
 
 use Symfony\Component\Validator\Constraints as Assert;
 
-/** Ce DTO represente les donnees necessaires pour creer une plage horaire. */
 class CreateOpeningHourRequest
 {
     #[Assert\NotNull(message: 'Le jour est obligatoire.')]

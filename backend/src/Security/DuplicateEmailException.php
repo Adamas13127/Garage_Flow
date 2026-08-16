@@ -8,9 +8,6 @@
 
 namespace App\Security;
 
-/**
- * Cette exception indique qu'un compte existe deja avec l'email demande.
- */
 class DuplicateEmailException extends \RuntimeException
 {
 }

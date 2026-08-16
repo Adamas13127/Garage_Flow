@@ -19,9 +19,6 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 
-/**
- * Ce controleur regroupe les routes d'authentification strictement necessaires au MVP.
- */
 #[Route('/api')]
 class AuthController extends AbstractController
 {
@@ -31,9 +28,6 @@ class AuthController extends AbstractController
     ) {
     }
 
-    /**
-     * Cette route permet a un client de creer son compte avant de prendre rendez-vous.
-     */
     #[Route('/auth/register/client', name: 'api_auth_register_client', methods: ['POST'])]
     public function registerClient(Request $request): JsonResponse
     {
@@ -86,9 +80,6 @@ class AuthController extends AbstractController
         return $this->json(['message' => 'Identifiants invalides.'], Response::HTTP_UNAUTHORIZED);
     }
 
-    /**
-     * Cette route permet au frontend de connaitre l'utilisateur connecte grace au token JWT.
-     */
     #[Route('/me', name: 'api_me', methods: ['GET'])]
     public function me(): JsonResponse
     {

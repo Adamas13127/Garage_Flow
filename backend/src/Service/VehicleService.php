@@ -28,9 +28,6 @@ class VehicleService
     ) {
     }
 
-    /**
-     * Cette methode cree un vehicule pour le client connecte apres verification de la plaque.
-     */
     public function createVehicle(User $client, CreateVehicleRequest $request): Vehicle
     {
         $plate = $this->normalizePlate((string) $request->plaqueImmatriculation);
@@ -52,8 +49,6 @@ class VehicleService
     }
 
     /**
-     * Cette methode retourne uniquement les vehicules du client connecte.
-     *
      * @return list<Vehicle>
      */
     public function getVehiclesForClient(User $client): array
@@ -61,9 +56,6 @@ class VehicleService
         return $this->vehicleRepository->findByClient($client);
     }
 
-    /**
-     * Cette methode recupere un vehicule seulement s'il appartient au client connecte.
-     */
     public function getVehicleForClient(User $client, int $id): Vehicle
     {
         $vehicle = $this->vehicleRepository->findOneByClientAndId($client, $id);
@@ -114,9 +106,6 @@ class VehicleService
         return $vehicle;
     }
 
-    /**
-     * Cette methode supprime un vehicule uniquement s'il appartient au client connecte.
-     */
     public function deleteVehicle(User $client, int $id): void
     {
         $vehicle = $this->getVehicleForClient($client, $id);
@@ -124,9 +113,6 @@ class VehicleService
         $this->entityManager->flush();
     }
 
-    /**
-     * Cette methode verifie qu'un client n'a pas deja enregistre un vehicule avec la meme plaque.
-     */
     private function assertPlateIsUniqueForClient(User $client, string $plate, ?Vehicle $excludedVehicle = null): void
     {
         if ($this->vehicleRepository->existsByClientAndPlate($client, $plate, $excludedVehicle)) {

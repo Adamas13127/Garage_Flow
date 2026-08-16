@@ -13,19 +13,15 @@ use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 
 /**
- * Ce repository centralise les requetes vers la table des statuts d'intervention.
- *
  * @extends ServiceEntityRepository<InterventionStatus>
  */
 class InterventionStatusRepository extends ServiceEntityRepository
 {
-    /** Cette methode connecte le repository a Doctrine pour l'entite InterventionStatus. */
     public function __construct(ManagerRegistry $registry)
     {
         parent::__construct($registry, InterventionStatus::class);
     }
 
-    /** Cette methode retrouve un statut d'intervention par son code technique. */
     public function findOneByCode(string $code): ?InterventionStatus
     {
         return $this->createQueryBuilder('status')
@@ -35,7 +31,6 @@ class InterventionStatusRepository extends ServiceEntityRepository
             ->getOneOrNullResult();
     }
 
-    /** Cette methode retourne le premier statut selon l'ordre d'affichage configure. */
     public function findFirstByOrder(): ?InterventionStatus
     {
         return $this->createQueryBuilder('status')

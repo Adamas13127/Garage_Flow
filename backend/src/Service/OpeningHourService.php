@@ -25,8 +25,6 @@ class OpeningHourService
     }
 
     /**
-     * Cette methode liste les horaires du garage connecte.
-     *
      * @return OpeningHour[]
      */
     public function listForGarage(Garage $garage): array
@@ -34,7 +32,6 @@ class OpeningHourService
         return $this->repository->findByGarage($garage);
     }
 
-    /** Cette methode cree une plage horaire apres verification des heures. */
     public function create(Garage $garage, CreateOpeningHourRequest $request): OpeningHour
     {
         $start = $this->parseTime((string) $request->heureDebut);
@@ -48,7 +45,6 @@ class OpeningHourService
         return $hour;
     }
 
-    /** Cette methode modifie une plage horaire appartenant au garage connecte. */
     public function update(Garage $garage, int $id, UpdateOpeningHourRequest $request): OpeningHour
     {
         $hour = $this->getForGarage($garage, $id);
@@ -72,7 +68,6 @@ class OpeningHourService
         return $hour;
     }
 
-    /** Cette methode desactive une plage horaire au lieu de la supprimer. */
     public function disable(Garage $garage, int $id): void
     {
         $hour = $this->getForGarage($garage, $id);
@@ -90,7 +85,6 @@ class OpeningHourService
         return $hour;
     }
 
-    /** Cette methode convertit une heure HH:MM en objet DateTimeImmutable en refusant les valeurs incoherentes. */
     private function parseTime(string $value): \DateTimeImmutable
     {
         $time = \DateTimeImmutable::createFromFormat('!H:i', trim($value));
@@ -103,7 +97,6 @@ class OpeningHourService
         return $time;
     }
 
-    /** Cette methode verifie que l'heure de debut est bien avant l'heure de fin. */
     private function assertStartBeforeEnd(\DateTimeImmutable $start, \DateTimeImmutable $end): void
     {
         if ($start >= $end) {

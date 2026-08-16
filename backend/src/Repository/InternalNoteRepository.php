@@ -14,21 +14,16 @@ use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 
 /**
- * Ce repository centralise les requetes vers la table des notes internes.
- *
  * @extends ServiceEntityRepository<InternalNote>
  */
 class InternalNoteRepository extends ServiceEntityRepository
 {
-    /** Cette methode connecte le repository a Doctrine pour l'entite InternalNote. */
     public function __construct(ManagerRegistry $registry)
     {
         parent::__construct($registry, InternalNote::class);
     }
 
     /**
-     * Cette methode liste les notes internes d'une intervention pour le garage.
-     *
      * @return InternalNote[]
      */
     public function findNotesByIntervention(Intervention $intervention): array
@@ -41,7 +36,6 @@ class InternalNoteRepository extends ServiceEntityRepository
             ->getResult();
     }
 
-    /** Cette methode retrouve une note seulement si elle appartient a l'intervention donnee. */
     public function findOneNoteByInterventionAndId(Intervention $intervention, int $id): ?InternalNote
     {
         return $this->createQueryBuilder('note')

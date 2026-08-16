@@ -38,7 +38,6 @@ class Garage
     /** @var Collection<int, ServicePrestation> */ #[ORM\OneToMany(mappedBy: 'garage', targetEntity: ServicePrestation::class, orphanRemoval: true)] private Collection $servicePrestations;
     /** @var Collection<int, Appointment> */ #[ORM\OneToMany(mappedBy: 'garage', targetEntity: Appointment::class)] private Collection $appointments;
     /** @var Collection<int, ActionLog> */ #[ORM\OneToMany(mappedBy: 'garage', targetEntity: ActionLog::class)] private Collection $actionLogs;
-    /** Cette methode initialise les collections du garage et sa date de creation. */
     public function __construct()
     {
         $this->createdAt = new \DateTimeImmutable();
@@ -200,7 +199,7 @@ class Garage
             $user->setGarage($this);
         }
 
-return $this;
+        return $this;
     }
 
     public function removeUser(User $user): static
@@ -209,7 +208,7 @@ return $this;
             $user->setGarage(null);
         }
 
-return $this;
+        return $this;
     }
 
     /** @return Collection<int, OpeningHour> */
@@ -225,7 +224,7 @@ return $this;
             $openingHour->setGarage($this);
         }
 
-return $this;
+        return $this;
     }
 
     public function removeOpeningHour(OpeningHour $openingHour): static
@@ -234,7 +233,7 @@ return $this;
             $openingHour->setGarage(null);
         }
 
-return $this;
+        return $this;
     }
 
     /** @return Collection<int, Unavailability> */
@@ -250,7 +249,7 @@ return $this;
             $unavailability->setGarage($this);
         }
 
-return $this;
+        return $this;
     }
 
     public function removeUnavailability(Unavailability $unavailability): static
@@ -259,7 +258,7 @@ return $this;
             $unavailability->setGarage(null);
         }
 
-return $this;
+        return $this;
     }
 
     /** @return Collection<int, ServicePrestation> */
@@ -275,7 +274,7 @@ return $this;
             $servicePrestation->setGarage($this);
         }
 
-return $this;
+        return $this;
     }
 
     public function removeServicePrestation(ServicePrestation $servicePrestation): static
@@ -284,7 +283,7 @@ return $this;
             $servicePrestation->setGarage(null);
         }
 
-return $this;
+        return $this;
     }
 
     /** @return Collection<int, Appointment> */
@@ -300,7 +299,7 @@ return $this;
             $appointment->setGarage($this);
         }
 
-return $this;
+        return $this;
     }
 
     public function removeAppointment(Appointment $appointment): static
@@ -309,7 +308,7 @@ return $this;
             $appointment->setGarage(null);
         }
 
-return $this;
+        return $this;
     }
 
     /** @return Collection<int, ActionLog> */
@@ -325,7 +324,7 @@ return $this;
             $actionLog->setGarage($this);
         }
 
-return $this;
+        return $this;
     }
 
     public function removeActionLog(ActionLog $actionLog): static
@@ -334,6 +333,6 @@ return $this;
             $actionLog->setGarage(null);
         }
 
-return $this;
+        return $this;
     }
 }

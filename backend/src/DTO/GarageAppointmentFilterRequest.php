@@ -12,7 +12,6 @@ use App\Entity\Appointment;
 use Symfony\Component\Validator\Constraints as Assert;
 use Symfony\Component\Validator\Context\ExecutionContextInterface;
 
-/** Ce DTO represente les filtres simples de liste des rendez-vous garage. */
 class GarageAppointmentFilterRequest
 {
     #[Assert\Length(max: 50)]
@@ -20,7 +19,6 @@ class GarageAppointmentFilterRequest
 
     public ?string $date = null;
 
-    /** Cette methode verifie que le statut filtre correspond a un statut de rendez-vous connu. */
     #[Assert\Callback]
     public function validateStatut(ExecutionContextInterface $context): void
     {

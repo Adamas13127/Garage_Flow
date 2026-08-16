@@ -14,21 +14,16 @@ use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 
 /**
- * Ce repository centralise les requetes vers la table des horaires d'ouverture.
- *
  * @extends ServiceEntityRepository<OpeningHour>
  */
 class OpeningHourRepository extends ServiceEntityRepository
 {
-    /** Cette methode connecte le repository a Doctrine pour l'entite OpeningHour. */
     public function __construct(ManagerRegistry $registry)
     {
         parent::__construct($registry, OpeningHour::class);
     }
 
     /**
-     * Cette methode retourne les horaires actifs visibles pour un garage.
-     *
      * @return OpeningHour[]
      */
     public function findActiveByGarage(Garage $garage): array
@@ -44,8 +39,6 @@ class OpeningHourRepository extends ServiceEntityRepository
     }
 
     /**
-     * Cette methode retourne tous les horaires du garage rattache au gerant.
-     *
      * @return OpeningHour[]
      */
     public function findByGarage(Garage $garage): array
@@ -59,7 +52,6 @@ class OpeningHourRepository extends ServiceEntityRepository
             ->getResult();
     }
 
-    /** Cette methode retrouve un horaire seulement s'il appartient au garage donne. */
     public function findOneByGarageAndId(Garage $garage, int $id): ?OpeningHour
     {
         return $this->createQueryBuilder('hour')
@@ -72,8 +64,6 @@ class OpeningHourRepository extends ServiceEntityRepository
     }
 
     /**
-     * Cette methode retourne les horaires actifs d'un garage pour un jour precis de la semaine.
-     *
      * @return OpeningHour[]
      */
     public function findActiveByGarageAndWeekday(Garage $garage, int $weekday): array

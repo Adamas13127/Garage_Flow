@@ -30,7 +30,6 @@ class Vehicle
     #[ORM\Column] private ?\DateTimeImmutable $createdAt = null;
     #[ORM\Column(nullable: true)] private ?\DateTimeImmutable $updatedAt = null;
     /** @var Collection<int, Appointment> */ #[ORM\OneToMany(mappedBy: 'vehicle', targetEntity: Appointment::class)] private Collection $appointments;
-    /** Cette methode initialise les rendez-vous du vehicule et sa date de creation. */
     public function __construct()
     {
         $this->createdAt = new \DateTimeImmutable();
@@ -163,7 +162,7 @@ class Vehicle
             $appointment->setVehicle($this);
         }
 
-return $this;
+        return $this;
     }
 
     public function removeAppointment(Appointment $appointment): static
@@ -172,6 +171,6 @@ return $this;
             $appointment->setVehicle(null);
         }
 
-return $this;
+        return $this;
     }
 }

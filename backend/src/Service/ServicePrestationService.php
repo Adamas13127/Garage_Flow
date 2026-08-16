@@ -24,8 +24,6 @@ class ServicePrestationService
     }
 
     /**
-     * Cette methode liste toutes les prestations du garage connecte.
-     *
      * @return ServicePrestation[]
      */
     public function listForGarage(Garage $garage): array
@@ -33,7 +31,6 @@ class ServicePrestationService
         return $this->repository->findByGarage($garage);
     }
 
-    /** Cette methode cree une prestation pour le garage connecte. */
     public function create(Garage $garage, CreateServicePrestationRequest $request): ServicePrestation
     {
         $service = new ServicePrestation();
@@ -44,7 +41,6 @@ class ServicePrestationService
         return $service;
     }
 
-    /** Cette methode modifie une prestation seulement si elle appartient au garage connecte. */
     public function update(Garage $garage, int $id, UpdateServicePrestationRequest $request): ServicePrestation
     {
         $service = $this->getForGarage($garage, $id);
@@ -66,7 +62,6 @@ class ServicePrestationService
         return $service;
     }
 
-    /** Cette methode desactive une prestation au lieu de la supprimer physiquement. */
     public function disable(Garage $garage, int $id): void
     {
         $service = $this->getForGarage($garage, $id);
@@ -74,7 +69,6 @@ class ServicePrestationService
         $this->entityManager->flush();
     }
 
-    /** Cette methode retrouve une prestation du garage ou retourne une erreur 404. */
     private function getForGarage(Garage $garage, int $id): ServicePrestation
     {
         $service = $this->repository->findOneByGarageAndId($garage, $id);
@@ -85,7 +79,6 @@ class ServicePrestationService
         return $service;
     }
 
-    /** Cette methode transforme une chaine vide en valeur nulle. */
     private function nullableTrim(?string $value): ?string
     {
         if (null === $value) {

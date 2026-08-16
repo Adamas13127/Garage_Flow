@@ -35,7 +35,6 @@ class Notification
     #[ORM\Column(options: ['default' => false])] private bool $lu = false;
     #[ORM\Column] private ?\DateTimeImmutable $createdAt = null;
     #[ORM\Column(nullable: true)] private ?\DateTimeImmutable $readAt = null;
-    /** Cette methode initialise la date de creation et l'etat non lu de la notification. */
     public function __construct()
     {
         $this->createdAt = new \DateTimeImmutable();

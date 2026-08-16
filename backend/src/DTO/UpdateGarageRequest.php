@@ -11,7 +11,6 @@ namespace App\DTO;
 use Symfony\Component\Validator\Constraints as Assert;
 use Symfony\Component\Validator\Context\ExecutionContextInterface;
 
-/** Ce DTO represente les champs modifiables d'un garage. */
 class UpdateGarageRequest
 {
     #[Assert\Length(max: 150)] public ?string $nom = null;
@@ -36,7 +35,6 @@ class UpdateGarageRequest
         return isset($this->providedFields[$field]);
     }
 
-    /** Cette methode refuse les champs obligatoires vides quand ils sont modifies. */
     #[Assert\Callback]
     public function validateRequiredStrings(ExecutionContextInterface $context): void
     {

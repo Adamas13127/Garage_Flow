@@ -10,7 +10,6 @@ namespace App\DTO;
 
 use Symfony\Component\Validator\Constraints as Assert;
 
-/** Ce DTO represente les champs modifiables d'une indisponibilite. */
 class UpdateUnavailabilityRequest
 {
     public ?string $dateDebut = null;

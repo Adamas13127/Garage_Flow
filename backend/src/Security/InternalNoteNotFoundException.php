@@ -8,7 +8,6 @@
 
 namespace App\Security;
 
-/** Cette exception indique qu'une note interne est introuvable dans l'intervention autorisee. */
 class InternalNoteNotFoundException extends \RuntimeException
 {
 }

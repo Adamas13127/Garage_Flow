@@ -14,14 +14,12 @@ use App\Entity\User;
 use App\Security\GarageNotFoundException;
 use Doctrine\ORM\EntityManagerInterface;
 
-/** Ce service contient la logique metier de gestion du garage rattache a l'utilisateur. */
 class GarageManagementService
 {
     public function __construct(private readonly EntityManagerInterface $entityManager)
     {
     }
 
-    /** Cette methode retourne le garage rattache a l'utilisateur connecte. */
     public function getGarageForUser(User $user): Garage
     {
         $garage = $user->getGarage();
@@ -32,7 +30,6 @@ class GarageManagementService
         return $garage;
     }
 
-    /** Cette methode modifie uniquement les informations du garage rattache au gerant connecte. */
     public function updateGarage(Garage $garage, UpdateGarageRequest $request): Garage
     {
         foreach (['nom', 'adresse', 'ville', 'codePostal', 'telephone', 'email', 'description', 'logoUrl', 'actif'] as $field) {

@@ -18,7 +18,6 @@ use App\Repository\UserRepository;
 use App\Security\NotificationNotFoundException;
 use Doctrine\ORM\EntityManagerInterface;
 
-/** Ce service centralise la creation des notifications de l'application. */
 class NotificationService
 {
     public function __construct(
@@ -28,7 +27,6 @@ class NotificationService
     ) {
     }
 
-    /** Cette methode cree une notification APP simple pour un utilisateur. */
     public function createForUser(User $recipient, string $type, string $contenu, ?Appointment $appointment = null, ?Intervention $intervention = null, string $canal = Notification::CANAL_APP): Notification
     {
         $notification = new Notification();
@@ -48,19 +46,16 @@ class NotificationService
         return $notification;
     }
 
-    /** Cette methode cree une notification liee a un rendez-vous. */
     public function createForAppointment(User $recipient, Appointment $appointment, string $type, string $contenu): Notification
     {
         return $this->createForUser($recipient, $type, $contenu, $appointment);
     }
 
-    /** Cette methode cree une notification liee a une intervention. */
     public function createForIntervention(User $recipient, Intervention $intervention, string $type, string $contenu): Notification
     {
         return $this->createForUser($recipient, $type, $contenu, $intervention->getAppointment(), $intervention);
     }
 
-    /** Cette methode notifie les gerants actifs du garage pour une nouvelle demande de rendez-vous. */
     public function notifyAppointmentRequested(Appointment $appointment): void
     {
         $garage = $appointment->getGarage();
@@ -73,7 +68,6 @@ class NotificationService
         }
     }
 
-    /** Cette methode notifie le client que son rendez-vous a ete accepte. */
     public function notifyAppointmentAccepted(Appointment $appointment): void
     {
         $client = $appointment->getClient();
@@ -82,7 +76,6 @@ class NotificationService
         }
     }
 
-    /** Cette methode notifie le client que son rendez-vous a ete refuse. */
     public function notifyAppointmentRefused(Appointment $appointment): void
     {
         $client = $appointment->getClient();
@@ -91,7 +84,6 @@ class NotificationService
         }
     }
 
-    /** Cette methode notifie les gerants actifs du garage qu'un rendez-vous a ete annule. */
     public function notifyAppointmentCancelled(Appointment $appointment): void
     {
         $garage = $appointment->getGarage();
@@ -104,7 +96,6 @@ class NotificationService
         }
     }
 
-    /** Cette methode notifie le client quand le statut de son intervention change. */
     public function notifyInterventionStatusChanged(Intervention $intervention): void
     {
         $client = $intervention->getAppointment()?->getClient();
@@ -122,8 +113,6 @@ class NotificationService
     }
 
     /**
-     * Cette methode liste les notifications de l'utilisateur connecte.
-     *
      * @return Notification[]
      */
     public function listForUser(User $recipient, bool $unreadOnly = false): array
@@ -131,7 +120,6 @@ class NotificationService
         return $unreadOnly ? $this->notificationRepository->findUnreadByRecipient($recipient) : $this->notificationRepository->findByRecipient($recipient);
     }
 
-    /** Cette methode marque comme lue une notification appartenant a l'utilisateur connecte. */
     public function markAsRead(User $recipient, int $id): Notification
     {
         $notification = $this->notificationRepository->findOneByRecipientAndId($recipient, $id);
@@ -148,7 +136,6 @@ class NotificationService
         return $notification;
     }
 
-    /** Cette methode marque toutes les notifications non lues d'un utilisateur comme lues. */
     public function markAllAsRead(User $recipient): int
     {
         $count = 0;

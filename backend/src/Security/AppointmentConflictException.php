@@ -8,7 +8,6 @@
 
 namespace App\Security;
 
-/** Cette exception indique qu'un creneau est indisponible ou qu'une annulation est impossible. */
 class AppointmentConflictException extends \RuntimeException
 {
 }

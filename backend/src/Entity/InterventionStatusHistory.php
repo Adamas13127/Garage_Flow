@@ -22,7 +22,6 @@ class InterventionStatusHistory
     #[ORM\ManyToOne(inversedBy: 'interventionStatusHistories')] #[ORM\JoinColumn(nullable: false)] private ?User $changedBy = null;
     #[ORM\Column(type: 'text', nullable: true)] private ?string $commentaire = null;
     #[ORM\Column] private ?\DateTimeImmutable $changedAt = null;
-    /** Cette methode initialise la date du changement de statut. */
     public function __construct()
     {
         $this->changedAt = new \DateTimeImmutable();

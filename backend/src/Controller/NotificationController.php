@@ -18,7 +18,6 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 
-/** Ce controleur expose les notifications du seul utilisateur connecte. */
 #[Route('/api/notifications')]
 class NotificationController extends AbstractController
 {
@@ -26,7 +25,6 @@ class NotificationController extends AbstractController
     {
     }
 
-    /** Cette route liste les notifications de l'utilisateur connecte, avec un filtre non lues optionnel. */
     #[Route('', name: 'api_notifications_list', methods: ['GET'])]
     public function list(Request $request): JsonResponse
     {
@@ -38,7 +36,6 @@ class NotificationController extends AbstractController
         )]);
     }
 
-    /** Cette route marque une notification de l'utilisateur connecte comme lue. */
     #[Route('/{id}/read', name: 'api_notifications_read', methods: ['PATCH'])]
     public function read(int $id): JsonResponse
     {
@@ -49,7 +46,6 @@ class NotificationController extends AbstractController
         }
     }
 
-    /** Cette route marque toutes les notifications de l'utilisateur connecte comme lues. */
     #[Route('/read-all', name: 'api_notifications_read_all', methods: ['PATCH'])]
     public function readAll(): JsonResponse
     {
@@ -58,7 +54,6 @@ class NotificationController extends AbstractController
         return $this->json(['message' => 'Notifications marquees comme lues.', 'updatedCount' => $count]);
     }
 
-    /** Cette methode recupere l'utilisateur connecte sans exposer son mot de passe. */
     private function user(): User
     {
         $user = $this->getUser();
@@ -70,8 +65,6 @@ class NotificationController extends AbstractController
     }
 
     /**
-     * Cette methode transforme une notification en tableau JSON public.
-     *
      * @return array<string, mixed>
      */
     private function serializeNotification(Notification $notification): array

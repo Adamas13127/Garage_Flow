@@ -17,9 +17,6 @@ use App\Security\DuplicateEmailException;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 
-/**
- * Ce service contient la logique metier necessaire a la creation d'un compte client.
- */
 class AuthService
 {
     public function __construct(
@@ -30,9 +27,6 @@ class AuthService
     ) {
     }
 
-    /**
-     * Cette methode verifie l'email, hash le mot de passe puis sauvegarde le client en base.
-     */
     public function registerClient(RegisterClientRequest $request): User
     {
         $email = mb_strtolower(trim((string) $request->email));

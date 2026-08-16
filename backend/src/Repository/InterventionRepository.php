@@ -16,19 +16,15 @@ use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 
 /**
- * Ce repository centralise les requetes vers la table des interventions.
- *
  * @extends ServiceEntityRepository<Intervention>
  */
 class InterventionRepository extends ServiceEntityRepository
 {
-    /** Cette methode connecte le repository a Doctrine pour l'entite Intervention. */
     public function __construct(ManagerRegistry $registry)
     {
         parent::__construct($registry, Intervention::class);
     }
 
-    /** Cette methode retrouve l'intervention creee pour un rendez-vous donne. */
     public function findOneByAppointment(Appointment $appointment): ?Intervention
     {
         return $this->createQueryBuilder('intervention')
@@ -39,8 +35,6 @@ class InterventionRepository extends ServiceEntityRepository
     }
 
     /**
-     * Cette methode liste les interventions d'un garage avec filtres de statut et de date.
-     *
      * @return Intervention[]
      */
     public function findByGarageWithFilters(Garage $garage, ?string $statusCode, ?\DateTimeImmutable $date): array
@@ -69,7 +63,6 @@ class InterventionRepository extends ServiceEntityRepository
         return $queryBuilder->getQuery()->getResult();
     }
 
-    /** Cette methode retrouve une intervention seulement si elle appartient au garage donne. */
     public function findOneByGarageAndId(Garage $garage, int $id): ?Intervention
     {
         return $this->createQueryBuilder('intervention')
@@ -83,8 +76,6 @@ class InterventionRepository extends ServiceEntityRepository
     }
 
     /**
-     * Cette methode liste les interventions rattachees aux rendez-vous du client connecte.
-     *
      * @return Intervention[]
      */
     public function findByClient(User $client): array
@@ -98,7 +89,6 @@ class InterventionRepository extends ServiceEntityRepository
             ->getResult();
     }
 
-    /** Cette methode retrouve une intervention seulement si elle appartient au client donne. */
     public function findOneByClientAndId(User $client, int $id): ?Intervention
     {
         return $this->createQueryBuilder('intervention')

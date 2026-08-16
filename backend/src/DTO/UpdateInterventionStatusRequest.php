@@ -10,7 +10,6 @@ namespace App\DTO;
 
 use Symfony\Component\Validator\Constraints as Assert;
 
-/** Ce DTO represente les donnees necessaires pour changer le statut d'une intervention. */
 class UpdateInterventionStatusRequest
 {
     #[Assert\NotBlank(message: 'Le code du statut est obligatoire.')]

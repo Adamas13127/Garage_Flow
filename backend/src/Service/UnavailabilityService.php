@@ -26,8 +26,6 @@ class UnavailabilityService
     }
 
     /**
-     * Cette methode liste les indisponibilites du garage connecte.
-     *
      * @return Unavailability[]
      */
     public function listForGarage(Garage $garage): array
@@ -35,7 +33,6 @@ class UnavailabilityService
         return $this->repository->findByGarage($garage);
     }
 
-    /** Cette methode cree une indisponibilite pour le garage connecte. */
     public function create(Garage $garage, User $user, CreateUnavailabilityRequest $request): Unavailability
     {
         $start = $this->parseDate((string) $request->dateDebut);
@@ -49,7 +46,6 @@ class UnavailabilityService
         return $unavailability;
     }
 
-    /** Cette methode modifie une indisponibilite appartenant au garage connecte. */
     public function update(Garage $garage, int $id, UpdateUnavailabilityRequest $request): Unavailability
     {
         $unavailability = $this->getForGarage($garage, $id);
@@ -88,7 +84,6 @@ class UnavailabilityService
         return $unavailability;
     }
 
-    /** Cette methode convertit une date ISO ou lisible par PHP en DateTimeImmutable. */
     private function parseDate(string $value): \DateTimeImmutable
     {
         try {
@@ -98,7 +93,6 @@ class UnavailabilityService
         }
     }
 
-    /** Cette methode verifie que la date de debut est bien avant la date de fin. */
     private function assertStartBeforeEnd(\DateTimeImmutable $start, \DateTimeImmutable $end): void
     {
         if ($start >= $end) {

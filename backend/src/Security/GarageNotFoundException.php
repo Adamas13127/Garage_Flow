@@ -8,7 +8,6 @@
 
 namespace App\Security;
 
-/** Cette exception indique que le garage demande est introuvable ou inaccessible. */
 class GarageNotFoundException extends \RuntimeException
 {
 }

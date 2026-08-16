@@ -13,21 +13,16 @@ use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 
 /**
- * Ce repository centralise les requetes vers la table des garages.
- *
  * @extends ServiceEntityRepository<Garage>
  */
 class GarageRepository extends ServiceEntityRepository
 {
-    /** Cette methode connecte le repository a Doctrine pour l'entite Garage. */
     public function __construct(ManagerRegistry $registry)
     {
         parent::__construct($registry, Garage::class);
     }
 
     /**
-     * Cette methode retourne les garages actifs visibles dans le catalogue public.
-     *
      * @return Garage[]
      */
     public function findActiveGarages(): array
@@ -39,7 +34,6 @@ class GarageRepository extends ServiceEntityRepository
             ->getResult();
     }
 
-    /** Cette methode retourne un garage actif par son identifiant public. */
     public function findActiveGarageById(int $id): ?Garage
     {
         return $this->createQueryBuilder('garage')

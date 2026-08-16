@@ -20,7 +20,6 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 
-/** Ce controleur recoit les demandes de consultation des creneaux disponibles. */
 class AvailabilityController extends AbstractController
 {
     public function __construct(
@@ -29,7 +28,6 @@ class AvailabilityController extends AbstractController
     ) {
     }
 
-    /** Cette route retourne les creneaux disponibles pour une prestation d'un garage actif. */
     #[Route('/api/garages/{garageId}/available-slots', name: 'api_garages_available_slots', methods: ['GET'])]
     public function availableSlots(int $garageId, Request $request): JsonResponse
     {
@@ -51,7 +49,6 @@ class AvailabilityController extends AbstractController
         }
     }
 
-    /** Cette methode convertit les erreurs de validation en reponse JSON claire pour le client API. */
     private function validateDto(object $dto): ?JsonResponse
     {
         $errors = $this->validator->validate($dto);

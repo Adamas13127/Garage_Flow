@@ -28,8 +28,6 @@ class InternalNoteService
     }
 
     /**
-     * Cette methode liste les notes internes d'une intervention du garage connecte.
-     *
      * @return InternalNote[]
      */
     public function listForIntervention(Garage $garage, int $interventionId): array
@@ -39,7 +37,6 @@ class InternalNoteService
         return $this->noteRepository->findNotesByIntervention($intervention);
     }
 
-    /** Cette methode ajoute une note interne avec l'utilisateur connecte comme auteur. */
     public function create(Garage $garage, int $interventionId, User $author, CreateInternalNoteRequest $request): InternalNote
     {
         $intervention = $this->interventionService->getForGarage($garage, $interventionId);
@@ -56,7 +53,6 @@ class InternalNoteService
         return $note;
     }
 
-    /** Cette methode modifie une note seulement si elle appartient a l'intervention du garage connecte. */
     public function update(Garage $garage, int $interventionId, int $noteId, UpdateInternalNoteRequest $request): InternalNote
     {
         $note = $this->getNoteForGarageIntervention($garage, $interventionId, $noteId);
@@ -67,7 +63,6 @@ class InternalNoteService
         return $note;
     }
 
-    /** Cette methode supprime une note seulement si elle appartient a l'intervention du garage connecte. */
     public function delete(Garage $garage, int $interventionId, int $noteId): void
     {
         $note = $this->getNoteForGarageIntervention($garage, $interventionId, $noteId);
@@ -75,7 +70,6 @@ class InternalNoteService
         $this->entityManager->flush();
     }
 
-    /** Cette methode retrouve une note interne dans une intervention deja controlee par garage. */
     private function getNoteForGarageIntervention(Garage $garage, int $interventionId, int $noteId): InternalNote
     {
         $intervention = $this->interventionService->getForGarage($garage, $interventionId);

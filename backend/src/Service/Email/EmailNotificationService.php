@@ -16,7 +16,6 @@ use Symfony\Component\Mailer\Exception\TransportExceptionInterface;
 use Symfony\Component\Mailer\MailerInterface;
 use Symfony\Component\Mime\Email;
 
-/** Ce service prepare et envoie les emails clients sans mettre de logique email dans les controleurs. */
 class EmailNotificationService
 {
     private const FROM_ADDRESS = 'no-reply@garageflow.local';
@@ -27,7 +26,6 @@ class EmailNotificationService
     ) {
     }
 
-    /** Cette methode envoie un email quand le garage confirme un rendez-vous client. */
     public function sendAppointmentAcceptedEmail(Appointment $appointment): void
     {
         $this->sendAppointmentEmail(
@@ -37,7 +35,6 @@ class EmailNotificationService
         );
     }
 
-    /** Cette methode envoie un email quand le garage refuse un rendez-vous client. */
     public function sendAppointmentRefusedEmail(Appointment $appointment, ?string $reason = null): void
     {
         $reasonText = null !== $reason && '' !== trim($reason) ? "\n\nMotif indique par le garage : ".trim($reason) : '';
@@ -49,7 +46,6 @@ class EmailNotificationService
         );
     }
 
-    /** Cette methode envoie un email quand un rendez-vous est annule. */
     public function sendAppointmentCancelledEmail(Appointment $appointment): void
     {
         $this->sendAppointmentEmail(
@@ -77,7 +73,6 @@ class EmailNotificationService
         );
     }
 
-    /** Cette methode envoie un email specifique quand le vehicule est pret a etre recupere. */
     public function sendVehicleReadyEmail(Intervention $intervention): void
     {
         $appointment = $intervention->getAppointment();
@@ -92,7 +87,6 @@ class EmailNotificationService
         );
     }
 
-    /** Cette methode evite de dupliquer la construction d'un email lie a un rendez-vous. */
     private function sendAppointmentEmail(Appointment $appointment, string $subject, string $text): void
     {
         $client = $appointment->getClient();

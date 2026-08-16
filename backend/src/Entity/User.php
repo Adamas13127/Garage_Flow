@@ -15,9 +15,6 @@ use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
 
-/**
- * Cette entite represente un utilisateur qui pourra etre authentifie par Symfony Security.
- */
 #[ORM\Entity(repositoryClass: UserRepository::class)]
 #[ORM\Table(name: 'user')]
 #[ORM\UniqueConstraint(name: 'uniq_user_email', columns: ['email'])]
@@ -89,7 +86,6 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\OneToMany(mappedBy: 'user', targetEntity: ActionLog::class)]
     private Collection $actionLogs;
 
-    /** Cette methode initialise les collections d'un utilisateur et sa date de creation. */
     public function __construct()
     {
         $this->createdAt = new \DateTimeImmutable();
@@ -102,7 +98,6 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         $this->actionLogs = new ArrayCollection();
     }
 
-    /** Cette methode retourne l'identifiant technique de l'utilisateur. */
     public function getId(): ?int
     {
         return $this->id;
@@ -168,13 +163,11 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         return $this;
     }
 
-    /** Cette methode permet a Symfony Security d'identifier l'utilisateur connecte grace a son email. */
     public function getUserIdentifier(): string
     {
         return (string) $this->email;
     }
 
-    /** Cette methode retourne les roles Symfony calcules depuis le role stocke en base. */
     public function getRoles(): array
     {
         $roleCode = $this->role?->getCode();
@@ -198,7 +191,6 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         return $this;
     }
 
-    /** Cette methode efface les donnees sensibles temporaires apres authentification. */
     public function eraseCredentials(): void
     {
     }
@@ -264,7 +256,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
             $unavailability->setCreatedBy($this);
         }
 
-return $this;
+        return $this;
     }
 
     public function removeCreatedUnavailability(Unavailability $unavailability): static
@@ -273,7 +265,7 @@ return $this;
             $unavailability->setCreatedBy(null);
         }
 
-return $this;
+        return $this;
     }
 
     /** @return Collection<int, Vehicle> */
@@ -289,7 +281,7 @@ return $this;
             $vehicle->setClient($this);
         }
 
-return $this;
+        return $this;
     }
 
     public function removeVehicle(Vehicle $vehicle): static
@@ -298,7 +290,7 @@ return $this;
             $vehicle->setClient(null);
         }
 
-return $this;
+        return $this;
     }
 
     /** @return Collection<int, Appointment> */
@@ -314,7 +306,7 @@ return $this;
             $appointment->setClient($this);
         }
 
-return $this;
+        return $this;
     }
 
     public function removeAppointment(Appointment $appointment): static
@@ -323,7 +315,7 @@ return $this;
             $appointment->setClient(null);
         }
 
-return $this;
+        return $this;
     }
 
     /** @return Collection<int, InterventionStatusHistory> */
@@ -339,7 +331,7 @@ return $this;
             $history->setChangedBy($this);
         }
 
-return $this;
+        return $this;
     }
 
     public function removeInterventionStatusHistory(InterventionStatusHistory $history): static
@@ -348,7 +340,7 @@ return $this;
             $history->setChangedBy(null);
         }
 
-return $this;
+        return $this;
     }
 
     /** @return Collection<int, InternalNote> */
@@ -364,7 +356,7 @@ return $this;
             $note->setAuthor($this);
         }
 
-return $this;
+        return $this;
     }
 
     public function removeInternalNote(InternalNote $note): static
@@ -373,7 +365,7 @@ return $this;
             $note->setAuthor(null);
         }
 
-return $this;
+        return $this;
     }
 
     /** @return Collection<int, Notification> */
@@ -389,7 +381,7 @@ return $this;
             $notification->setRecipient($this);
         }
 
-return $this;
+        return $this;
     }
 
     public function removeNotification(Notification $notification): static
@@ -398,7 +390,7 @@ return $this;
             $notification->setRecipient(null);
         }
 
-return $this;
+        return $this;
     }
 
     /** @return Collection<int, ActionLog> */
@@ -414,7 +406,7 @@ return $this;
             $actionLog->setUser($this);
         }
 
-return $this;
+        return $this;
     }
 
     public function removeActionLog(ActionLog $actionLog): static
@@ -423,6 +415,6 @@ return $this;
             $actionLog->setUser(null);
         }
 
-return $this;
+        return $this;
     }
 }

@@ -10,7 +10,6 @@ namespace App\DTO;
 
 use Symfony\Component\Validator\Constraints as Assert;
 
-/** Ce DTO represente les criteres permettant de calculer les creneaux disponibles. */
 class AvailableSlotsRequest
 {
     #[Assert\NotNull(message: 'La prestation est obligatoire.')]

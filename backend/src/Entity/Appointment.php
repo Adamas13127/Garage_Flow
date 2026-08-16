@@ -39,7 +39,6 @@ class Appointment
     #[ORM\Column(nullable: true)] private ?\DateTimeImmutable $updatedAt = null;
     #[ORM\OneToOne(mappedBy: 'appointment', targetEntity: Intervention::class)] private ?Intervention $intervention = null;
     /** @var Collection<int, Notification> */ #[ORM\OneToMany(mappedBy: 'appointment', targetEntity: Notification::class)] private Collection $notifications;
-    /** Cette methode initialise les notifications du rendez-vous et sa date de creation. */
     public function __construct()
     {
         $this->createdAt = new \DateTimeImmutable();
@@ -196,7 +195,7 @@ class Appointment
             $notification->setAppointment($this);
         }
 
-return $this;
+        return $this;
     }
 
     public function removeNotification(Notification $notification): static
@@ -205,6 +204,6 @@ return $this;
             $notification->setAppointment(null);
         }
 
-return $this;
+        return $this;
     }
 }

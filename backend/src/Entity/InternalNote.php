@@ -22,7 +22,6 @@ class InternalNote
     #[ORM\Column(type: 'text')] private ?string $contenu = null;
     #[ORM\Column] private ?\DateTimeImmutable $createdAt = null;
     #[ORM\Column(nullable: true)] private ?\DateTimeImmutable $updatedAt = null;
-    /** Cette methode initialise la date de creation de la note interne. */
     public function __construct()
     {
         $this->createdAt = new \DateTimeImmutable();

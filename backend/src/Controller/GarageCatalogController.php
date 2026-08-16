@@ -19,7 +19,6 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 
-/** Ce controleur expose le catalogue public des garages actifs. */
 #[Route('/api/garages')]
 class GarageCatalogController extends AbstractController
 {
@@ -27,14 +26,12 @@ class GarageCatalogController extends AbstractController
     {
     }
 
-    /** Cette route retourne la liste des garages actifs. */
     #[Route('', name: 'api_garages_list', methods: ['GET'])]
     public function list(): JsonResponse
     {
         return $this->json(array_map(fn (Garage $garage): array => $this->serializeGarage($garage), $this->catalogService->getActiveGarages()));
     }
 
-    /** Cette route retourne le detail public d'un garage actif. */
     #[Route('/{id}', name: 'api_garages_show', methods: ['GET'])]
     public function show(int $id): JsonResponse
     {
@@ -47,7 +44,6 @@ class GarageCatalogController extends AbstractController
         return $this->json($this->serializeGarageDetail($garage));
     }
 
-    /** Cette route retourne les prestations actives d'un garage actif. */
     #[Route('/{id}/services', name: 'api_garages_services', methods: ['GET'])]
     public function services(int $id): JsonResponse
     {

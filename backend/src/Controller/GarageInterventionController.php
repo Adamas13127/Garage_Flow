@@ -33,7 +33,6 @@ use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 
-/** Ce controleur expose les routes de suivi atelier reservees au garage. */
 #[Route('/api/garage/me/interventions')]
 #[IsGranted('ROLE_EMPLOYE')]
 class GarageInterventionController extends AbstractController
@@ -46,7 +45,6 @@ class GarageInterventionController extends AbstractController
     ) {
     }
 
-    /** Cette route liste les interventions du garage connecte. */
     #[Route('', name: 'api_garage_me_interventions_list', methods: ['GET'])]
     public function list(Request $request): JsonResponse
     {
@@ -71,7 +69,6 @@ class GarageInterventionController extends AbstractController
         }
     }
 
-    /** Cette route retourne le detail complet d'une intervention du garage connecte. */
     #[Route('/{id}', name: 'api_garage_me_interventions_show', methods: ['GET'])]
     public function show(int $id): JsonResponse
     {
@@ -84,7 +81,6 @@ class GarageInterventionController extends AbstractController
         }
     }
 
-    /** Cette route change le statut d'une intervention et ajoute une ligne d'historique. */
     #[Route('/{id}/status', name: 'api_garage_me_interventions_update_status', methods: ['PATCH'])]
     public function updateStatus(int $id, Request $request): JsonResponse
     {
@@ -111,7 +107,6 @@ class GarageInterventionController extends AbstractController
         }
     }
 
-    /** Cette route liste les notes internes d'une intervention du garage. */
     #[Route('/{id}/notes', name: 'api_garage_me_interventions_notes_list', methods: ['GET'])]
     public function listNotes(int $id): JsonResponse
     {
@@ -125,7 +120,6 @@ class GarageInterventionController extends AbstractController
         }
     }
 
-    /** Cette route ajoute une note interne a une intervention du garage. */
     #[Route('/{id}/notes', name: 'api_garage_me_interventions_notes_create', methods: ['POST'])]
     public function createNote(int $id, Request $request): JsonResponse
     {
@@ -149,7 +143,6 @@ class GarageInterventionController extends AbstractController
         }
     }
 
-    /** Cette route modifie une note interne appartenant a l'intervention du garage. */
     #[Route('/{id}/notes/{noteId}', name: 'api_garage_me_interventions_notes_update', methods: ['PATCH'])]
     public function updateNote(int $id, int $noteId, Request $request): JsonResponse
     {
@@ -173,7 +166,6 @@ class GarageInterventionController extends AbstractController
         }
     }
 
-    /** Cette route supprime une note interne appartenant a l'intervention du garage. */
     #[Route('/{id}/notes/{noteId}', name: 'api_garage_me_interventions_notes_delete', methods: ['DELETE'])]
     public function deleteNote(int $id, int $noteId): JsonResponse
     {
@@ -186,7 +178,6 @@ class GarageInterventionController extends AbstractController
         }
     }
 
-    /** Cette methode recupere l'utilisateur connecte sous forme d'entite User. */
     private function user(): User
     {
         $user = $this->getUser();
@@ -197,15 +188,12 @@ class GarageInterventionController extends AbstractController
         return $user;
     }
 
-    /** Cette methode recupere le garage rattache a l'utilisateur connecte. */
     private function garage(): Garage
     {
         return $this->garageManagementService->getGarageForUser($this->user());
     }
 
     /**
-     * Cette methode decode le JSON envoye par le garage.
-     *
      * @return array<string, mixed>|JsonResponse
      */
     private function payload(Request $request): array|JsonResponse
@@ -219,7 +207,6 @@ class GarageInterventionController extends AbstractController
         return is_array($payload) ? $payload : $this->json(['message' => 'Les donnees envoyees sont invalides.'], Response::HTTP_BAD_REQUEST);
     }
 
-    /** Cette methode transforme les erreurs de validation en reponse JSON. */
     private function validateDto(object $dto): ?JsonResponse
     {
         $errors = $this->validator->validate($dto);
@@ -236,8 +223,6 @@ class GarageInterventionController extends AbstractController
     }
 
     /**
-     * Cette methode prepare le resume d'une intervention pour les listes garage.
-     *
      * @return array<string, mixed>
      */
     private function serializeInterventionSummary(Intervention $intervention): array
@@ -258,8 +243,6 @@ class GarageInterventionController extends AbstractController
     }
 
     /**
-     * Cette methode prepare le detail d'une intervention avec historique et notes internes.
-     *
      * @return array<string, mixed>
      */
     private function serializeInterventionDetail(Intervention $intervention): array
@@ -271,8 +254,6 @@ class GarageInterventionController extends AbstractController
     }
 
     /**
-     * Cette methode prepare un statut d'intervention pour la reponse JSON.
-     *
      * @return array<string, mixed>
      */
     private function serializeStatus(Intervention $intervention): array
@@ -283,8 +264,6 @@ class GarageInterventionController extends AbstractController
     }
 
     /**
-     * Cette methode prepare une ligne d'historique pour le garage.
-     *
      * @return array<string, mixed>
      */
     private function serializeHistory(InterventionStatusHistory $history): array
@@ -299,8 +278,6 @@ class GarageInterventionController extends AbstractController
     }
 
     /**
-     * Cette methode prepare une note interne uniquement pour les reponses garage.
-     *
      * @return array<string, mixed>
      */
     private function serializeNote(InternalNote $note): array

@@ -24,8 +24,6 @@ class ClientInterventionService
     }
 
     /**
-     * Cette methode liste les interventions du client connecte.
-     *
      * @return Intervention[]
      */
     public function listForClient(User $client): array
@@ -33,7 +31,6 @@ class ClientInterventionService
         return $this->interventionRepository->findByClient($client);
     }
 
-    /** Cette methode recupere une intervention seulement si elle appartient au client connecte. */
     public function getForClient(User $client, int $id): Intervention
     {
         $intervention = $this->interventionRepository->findOneByClientAndId($client, $id);
@@ -45,8 +42,6 @@ class ClientInterventionService
     }
 
     /**
-     * Cette methode retourne uniquement l'historique dont le statut est visible par le client.
-     *
      * @return \App\Entity\InterventionStatusHistory[]
      */
     public function getVisibleHistory(Intervention $intervention): array

@@ -23,9 +23,6 @@ use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 
-/**
- * Ce controleur expose les routes permettant au client connecte de gerer ses vehicules.
- */
 #[Route('/api/client/vehicles')]
 #[IsGranted('ROLE_CLIENT')]
 class VehicleController extends AbstractController
@@ -36,7 +33,6 @@ class VehicleController extends AbstractController
     ) {
     }
 
-    /** Cette route retourne la liste des vehicules du client connecte. */
     #[Route('', name: 'api_client_vehicles_list', methods: ['GET'])]
     public function list(): JsonResponse
     {
@@ -46,7 +42,6 @@ class VehicleController extends AbstractController
         return $this->json(['items' => $vehicles]);
     }
 
-    /** Cette route cree un vehicule pour le client connecte. */
     #[Route('', name: 'api_client_vehicles_create', methods: ['POST'])]
     public function create(Request $request): JsonResponse
     {
@@ -77,7 +72,6 @@ class VehicleController extends AbstractController
         return $this->json($this->serializeVehicle($vehicle), Response::HTTP_CREATED);
     }
 
-    /** Cette route retourne un vehicule precis seulement s'il appartient au client connecte. */
     #[Route('/{id}', name: 'api_client_vehicles_show', methods: ['GET'])]
     public function show(int $id): JsonResponse
     {
@@ -88,7 +82,6 @@ class VehicleController extends AbstractController
         }
     }
 
-    /** Cette route modifie un vehicule seulement s'il appartient au client connecte. */
     #[Route('/{id}', name: 'api_client_vehicles_update', methods: ['PATCH'])]
     public function update(int $id, Request $request): JsonResponse
     {
@@ -127,7 +120,6 @@ class VehicleController extends AbstractController
         return $this->json($this->serializeVehicle($vehicle));
     }
 
-    /** Cette route supprime un vehicule seulement s'il appartient au client connecte. */
     #[Route('/{id}', name: 'api_client_vehicles_delete', methods: ['DELETE'])]
     public function delete(int $id): JsonResponse
     {
@@ -140,7 +132,6 @@ class VehicleController extends AbstractController
         return new JsonResponse(null, Response::HTTP_NO_CONTENT);
     }
 
-    /** Cette methode recupere l'utilisateur connecte en s'assurant qu'il s'agit bien d'un User de l'application. */
     private function getClientUser(): User
     {
         $user = $this->getUser();
@@ -152,8 +143,6 @@ class VehicleController extends AbstractController
     }
 
     /**
-     * Cette methode transforme un vehicule en tableau JSON sans exposer de donnees sensibles.
-     *
      * @return array<string, mixed>
      */
     private function serializeVehicle(Vehicle $vehicle): array
@@ -172,8 +161,6 @@ class VehicleController extends AbstractController
     }
 
     /**
-     * Cette methode decode le JSON envoye par le client et retourne une erreur 400 si le format est invalide.
-     *
      * @return array<string, mixed>|JsonResponse
      */
     private function decodeJsonPayload(Request $request): array|JsonResponse
@@ -191,7 +178,6 @@ class VehicleController extends AbstractController
         return $payload;
     }
 
-    /** Cette methode convertit les erreurs de validation Symfony en reponse JSON lisible. */
     private function validateDto(object $dto): ?JsonResponse
     {
         $errors = $this->validator->validate($dto);

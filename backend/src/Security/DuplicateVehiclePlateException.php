@@ -8,9 +8,6 @@
 
 namespace App\Security;
 
-/**
- * Cette exception indique que la plaque existe deja pour le client connecte.
- */
 class DuplicateVehiclePlateException extends \RuntimeException
 {
 }

@@ -10,7 +10,6 @@ namespace App\DTO;
 
 use Symfony\Component\Validator\Constraints as Assert;
 
-/** Ce DTO represente le formulaire API de creation d'un rendez-vous client. */
 class CreateAppointmentRequest
 {
     #[Assert\NotNull(message: 'Le garage est obligatoire.')]

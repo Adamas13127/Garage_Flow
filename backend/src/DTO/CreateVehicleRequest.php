@@ -11,9 +11,6 @@ namespace App\DTO;
 use Symfony\Component\Validator\Constraints as Assert;
 use Symfony\Component\Validator\Context\ExecutionContextInterface;
 
-/**
- * Ce DTO represente les informations obligatoires et optionnelles pour creer un vehicule.
- */
 class CreateVehicleRequest
 {
     #[Assert\NotBlank(message: 'La marque est obligatoire.')]
@@ -37,7 +34,6 @@ class CreateVehicleRequest
     #[Assert\Length(max: 50, maxMessage: 'Le carburant ne doit pas depasser {{ limit }} caracteres.')]
     public ?string $carburant = null;
 
-    /** Cette methode verifie que l'annee du vehicule reste coherente pour le jury et la base de donnees. */
     #[Assert\Callback]
     public function validateYear(ExecutionContextInterface $context): void
     {

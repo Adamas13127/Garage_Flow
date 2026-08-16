@@ -39,8 +39,6 @@ class GarageInterventionService
     }
 
     /**
-     * Cette methode liste les interventions du garage connecte avec des filtres optionnels.
-     *
      * @return Intervention[]
      */
     public function listForGarage(Garage $garage, InterventionFilterRequest $request): array
@@ -48,7 +46,6 @@ class GarageInterventionService
         return $this->interventionRepository->findByGarageWithFilters($garage, $request->statusCode, $this->parseOptionalDate($request->date));
     }
 
-    /** Cette methode recupere une intervention seulement si elle appartient au garage connecte. */
     public function getForGarage(Garage $garage, int $id): Intervention
     {
         $intervention = $this->interventionRepository->findOneByGarageAndId($garage, $id);
@@ -60,8 +57,6 @@ class GarageInterventionService
     }
 
     /**
-     * Cette methode retourne l'historique complet visible par le garage.
-     *
      * @return InterventionStatusHistory[]
      */
     public function getHistory(Intervention $intervention): array
@@ -69,7 +64,6 @@ class GarageInterventionService
         return $this->historyRepository->findHistoryByIntervention($intervention);
     }
 
-    /** Cette methode change le statut actuel et ajoute une ligne d'historique. */
     public function updateStatus(Garage $garage, int $id, User $changedBy, UpdateInterventionStatusRequest $request): Intervention
     {
         $intervention = $this->getForGarage($garage, $id);
@@ -110,7 +104,6 @@ class GarageInterventionService
         return $intervention;
     }
 
-    /** Cette methode convertit le filtre date YYYY-MM-DD en objet utilisable par Doctrine. */
     private function parseOptionalDate(?string $date): ?\DateTimeImmutable
     {
         if (null === $date || '' === trim($date)) {

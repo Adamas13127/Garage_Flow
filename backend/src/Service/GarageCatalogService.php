@@ -15,7 +15,6 @@ use App\Repository\ServicePrestationRepository;
 use App\Repository\UnavailabilityRepository;
 use App\Security\GarageNotFoundException;
 
-/** Ce service contient la logique de consultation publique des garages actifs. */
 class GarageCatalogService
 {
     public function __construct(
@@ -27,8 +26,6 @@ class GarageCatalogService
     }
 
     /**
-     * Cette methode retourne tous les garages actifs visibles par les clients.
-     *
      * @return Garage[]
      */
     public function getActiveGarages(): array
@@ -36,7 +33,6 @@ class GarageCatalogService
         return $this->garageRepository->findActiveGarages();
     }
 
-    /** Cette methode retourne un garage actif ou une erreur 404 s'il n'est pas public. */
     public function getActiveGarage(int $id): Garage
     {
         $garage = $this->garageRepository->findActiveGarageById($id);
@@ -48,8 +44,6 @@ class GarageCatalogService
     }
 
     /**
-     * Cette methode retourne les prestations actives d'un garage public.
-     *
      * @return \App\Entity\ServicePrestation[]
      */
     public function getActiveServices(Garage $garage): array
@@ -58,8 +52,6 @@ class GarageCatalogService
     }
 
     /**
-     * Cette methode retourne les horaires actifs d'un garage public.
-     *
      * @return \App\Entity\OpeningHour[]
      */
     public function getActiveOpeningHours(Garage $garage): array
@@ -68,8 +60,6 @@ class GarageCatalogService
     }
 
     /**
-     * Cette methode retourne les futures indisponibilites utiles au detail public.
-     *
      * @return \App\Entity\Unavailability[]
      */
     public function getFutureUnavailabilities(Garage $garage): array

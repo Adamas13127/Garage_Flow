@@ -27,7 +27,6 @@ class ServicePrestation
     #[ORM\Column] private ?\DateTimeImmutable $createdAt = null;
     #[ORM\Column(nullable: true)] private ?\DateTimeImmutable $updatedAt = null;
     /** @var Collection<int, Appointment> */ #[ORM\OneToMany(mappedBy: 'service', targetEntity: Appointment::class)] private Collection $appointments;
-    /** Cette methode initialise les rendez-vous lies et la date de creation. */
     public function __construct()
     {
         $this->createdAt = new \DateTimeImmutable();
@@ -136,7 +135,7 @@ class ServicePrestation
             $appointment->setService($this);
         }
 
-return $this;
+        return $this;
     }
 
     public function removeAppointment(Appointment $appointment): static
@@ -145,6 +144,6 @@ return $this;
             $appointment->setService(null);
         }
 
-return $this;
+        return $this;
     }
 }

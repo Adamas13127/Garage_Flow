@@ -18,7 +18,6 @@ use App\Repository\InterventionStatusRepository;
 use App\Security\AppointmentConflictException;
 use Doctrine\ORM\EntityManagerInterface;
 
-/** Ce service contient la logique de creation automatique du suivi atelier. */
 class InterventionCreationService
 {
     private const INITIAL_HISTORY_COMMENT = 'Intervention creee automatiquement apres confirmation du rendez-vous.';
@@ -30,7 +29,6 @@ class InterventionCreationService
     ) {
     }
 
-    /** Cette methode cree une intervention si le rendez-vous confirme n'en possede pas encore. */
     public function createForAcceptedAppointment(Appointment $appointment, User $changedBy): Intervention
     {
         $existingIntervention = $this->interventionRepository->findOneByAppointment($appointment);

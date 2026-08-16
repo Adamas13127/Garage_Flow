@@ -10,7 +10,6 @@ namespace App\DTO;
 
 use Symfony\Component\Validator\Constraints as Assert;
 
-/** Ce DTO represente les filtres de recherche des interventions du garage. */
 class InterventionFilterRequest
 {
     #[Assert\Length(max: 80)]

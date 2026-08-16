@@ -27,7 +27,6 @@ use Symfony\Component\Security\Core\Exception\AccessDeniedException;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 
-/** Ce controleur recoit les requetes HTTP liees aux rendez-vous du client connecte. */
 #[Route('/api/client/appointments')]
 #[IsGranted('ROLE_CLIENT')]
 class ClientAppointmentController extends AbstractController
@@ -38,7 +37,6 @@ class ClientAppointmentController extends AbstractController
     ) {
     }
 
-    /** Cette route liste les rendez-vous du client connecte. */
     #[Route('', name: 'api_client_appointments_list', methods: ['GET'])]
     public function list(): JsonResponse
     {
@@ -50,7 +48,6 @@ class ClientAppointmentController extends AbstractController
         return $this->json(['items' => $appointments]);
     }
 
-    /** Cette route cree une demande de rendez-vous en statut EN_ATTENTE. */
     #[Route('', name: 'api_client_appointments_create', methods: ['POST'])]
     public function create(Request $request): JsonResponse
     {
@@ -82,7 +79,6 @@ class ClientAppointmentController extends AbstractController
         }
     }
 
-    /** Cette route retourne le detail d'un rendez-vous appartenant au client connecte. */
     #[Route('/{id}', name: 'api_client_appointments_show', methods: ['GET'])]
     public function show(int $id): JsonResponse
     {
@@ -93,7 +89,6 @@ class ClientAppointmentController extends AbstractController
         }
     }
 
-    /** Cette route permet au client d'annuler son rendez-vous selon son statut. */
     #[Route('/{id}/cancel', name: 'api_client_appointments_cancel', methods: ['PATCH'])]
     public function cancel(int $id): JsonResponse
     {
@@ -106,7 +101,6 @@ class ClientAppointmentController extends AbstractController
         }
     }
 
-    /** Cette methode recupere l'utilisateur connecte et verifie qu'il s'agit bien d'un compte client. */
     private function getClientUser(): User
     {
         $user = $this->getUser();
@@ -122,8 +116,6 @@ class ClientAppointmentController extends AbstractController
     }
 
     /**
-     * Cette methode decode le JSON envoye par le client et retourne une erreur 400 si besoin.
-     *
      * @return array<string, mixed>|JsonResponse
      */
     private function decodeJsonPayload(Request $request): array|JsonResponse
@@ -141,7 +133,6 @@ class ClientAppointmentController extends AbstractController
         return $payload;
     }
 
-    /** Cette methode transforme les erreurs de validation Symfony en reponse JSON lisible. */
     private function validateDto(object $dto): ?JsonResponse
     {
         $errors = $this->validator->validate($dto);
@@ -158,8 +149,6 @@ class ClientAppointmentController extends AbstractController
     }
 
     /**
-     * Cette methode prepare la reponse JSON d'un rendez-vous sans exposer d'informations inutiles.
-     *
      * @return array<string, mixed>
      */
     private function serializeAppointment(Appointment $appointment): array

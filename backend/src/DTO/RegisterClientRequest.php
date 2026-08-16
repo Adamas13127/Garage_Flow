@@ -10,9 +10,6 @@ namespace App\DTO;
 
 use Symfony\Component\Validator\Constraints as Assert;
 
-/**
- * Ce DTO represente les informations necessaires pour creer un compte client.
- */
 class RegisterClientRequest
 {
     #[Assert\NotBlank(message: 'Le nom est obligatoire.')]

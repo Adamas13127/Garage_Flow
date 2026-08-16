@@ -28,7 +28,6 @@ use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 
-/** Cette commande prepare un jeu de donnees local complet pour presenter le MVP GarageFlow. */
 #[AsCommand(
     name: 'app:create-demo-data',
     description: 'Cree des donnees de demonstration realistes pour le jury.'
@@ -60,7 +59,6 @@ class CreateDemoDataCommand extends Command
         parent::__construct();
     }
 
-    /** Cette methode orchestre la creation idempotente du scenario de demonstration. */
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $io = new SymfonyStyle($input, $output);
@@ -89,8 +87,6 @@ class CreateDemoDataCommand extends Command
     }
 
     /**
-     * Cette methode cree les roles si la base locale n'a pas encore recu les fixtures.
-     *
      * @return array<string, Role>
      */
     private function ensureRoles(): array
@@ -119,8 +115,6 @@ class CreateDemoDataCommand extends Command
     }
 
     /**
-     * Cette methode garantit que les statuts de suivi atelier existent pour les interventions demo.
-     *
      * @return array<string, InterventionStatus>
      */
     private function ensureInterventionStatuses(): array
@@ -150,7 +144,6 @@ class CreateDemoDataCommand extends Command
         return $statuses;
     }
 
-    /** Cette methode cree ou remet a jour le garage utilise pendant la demonstration. */
     private function getOrCreateGarage(): Garage
     {
         $garage = $this->entityManager->getRepository(Garage::class)->findOneBy(['email' => self::GARAGE_EMAIL]);
@@ -175,7 +168,6 @@ class CreateDemoDataCommand extends Command
         return $garage;
     }
 
-    /** Cette methode cree ou reutilise un compte de demonstration avec le bon role et garage. */
     private function getOrCreateUser(string $email, string $nom, string $prenom, Role $role, ?Garage $garage): User
     {
         $user = $this->entityManager->getRepository(User::class)->findOneBy(['email' => $email]);
@@ -200,8 +192,6 @@ class CreateDemoDataCommand extends Command
     }
 
     /**
-     * Cette methode cree les prestations actives visibles dans le dashboard garage.
-     *
      * @return array<string, ServicePrestation>
      */
     private function ensureServices(Garage $garage): array
@@ -230,7 +220,6 @@ class CreateDemoDataCommand extends Command
         return $services;
     }
 
-    /** Cette methode cree ou corrige les horaires recurrentes du garage de demonstration. */
     private function ensureOpeningHours(Garage $garage): void
     {
         $definitions = [1 => ['09:00', '18:00'], 2 => ['09:00', '18:00'], 3 => ['09:00', '18:00'], 4 => ['09:00', '18:00'], 5 => ['09:00', '17:00'], 6 => ['09:00', '13:00']];
@@ -248,8 +237,6 @@ class CreateDemoDataCommand extends Command
     }
 
     /**
-     * Cette methode cree les vehicules du compte client de demonstration.
-     *
      * @return array<string, Vehicle>
      */
     private function ensureVehicles(User $client): array
@@ -365,8 +352,6 @@ class CreateDemoDataCommand extends Command
     }
 
     /**
-     * Cette methode ajoute les lignes d'historique manquantes sans les dupliquer.
-     *
      * @param list<string>                      $historyCodes
      * @param array<string, InterventionStatus> $statuses
      */
@@ -389,8 +374,6 @@ class CreateDemoDataCommand extends Command
     }
 
     /**
-     * Cette methode cree des notes internes uniquement visibles par le garage.
-     *
      * @param array<string, Intervention> $interventions
      */
     private function ensureInternalNotes(array $interventions, User $employee): void
@@ -414,8 +397,6 @@ class CreateDemoDataCommand extends Command
     }
 
     /**
-     * Cette methode cree des notifications visibles dans les compteurs web et mobile.
-     *
      * @param array<string, Appointment>  $appointments
      * @param array<string, Intervention> $interventions
      */
@@ -443,8 +424,6 @@ class CreateDemoDataCommand extends Command
     }
 
     /**
-     * Cette methode affiche un resume lisible pour guider la demonstration locale.
-     *
      * @param array<string, Vehicle>           $vehicles
      * @param array<string, ServicePrestation> $services
      * @param array<string, Appointment>       $appointments
@@ -472,13 +451,11 @@ class CreateDemoDataCommand extends Command
         $io->writeln('Commande : php bin/console app:create-demo-data');
     }
 
-    /** Cette methode incremente le compteur de creation affiche dans le resume. */
     private function markCreated(string $label): void
     {
         $this->created[$label] = ($this->created[$label] ?? 0) + 1;
     }
 
-    /** Cette methode incremente le compteur de reutilisation affiche dans le resume. */
     private function markReused(string $label): void
     {
         $this->reused[$label] = ($this->reused[$label] ?? 0) + 1;

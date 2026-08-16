@@ -14,21 +14,16 @@ use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 
 /**
- * Ce repository centralise les requetes vers la table des notifications.
- *
  * @extends ServiceEntityRepository<Notification>
  */
 class NotificationRepository extends ServiceEntityRepository
 {
-    /** Cette methode connecte le repository a Doctrine pour l'entite Notification. */
     public function __construct(ManagerRegistry $registry)
     {
         parent::__construct($registry, Notification::class);
     }
 
     /**
-     * Cette methode liste les notifications d'un utilisateur, les plus recentes d'abord.
-     *
      * @return Notification[]
      */
     public function findByRecipient(User $recipient): array
@@ -42,8 +37,6 @@ class NotificationRepository extends ServiceEntityRepository
     }
 
     /**
-     * Cette methode liste seulement les notifications non lues d'un utilisateur.
-     *
      * @return Notification[]
      */
     public function findUnreadByRecipient(User $recipient): array
@@ -57,7 +50,6 @@ class NotificationRepository extends ServiceEntityRepository
             ->getResult();
     }
 
-    /** Cette methode retrouve une notification uniquement si elle appartient a l'utilisateur donne. */
     public function findOneByRecipientAndId(User $recipient, int $id): ?Notification
     {
         return $this->createQueryBuilder('notification')

@@ -23,7 +23,6 @@ class Unavailability
     #[ORM\Column] private ?\DateTimeImmutable $dateFin = null;
     #[ORM\Column(length: 255, nullable: true)] private ?string $motif = null;
     #[ORM\Column] private ?\DateTimeImmutable $createdAt = null;
-    /** Cette methode initialise la date de creation de l'indisponibilite. */
     public function __construct()
     {
         $this->createdAt = new \DateTimeImmutable();
