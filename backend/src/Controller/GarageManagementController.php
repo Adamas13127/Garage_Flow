@@ -76,7 +76,7 @@ class GarageManagementController extends AbstractController
         }
 
         try {
-            return $this->json($this->serializeGarage($this->garageManagementService->updateGarage($this->garage(), $dto)));
+            return $this->json($this->serializeGarage($this->garageManagementService->updateGarage($this->garage(), $this->user(), $dto)));
         } catch (GarageNotFoundException $exception) {
             return $this->json(['message' => $exception->getMessage()], Response::HTTP_NOT_FOUND);
         }
@@ -112,7 +112,7 @@ class GarageManagementController extends AbstractController
             return $error;
         }
 
-        return $this->json($this->serializeService($this->servicePrestationService->create($this->garage(), $dto)), Response::HTTP_CREATED);
+        return $this->json($this->serializeService($this->servicePrestationService->create($this->garage(), $this->user(), $dto)), Response::HTTP_CREATED);
     }
 
     #[Route('/services/{id}', name: 'api_garage_me_services_update', methods: ['PATCH'])]
@@ -133,7 +133,7 @@ class GarageManagementController extends AbstractController
         }
 
         try {
-            return $this->json($this->serializeService($this->servicePrestationService->update($this->garage(), $id, $dto)));
+            return $this->json($this->serializeService($this->servicePrestationService->update($this->garage(), $id, $this->user(), $dto)));
         } catch (GarageResourceNotFoundException $exception) {
             return $this->json(['message' => $exception->getMessage()], Response::HTTP_NOT_FOUND);
         }
@@ -284,7 +284,7 @@ class GarageManagementController extends AbstractController
         }
 
         try {
-            return $this->json($this->serializeUnavailability($this->unavailabilityService->update($this->garage(), $id, $dto)));
+            return $this->json($this->serializeUnavailability($this->unavailabilityService->update($this->garage(), $id, $this->user(), $dto)));
         } catch (GarageResourceNotFoundException $exception) {
             return $this->json(['message' => $exception->getMessage()], Response::HTTP_NOT_FOUND);
         } catch (InvalidGarageScheduleException $exception) {

@@ -35,6 +35,7 @@ class GarageInterventionService
         private readonly InterventionStatusHistoryRepository $historyRepository,
         private readonly NotificationService $notificationService,
         private readonly EmailNotificationService $emailNotificationService,
+        private readonly ActionLogService $actionLogService,
     ) {
     }
 
@@ -99,6 +100,10 @@ class GarageInterventionService
         } else {
             $this->emailNotificationService->sendInterventionStatusChangedEmail($intervention, $request->commentaire);
         }
+        // intervention_status_history reste la timeline metier montree au client (App\Entity\
+        // InterventionStatusHistory) ; cette entree action_log est un journal d'audit transverse
+        // distinct, pense pour un usage gerant/admin plutot que client -- voir docs/technique/TRACABILITE.md.
+        $this->actionLogService->log($changedBy, $garage, ActionLogService::INTERVENTION_STATUS_CHANGED, 'Intervention', $id, sprintf('Nouveau statut : %s', $status->getCode()));
         $this->entityManager->flush();
 
         return $intervention;

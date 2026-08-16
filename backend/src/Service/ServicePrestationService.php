@@ -12,6 +12,7 @@ use App\DTO\CreateServicePrestationRequest;
 use App\DTO\UpdateServicePrestationRequest;
 use App\Entity\Garage;
 use App\Entity\ServicePrestation;
+use App\Entity\User;
 use App\Repository\ServicePrestationRepository;
 use App\Security\GarageResourceNotFoundException;
 use Doctrine\ORM\EntityManagerInterface;
@@ -19,8 +20,11 @@ use Doctrine\ORM\EntityManagerInterface;
 /** Ce service garantit qu'une prestation manipulee appartient au bon garage. */
 class ServicePrestationService
 {
-    public function __construct(private readonly EntityManagerInterface $entityManager, private readonly ServicePrestationRepository $repository)
-    {
+    public function __construct(
+        private readonly EntityManagerInterface $entityManager,
+        private readonly ServicePrestationRepository $repository,
+        private readonly ActionLogService $actionLogService,
+    ) {
     }
 
     /**
@@ -31,17 +35,19 @@ class ServicePrestationService
         return $this->repository->findByGarage($garage);
     }
 
-    public function create(Garage $garage, CreateServicePrestationRequest $request): ServicePrestation
+    public function create(Garage $garage, User $user, CreateServicePrestationRequest $request): ServicePrestation
     {
         $service = new ServicePrestation();
         $service->setGarage($garage)->setNom(trim((string) $request->nom))->setDescription($this->nullableTrim($request->description))->setDureeMinutes((int) $request->dureeMinutes)->setActif($request->actif ?? true);
         $this->entityManager->persist($service);
         $this->entityManager->flush();
+        $this->actionLogService->log($user, $garage, ActionLogService::SERVICE_CREATED, 'ServicePrestation', (int) $service->getId());
+        $this->entityManager->flush();
 
         return $service;
     }
 
-    public function update(Garage $garage, int $id, UpdateServicePrestationRequest $request): ServicePrestation
+    public function update(Garage $garage, int $id, User $user, UpdateServicePrestationRequest $request): ServicePrestation
     {
         $service = $this->getForGarage($garage, $id);
         if ($request->hasProvided('nom')) {
@@ -57,6 +63,7 @@ class ServicePrestationService
             $service->setActif((bool) $request->actif);
         }
         $service->setUpdatedAt(new \DateTimeImmutable());
+        $this->actionLogService->log($user, $garage, ActionLogService::SERVICE_UPDATED, 'ServicePrestation', $id);
         $this->entityManager->flush();
 
         return $service;

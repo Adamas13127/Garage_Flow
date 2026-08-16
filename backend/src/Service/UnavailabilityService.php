@@ -21,8 +21,11 @@ use Doctrine\ORM\EntityManagerInterface;
 /** Ce service verifie que les indisponibilites appartiennent au bon garage et gardent des dates coherentes. */
 class UnavailabilityService
 {
-    public function __construct(private readonly EntityManagerInterface $entityManager, private readonly UnavailabilityRepository $repository)
-    {
+    public function __construct(
+        private readonly EntityManagerInterface $entityManager,
+        private readonly UnavailabilityRepository $repository,
+        private readonly ActionLogService $actionLogService,
+    ) {
     }
 
     /**
@@ -42,11 +45,13 @@ class UnavailabilityService
         $unavailability->setGarage($garage)->setCreatedBy($user)->setDateDebut($start)->setDateFin($end)->setMotif($this->nullableTrim($request->motif));
         $this->entityManager->persist($unavailability);
         $this->entityManager->flush();
+        $this->actionLogService->log($user, $garage, ActionLogService::UNAVAILABILITY_CREATED, 'Unavailability', (int) $unavailability->getId());
+        $this->entityManager->flush();
 
         return $unavailability;
     }
 
-    public function update(Garage $garage, int $id, UpdateUnavailabilityRequest $request): Unavailability
+    public function update(Garage $garage, int $id, User $user, UpdateUnavailabilityRequest $request): Unavailability
     {
         $unavailability = $this->getForGarage($garage, $id);
         $start = $request->hasProvided('dateDebut') ? $this->parseDate((string) $request->dateDebut) : $unavailability->getDateDebut();
@@ -61,6 +66,7 @@ class UnavailabilityService
         if ($request->hasProvided('motif')) {
             $unavailability->setMotif($this->nullableTrim($request->motif));
         }
+        $this->actionLogService->log($user, $garage, ActionLogService::UNAVAILABILITY_UPDATED, 'Unavailability', $id);
         $this->entityManager->flush();
 
         return $unavailability;

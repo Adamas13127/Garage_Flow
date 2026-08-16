@@ -110,7 +110,7 @@ class GarageAppointmentController extends AbstractController
         }
 
         try {
-            return $this->json($this->serializeAppointment($this->appointmentService->refuse($this->garage(), $id, $dto)));
+            return $this->json($this->serializeAppointment($this->appointmentService->refuse($this->garage(), $id, $dto, $this->user())));
         } catch (GarageNotFoundException|AppointmentNotFoundException $exception) {
             return $this->json(['message' => $exception->getMessage()], Response::HTTP_NOT_FOUND);
         } catch (AppointmentConflictException $exception) {

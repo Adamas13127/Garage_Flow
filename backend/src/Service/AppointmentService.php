@@ -29,6 +29,7 @@ class AppointmentService
         private readonly AvailabilityService $availabilityService,
         private readonly NotificationService $notificationService,
         private readonly EmailNotificationService $emailNotificationService,
+        private readonly ActionLogService $actionLogService,
     ) {
     }
 
@@ -57,7 +58,10 @@ class AppointmentService
             ->setCreatedAt(new \DateTimeImmutable());
 
         $this->entityManager->persist($appointment);
+        $this->entityManager->flush();
+
         $this->notificationService->notifyAppointmentRequested($appointment);
+        $this->actionLogService->log($client, $garage, ActionLogService::APPOINTMENT_CREATED, 'Appointment', (int) $appointment->getId());
         $this->entityManager->flush();
 
         return $appointment;
@@ -92,6 +96,7 @@ class AppointmentService
         $appointment->setUpdatedAt(new \DateTimeImmutable());
         $this->notificationService->notifyAppointmentCancelled($appointment);
         $this->emailNotificationService->sendAppointmentCancelledEmail($appointment);
+        $this->actionLogService->log($client, $appointment->getGarage(), ActionLogService::APPOINTMENT_CANCELLED, 'Appointment', $id);
         $this->entityManager->flush();
 
         return $appointment;

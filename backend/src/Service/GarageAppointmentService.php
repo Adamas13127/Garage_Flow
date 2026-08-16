@@ -31,6 +31,7 @@ class GarageAppointmentService
         private readonly InterventionCreationService $interventionCreationService,
         private readonly NotificationService $notificationService,
         private readonly EmailNotificationService $emailNotificationService,
+        private readonly ActionLogService $actionLogService,
     ) {
     }
 
@@ -67,15 +68,19 @@ class GarageAppointmentService
         $appointment->setStatut(Appointment::STATUT_CONFIRME);
         $appointment->setUpdatedAt(new \DateTimeImmutable());
         $intervention = $this->interventionCreationService->createForAcceptedAppointment($appointment, $changedBy);
+        $this->entityManager->flush();
+
         $this->notificationService->notifyAppointmentAccepted($appointment);
         $this->emailNotificationService->sendAppointmentAcceptedEmail($appointment);
+        $this->actionLogService->log($changedBy, $garage, ActionLogService::APPOINTMENT_ACCEPTED, 'Appointment', $id);
+        $this->actionLogService->log($changedBy, $garage, ActionLogService::INTERVENTION_CREATED, 'Intervention', (int) $intervention->getId());
         $this->entityManager->flush();
 
         return ['appointment' => $appointment, 'intervention' => $intervention];
     }
 
     /** Cette methode refuse un rendez-vous en attente sans creer d'intervention. */
-    public function refuse(Garage $garage, int $id, RefuseAppointmentRequest $request): Appointment
+    public function refuse(Garage $garage, int $id, RefuseAppointmentRequest $request, User $changedBy): Appointment
     {
         $appointment = $this->getForGarage($garage, $id);
         $this->assertPending($appointment);
@@ -83,6 +88,7 @@ class GarageAppointmentService
         $appointment->setUpdatedAt(new \DateTimeImmutable());
         $this->notificationService->notifyAppointmentRefused($appointment);
         $this->emailNotificationService->sendAppointmentRefusedEmail($appointment, $request->motifRefus);
+        $this->actionLogService->log($changedBy, $garage, ActionLogService::APPOINTMENT_REFUSED, 'Appointment', $id);
         $this->entityManager->flush();
 
         return $appointment;

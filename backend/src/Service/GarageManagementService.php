@@ -16,8 +16,10 @@ use Doctrine\ORM\EntityManagerInterface;
 
 class GarageManagementService
 {
-    public function __construct(private readonly EntityManagerInterface $entityManager)
-    {
+    public function __construct(
+        private readonly EntityManagerInterface $entityManager,
+        private readonly ActionLogService $actionLogService,
+    ) {
     }
 
     public function getGarageForUser(User $user): Garage
@@ -30,7 +32,7 @@ class GarageManagementService
         return $garage;
     }
 
-    public function updateGarage(Garage $garage, UpdateGarageRequest $request): Garage
+    public function updateGarage(Garage $garage, User $user, UpdateGarageRequest $request): Garage
     {
         foreach (['nom', 'adresse', 'ville', 'codePostal', 'telephone', 'email', 'description', 'logoUrl', 'actif'] as $field) {
             if (!$request->hasProvided($field)) {
@@ -49,6 +51,7 @@ class GarageManagementService
         }
 
         $garage->setUpdatedAt(new \DateTimeImmutable());
+        $this->actionLogService->log($user, $garage, ActionLogService::GARAGE_UPDATED, 'Garage', (int) $garage->getId());
         $this->entityManager->flush();
 
         return $garage;
