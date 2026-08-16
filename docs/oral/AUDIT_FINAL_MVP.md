@@ -116,7 +116,9 @@ Backend :
 * `php bin/phpunit` : OK, **46 tests et 237 assertions** (34 tests fonctionnels WebTestCase +
   12 tests unitaires ajoutes dans `tests/Unit/`, cf. `docs/oral/AGENTS.md` pour la politique de
   tests).
-* `vendor/bin/phpstan analyse` : OK, niveau 5 sans erreur (cf. section qualite statique).
+* `vendor/bin/phpstan analyse` : OK, niveau 6 sans erreur (extension `phpstan-doctrine` incluse
+  pour les entites Doctrine).
+* `vendor/bin/php-cs-fixer fix --dry-run --diff` : OK, 0 fichier a corriger (regle `@Symfony`).
 * `php bin/console debug:router` : OK, 46 routes `api_*` listees (documentees dans
   `backend/docs/API.md`).
 * `php bin/console app:create-demo-data` : OK, commande idempotente.
