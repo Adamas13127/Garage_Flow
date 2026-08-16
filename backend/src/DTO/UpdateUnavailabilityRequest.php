@@ -1,11 +1,5 @@
 <?php
 
-/*
- * Ce fichier declare le DTO UpdateUnavailabilityRequest du backend GarageFlow.
- * Il existe pour valider la modification d'une indisponibilite exceptionnelle.
- * Il communique avec GarageManagementController, le validator Symfony et UnavailabilityService.
- */
-
 namespace App\DTO;
 
 use Symfony\Component\Validator\Constraints as Assert;

@@ -1,11 +1,5 @@
 <?php
 
-/*
- * Ce fichier declare l'entite Appointment du backend GarageFlow.
- * Il existe pour stocker une demande ou confirmation de rendez-vous entre un client et un garage.
- * Il communique avec Garage, User, Vehicle, ServicePrestation, Intervention et Notification.
- */
-
 namespace App\Entity;
 
 use App\Repository\AppointmentRepository;

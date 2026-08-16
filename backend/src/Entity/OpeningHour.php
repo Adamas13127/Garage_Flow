@@ -1,11 +1,5 @@
 <?php
 
-/*
- * Ce fichier declare l'entite OpeningHour du backend GarageFlow.
- * Il existe pour stocker les plages horaires recurrentes d'un garage.
- * Il communique avec Garage pour calculer plus tard les creneaux disponibles.
- */
-
 namespace App\Entity;
 
 use App\Repository\OpeningHourRepository;

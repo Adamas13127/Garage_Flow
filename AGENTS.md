@@ -86,7 +86,19 @@ cible). Au-dela de 15 %, les commentaires paraphrasent generalement le code au l
 apporter une information qu'il ne porte pas deja ; en dessous de 8 %, les regles metier
 non triviales risquent de ne plus etre documentees.
 
-Chaque fichier cree ou modifie doit commencer par un commentaire d'en-tete expliquant :
+Le commentaire d'en-tete de fichier n'est requis que lorsqu'il apporte une information non
+deductible du nom de la classe et de son emplacement dans l'arborescence : typiquement les
+services metier, les controleurs et les classes qui portent une logique non triviale. Il n'est
+pas requis sur les DTO, les entites simples (getters/setters Doctrine sans logique), les
+repositories sans requete personnalisee (aucune methode au-dela du constructeur) et les classes
+d'exception -- leur nom et leur emplacement (`src/DTO/`, `src/Entity/`, `src/Security/`) disent
+deja tout ce que l'en-tete repeterait. Cette regle a d'abord impose un en-tete sur chaque fichier
+sans exception ; l'experience a montre qu'un en-tete de 4-5 lignes sur un fichier de 4 lignes de
+code (une exception, un DTO) rend la cible de ratio ci-dessus mathematiquement inatteignable sans
+rien retirer d'utile -- la regle a donc ete restreinte aux fichiers ou l'en-tete a une vraie
+valeur de lecture.
+
+Quand il est requis, l'en-tete explique :
 
 * le role du fichier ;
 * pourquoi il existe dans le projet ;

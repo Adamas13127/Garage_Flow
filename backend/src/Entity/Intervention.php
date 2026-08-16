@@ -1,11 +1,5 @@
 <?php
 
-/*
- * Ce fichier declare l'entite Intervention du backend GarageFlow.
- * Il existe pour representer le suivi atelier cree apres confirmation d'un rendez-vous.
- * Il communique avec Appointment, InterventionStatus, les historiques, notes et notifications.
- */
-
 namespace App\Entity;
 
 use App\Repository\InterventionRepository;

@@ -1,11 +1,5 @@
 <?php
 
-/*
- * Ce fichier declare l'entite Role du backend GarageFlow.
- * Il existe pour stocker les profils utilisateurs comme ADMIN, GERANT, EMPLOYE ou CLIENT.
- * Il communique avec les utilisateurs afin de preparer les futures regles d'autorisation.
- */
-
 namespace App\Entity;
 
 use App\Repository\RoleRepository;

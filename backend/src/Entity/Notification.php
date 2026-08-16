@@ -1,11 +1,5 @@
 <?php
 
-/*
- * Ce fichier declare l'entite Notification du backend GarageFlow.
- * Il existe pour stocker les notifications applicatives ou email envoyees aux utilisateurs.
- * Il communique avec User, Appointment et Intervention pour garder le contexte de la notification.
- */
-
 namespace App\Entity;
 
 use App\Repository\NotificationRepository;

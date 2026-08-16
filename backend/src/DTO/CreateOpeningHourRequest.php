@@ -1,11 +1,5 @@
 <?php
 
-/*
- * Ce fichier declare le DTO CreateOpeningHourRequest du backend GarageFlow.
- * Il existe pour valider la creation d'une plage horaire recurrente.
- * Il communique avec GarageManagementController, le validator Symfony et OpeningHourService.
- */
-
 namespace App\DTO;
 
 use Symfony\Component\Validator\Constraints as Assert;

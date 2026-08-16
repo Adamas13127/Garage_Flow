@@ -1,11 +1,5 @@
 <?php
 
-/*
- * Ce fichier declare l'entite ActionLog du backend GarageFlow.
- * Il existe pour journaliser les actions importantes realisees dans l'application.
- * Il communique avec User et Garage pour garder la trace de qui a agi et sur quel garage.
- */
-
 namespace App\Entity;
 
 use App\Repository\ActionLogRepository;

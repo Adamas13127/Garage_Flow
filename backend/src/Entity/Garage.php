@@ -1,11 +1,5 @@
 <?php
 
-/*
- * Ce fichier declare l'entite Garage du backend GarageFlow.
- * Il existe pour representer un garage independant inscrit sur la plateforme.
- * Il communique avec les utilisateurs, horaires, prestations, rendez-vous et logs du garage.
- */
-
 namespace App\Entity;
 
 use App\Repository\GarageRepository;

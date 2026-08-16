@@ -1,11 +1,5 @@
 <?php
 
-/*
- * Ce fichier declare l'entite User du backend GarageFlow.
- * Il existe pour centraliser les comptes clients, employes, gerants et administrateurs.
- * Il communique avec les roles, les garages, les vehicules, les rendez-vous, Symfony Security et les traces d'action.
- */
-
 namespace App\Entity;
 
 use App\Repository\UserRepository;

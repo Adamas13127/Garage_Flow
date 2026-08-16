@@ -1,11 +1,5 @@
 <?php
 
-/*
- * Ce fichier declare l'entite ServicePrestation du backend GarageFlow.
- * Il existe pour representer les prestations proposees par un garage sans confondre avec les services Symfony.
- * Il communique avec Garage et Appointment pour relier une demande de rendez-vous a une prestation.
- */
-
 namespace App\Entity;
 
 use App\Repository\ServicePrestationRepository;

@@ -1,11 +1,5 @@
 <?php
 
-/*
- * Ce fichier declare l'entite Unavailability du backend GarageFlow.
- * Il existe pour bloquer exceptionnellement un creneau ou une periode d'un garage.
- * Il communique avec Garage et User pour savoir quel garage est bloque et qui a cree le blocage.
- */
-
 namespace App\Entity;
 
 use App\Repository\UnavailabilityRepository;

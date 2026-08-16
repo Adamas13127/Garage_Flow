@@ -1,11 +1,5 @@
 <?php
 
-/*
- * Ce fichier declare le DTO RegisterClientRequest du backend GarageFlow.
- * Il existe pour transporter et valider les donnees envoyees lors de l'inscription client.
- * Il communique avec AuthController, le validator Symfony et AuthService.
- */
-
 namespace App\DTO;
 
 use Symfony\Component\Validator\Constraints as Assert;

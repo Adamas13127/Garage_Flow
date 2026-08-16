@@ -1,11 +1,5 @@
 <?php
 
-/*
- * Ce fichier declare l'entite InterventionStatus du backend GarageFlow.
- * Il existe pour stocker les statuts possibles du suivi atelier.
- * Il communique avec Intervention et InterventionStatusHistory pour historiser les changements.
- */
-
 namespace App\Entity;
 
 use App\Repository\InterventionStatusRepository;

@@ -1,11 +1,5 @@
 <?php
 
-/*
- * Ce fichier declare le DTO RefuseAppointmentRequest du backend GarageFlow.
- * Il existe pour valider le motif optionnel envoye quand le garage refuse un rendez-vous.
- * Il communique avec GarageAppointmentController, Symfony Validator et GarageAppointmentService.
- */
-
 namespace App\DTO;
 
 use Symfony\Component\Validator\Constraints as Assert;

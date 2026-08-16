@@ -1,11 +1,5 @@
 <?php
 
-/*
- * Ce fichier declare le DTO UpdateInterventionStatusRequest du backend GarageFlow.
- * Il existe pour valider le changement de statut d'une intervention par le garage.
- * Il communique avec GarageInterventionController, Symfony Validator et GarageInterventionService.
- */
-
 namespace App\DTO;
 
 use Symfony\Component\Validator\Constraints as Assert;

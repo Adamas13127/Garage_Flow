@@ -1,11 +1,5 @@
 <?php
 
-/*
- * Ce fichier declare le DTO UpdateGarageRequest du backend GarageFlow.
- * Il existe pour valider les donnees envoyees lors de la modification du garage du gerant.
- * Il communique avec GarageManagementController, le validator Symfony et GarageManagementService.
- */
-
 namespace App\DTO;
 
 use Symfony\Component\Validator\Constraints as Assert;

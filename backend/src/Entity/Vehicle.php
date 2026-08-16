@@ -1,11 +1,5 @@
 <?php
 
-/*
- * Ce fichier declare l'entite Vehicle du backend GarageFlow.
- * Il existe pour stocker les vehicules appartenant aux clients.
- * Il communique avec User et Appointment pour rattacher un rendez-vous au bon vehicule.
- */
-
 namespace App\Entity;
 
 use App\Repository\VehicleRepository;

@@ -1,11 +1,5 @@
 <?php
 
-/*
- * Ce fichier declare le repository Doctrine de l'entite Role.
- * Il existe pour centraliser plus tard les requetes SQL liees a cette entite.
- * Il communique avec Doctrine ORM et la base MySQL, sans contenir encore de requete metier specifique.
- */
-
 namespace App\Repository;
 
 use App\Entity\Role;

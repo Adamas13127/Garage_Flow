@@ -1,11 +1,5 @@
 <?php
 
-/*
- * Ce fichier declare le DTO GarageAppointmentFilterRequest du backend GarageFlow.
- * Il existe pour valider les filtres envoyes par le garage lorsqu'il consulte ses rendez-vous.
- * Il communique avec GarageAppointmentController, Symfony Validator et GarageAppointmentService.
- */
-
 namespace App\DTO;
 
 use App\Entity\Appointment;

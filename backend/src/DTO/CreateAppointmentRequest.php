@@ -1,11 +1,5 @@
 <?php
 
-/*
- * Ce fichier declare le DTO CreateAppointmentRequest du backend GarageFlow.
- * Il existe pour transporter et valider les donnees envoyees par un client lors d'une demande de rendez-vous.
- * Il communique avec AppointmentController, Symfony Validator et AppointmentService.
- */
-
 namespace App\DTO;
 
 use Symfony\Component\Validator\Constraints as Assert;

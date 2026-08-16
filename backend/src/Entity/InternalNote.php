@@ -1,11 +1,5 @@
 <?php
 
-/*
- * Ce fichier declare l'entite InternalNote du backend GarageFlow.
- * Il existe pour stocker les notes internes d'un garage sur une intervention.
- * Il communique avec Intervention et User, et ces notes ne doivent jamais etre exposees aux clients.
- */
-
 namespace App\Entity;
 
 use App\Repository\InternalNoteRepository;
