@@ -77,12 +77,13 @@ D'où la transformation de la fiche de lancement en liste de contrôle vérifiab
 |---|---|
 | PHPStan niveau 6 | 0 erreur |
 | PHP-CS-Fixer | 0 violation |
-| Tests backend | 58 tests, 303 assertions (dont 12 tests unitaires isolés dans `tests/Unit/` et 4 tests des déclencheurs SQL en base réelle dans `tests/Mission12/DatabaseTriggersTest.php`) |
+| Tests backend | 65 tests, 359 assertions (dont 12 tests unitaires isolés dans `tests/Unit/`, 4 tests des déclencheurs SQL en base réelle et 7 tests de journalisation applicative avec vérification de l'auteur) |
 | Routes documentées | 48 / 48 |
 | Ratio de commentaires | 14,00 % — **cible 8-15 % atteinte** |
 | Sécurité dépendances npm (web) | 0 vulnérabilité (6 corrigées le 2026-08-16) |
 | Sécurité dépendances npm (mobile) | 19 vulnérabilités restantes, documentées et datées (`docs/technique/SECURITE_DEPENDANCES.md`) — nécessitent une migration majeure du SDK Expo, hors périmètre du durcissement en cours |
 | Déclencheurs SQL | **2 déclencheurs créés** (migration `Version20260816200000`) : contrôle sur `notification` (BEFORE INSERT/UPDATE, rejette une notification sans rendez-vous ni intervention) et audit sur `user` (AFTER UPDATE, journalise dans `action_log` tout changement de rôle ou d'état actif) |
+| Journalisation applicative (`action_log`) | **fait** : `ActionLogService` alimente `action_log` avec l'auteur authentifié pour les rendez-vous, interventions, prestations, indisponibilités et garage — voir `docs/technique/TRACABILITE.md`, qui fait autorité sur ce point et signale les PDF de référence dépassés (matrice des droits, dictionnaire de données) |
 | Audit RGAA | **non réalisé** |
 | Pipeline CI | **absent** |
 | Export de données | **fait** : export CSV/JSON des rendez-vous et interventions du garage, filtré par période (`GET /api/garage/me/export/appointments`, `.../interventions`, documenté dans `backend/docs/API.md`) |
