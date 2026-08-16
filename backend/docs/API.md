@@ -14,7 +14,7 @@ Les routes privees utilisent un token JWT dans l'en-tete :
 Authorization: Bearer VOTRE_TOKEN_JWT
 ```
 
-Document genere a partir du routeur reel (`php bin/console debug:router`) : les 46 routes `api_*`
+Document genere a partir du routeur reel (`php bin/console debug:router`) : les 48 routes `api_*`
 exposees par le backend y figurent.
 
 ## Auth
@@ -241,6 +241,40 @@ Body creation/modification note interne :
 | GET | `/api/notifications?unreadOnly=true` | Connecte | Liste seulement les non lues. | 200, 401 |
 | PATCH | `/api/notifications/{id}/read` | Connecte | Marque une notification comme lue. | 200, 404 |
 | PATCH | `/api/notifications/read-all` | Connecte | Marque toutes ses notifications comme lues. | 200 |
+
+## Export (garage)
+
+Flux d'echange de donnees avec un logiciel externe (tableur, ERP) : export des rendez-vous ou des
+interventions du garage connecte, sur une periode donnee, aux formats CSV ou JSON.
+
+| Methode | Route | Role | Description | Codes principaux |
+|---|---|---|---|---|
+| GET | `/api/garage/me/export/appointments` | ROLE_EMPLOYE | Exporte les rendez-vous du garage sur la periode. | 200, 400, 403 |
+| GET | `/api/garage/me/export/interventions` | ROLE_EMPLOYE | Exporte les interventions du garage sur la periode. | 200, 400, 403 |
+
+Parametres de requete, communs aux deux routes :
+
+| Parametre | Obligatoire | Format | Description |
+|---|---|---|---|
+| `from` | oui | `YYYY-MM-DD` | Debut de periode (inclus), filtre sur la date de rendez-vous. |
+| `to` | oui | `YYYY-MM-DD` | Fin de periode (inclus), filtre sur la date de rendez-vous. |
+| `format` | non | `csv` ou `json` | Format de sortie. `json` par defaut. |
+
+400 si `from`/`to` sont absents, mal formates, si `from` est posterieur a `to`, ou si `format` n'est
+ni `csv` ni `json`.
+
+En JSON : `{"items": [...]}`, memes champs que la liste correspondante (rendez-vous ou
+interventions) plus les informations client/vehicule/prestation necessaires a un usage hors ligne.
+
+En CSV : `Content-Type: text/csv; charset=UTF-8`, `Content-Disposition: attachment`, colonnes
+separees par `;`, une ligne d'en-tete avec les noms de colonnes.
+
+Exemple :
+
+```http
+GET /api/garage/me/export/appointments?from=2026-08-01&to=2026-08-31&format=csv
+Authorization: Bearer VOTRE_TOKEN_JWT
+```
 
 ## Format des reponses d'erreur
 

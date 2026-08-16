@@ -78,6 +78,24 @@ class InterventionRepository extends ServiceEntityRepository
     /**
      * @return Intervention[]
      */
+    public function findByGarageBetweenDates(Garage $garage, \DateTimeImmutable $from, \DateTimeImmutable $to): array
+    {
+        return $this->createQueryBuilder('intervention')
+            ->join('intervention.appointment', 'appointment')
+            ->andWhere('appointment.garage = :garage')
+            ->andWhere('appointment.dateDebut >= :from')
+            ->andWhere('appointment.dateDebut < :to')
+            ->setParameter('garage', $garage)
+            ->setParameter('from', $from->setTime(0, 0))
+            ->setParameter('to', $to->setTime(0, 0)->modify('+1 day'))
+            ->orderBy('appointment.dateDebut', 'ASC')
+            ->getQuery()
+            ->getResult();
+    }
+
+    /**
+     * @return Intervention[]
+     */
     public function findByClient(User $client): array
     {
         return $this->createQueryBuilder('intervention')
