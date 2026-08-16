@@ -77,14 +77,15 @@ D'où la transformation de la fiche de lancement en liste de contrôle vérifiab
 |---|---|
 | PHPStan niveau 6 | 0 erreur |
 | PHP-CS-Fixer | 0 violation |
-| Tests backend | 46 tests, 237 assertions (dont 12 tests unitaires isolés dans `tests/Unit/`) |
-| Routes documentées | 46 / 46 |
+| Tests backend | 58 tests, 303 assertions (dont 12 tests unitaires isolés dans `tests/Unit/` et 4 tests des déclencheurs SQL en base réelle dans `tests/Mission12/DatabaseTriggersTest.php`) |
+| Routes documentées | 48 / 48 |
 | Ratio de commentaires | 14,00 % — **cible 8-15 % atteinte** |
 | Sécurité dépendances npm (web) | 0 vulnérabilité (6 corrigées le 2026-08-16) |
 | Sécurité dépendances npm (mobile) | 19 vulnérabilités restantes, documentées et datées (`docs/technique/SECURITE_DEPENDANCES.md`) — nécessitent une migration majeure du SDK Expo, hors périmètre du durcissement en cours |
-| Déclencheurs SQL | **aucun — à créer** |
+| Déclencheurs SQL | **2 déclencheurs créés** (migration `Version20260816200000`) : contrôle sur `notification` (BEFORE INSERT/UPDATE, rejette une notification sans rendez-vous ni intervention) et audit sur `user` (AFTER UPDATE, journalise dans `action_log` tout changement de rôle ou d'état actif) |
 | Audit RGAA | **non réalisé** |
 | Pipeline CI | **absent** |
-| Export de données | **absent** |
+| Export de données | **fait** : export CSV/JSON des rendez-vous et interventions du garage, filtré par période (`GET /api/garage/me/export/appointments`, `.../interventions`, documenté dans `backend/docs/API.md`) |
+| Communication bilingue | **fait** : `README.en.md` ajouté à la racine |
 
-Mise à jour : 2026-08-16 (branche `chore/rncp-hardening`). Ce tableau doit être tenu à jour à chaque lot.
+Mise à jour : 2026-08-16 (branche `feat/rncp-triggers-i18n-export`, fusionnée depuis `chore/rncp-hardening`). Ce tableau doit être tenu à jour à chaque lot.
