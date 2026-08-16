@@ -6,6 +6,9 @@ Il communique avec les README, les commandes de verification et les donnees de d
 
 # Audit final MVP GarageFlow
 
+Derniere mise a jour : 2026-08-16, sur la branche `chore/rncp-hardening`, apres verification
+manuelle de chaque commande listee ci-dessous (pas de chiffre recopie de memoire).
+
 ## Etat global
 
 Le MVP GarageFlow est presentable localement. Le backend Symfony expose l'API REST, le dashboard web React couvre le parcours garage et l'application mobile Expo couvre le parcours client. Les donnees de demonstration permettent de montrer un garage, des comptes, des vehicules, des rendez-vous, des interventions, des notes internes et des notifications.
@@ -102,29 +105,49 @@ Mot de passe commun : `Password123`.
 
 ## Resultats des tests
 
+Chiffres verifies le 2026-08-16 en executant chaque commande (aucun ne provient d'un audit
+anterieur recopie sans re-controle).
+
 Backend :
 
 * `composer validate --strict` : OK.
 * `php bin/console lint:container` : OK.
 * `php bin/console doctrine:schema:validate` : OK.
-* `php bin/phpunit` : OK, 27 tests et 191 assertions.
-* `php bin/console debug:router` : OK, routes API listees.
+* `php bin/phpunit` : OK, **46 tests et 237 assertions** (34 tests fonctionnels WebTestCase +
+  12 tests unitaires ajoutes dans `tests/Unit/`, cf. `docs/oral/AGENTS.md` pour la politique de
+  tests).
+* `vendor/bin/phpstan analyse` : OK, niveau 5 sans erreur (cf. section qualite statique).
+* `php bin/console debug:router` : OK, 46 routes `api_*` listees (documentees dans
+  `backend/docs/API.md`).
 * `php bin/console app:create-demo-data` : OK, commande idempotente.
 
 Web :
 
 * `npm run lint` : OK.
 * `npm run build` : OK.
-* `npm audit --omit=dev` : OK, 0 vulnerabilite.
-* `npm test` : bloque localement par `spawn EPERM` sur esbuild dans Vitest. Le build fonctionne, donc le probleme observe correspond a une execution locale Windows du binaire esbuild, pas a un echec d'assertion du code.
+* `npm test` : OK, **31 tests, 9 fichiers**. Le blocage `spawn EPERM` sur esbuild n'est plus
+  reproduit depuis la resolution du conflit de peer dependency vitest/vite@7 (vitest passe de
+  2.1.9 a 4.1.10) ; `npm install` ne necessite plus `--legacy-peer-deps`.
+* `npm audit --omit=dev` : **4 vulnerabilites (high)**, pas 0 -- toutes portees par `vite`
+  (present en `dependencies`, pas `devDependencies`, dans `web/package.json`) et sa dependance
+  `react-router`. `npm audit` complet (avec devDependencies) : 6 vulnerabilites (2 low, 4 high).
+  Un correctif existe (`npm audit fix --force`, bascule vers `vite@7.3.6`, meme branche majeure)
+  mais n'a pas ete applique dans ce lot -- a evaluer separement.
 
-Mobile :
+Mobile (non modifie par le present audit, chiffres re-verifies) :
 
 * `npm run lint` : OK.
-* `npm test` : OK, 13 suites et 22 tests.
+* `npm test` : OK, **16 suites et 39 tests** (le projet a grandi depuis le dernier audit, qui
+  annoncait 13 suites et 22 tests).
 * `npx tsc --noEmit` : OK.
-* `npm audit --omit=dev` : OK, 0 vulnerabilite.
+* `npm audit --omit=dev` : **23 vulnerabilites (9 moderate, 14 high)**, pas 0. `npm audit`
+  complet : 24 vulnerabilites (10 moderate, 14 high), concentrees sur la chaine de outillage
+  Expo/`@expo/cli` (pas de correctif direct sans changement de version majeure).
 * `npx expo install --check` : OK, dependances a jour.
+
+Vulnerabilites totales (methodologie `--omit=dev`, comme annoncee dans les versions precedentes
+de ce document) : **27** (4 web + 23 mobile), a comparer aux "0 vulnerabilite" precedemment
+annoncees. Avec devDependencies incluses : **30** (6 web + 24 mobile).
 
 ## Scenario de demo recommande
 
@@ -152,7 +175,6 @@ Ces limites respectent le perimetre MVP defini dans `AGENTS.md`.
 
 ## Risques restants
 
-* Le test web peut rester bloque sur certains postes Windows si l'antivirus ou le terminal empeche l'execution d'esbuild.
 * L'application mobile sur telephone physique depend de l'IP locale du PC et du meme reseau Wi-Fi.
 * Les cles JWT et les fichiers `.env.local` doivent etre recrees localement et ne doivent pas etre versionnes.
 * La base de demonstration est locale et ne remplace pas une strategie de seed de production.
