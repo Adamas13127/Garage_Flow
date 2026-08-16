@@ -45,6 +45,14 @@ class CreateDemoDataCommand extends Command
     /** @var array<string, int> */
     private array $reused = [];
 
+    /**
+     * Instant de reference pour toutes les dates relatives du scenario, fige une seule fois par
+     * execution : les rendez-vous "en attente"/"confirmes" restent dans le futur et les
+     * interventions deja en cours restent dans le passe quel que soit le jour ou la commande
+     * est lancee, sans jamais deriver vers une date fixe qui finirait par devenir incoherente.
+     */
+    private \DateTimeImmutable $now;
+
     public function __construct(
         private readonly EntityManagerInterface $entityManager,
         private readonly UserPasswordHasherInterface $passwordHasher,
@@ -58,6 +66,7 @@ class CreateDemoDataCommand extends Command
         $io = new SymfonyStyle($input, $output);
         $this->created = [];
         $this->reused = [];
+        $this->now = new \DateTimeImmutable();
 
         $roles = $this->ensureRoles();
         $statuses = $this->ensureInterventionStatuses();
@@ -79,7 +88,10 @@ class CreateDemoDataCommand extends Command
         return Command::SUCCESS;
     }
 
-    /** Cette methode cree les roles si la base locale n'a pas encore recu les fixtures. */
+    /**
+     * Cette methode cree les roles si la base locale n'a pas encore recu les fixtures.
+     * @return array<string, Role>
+     */
     private function ensureRoles(): array
     {
         $definitions = [
@@ -105,7 +117,10 @@ class CreateDemoDataCommand extends Command
         return $roles;
     }
 
-    /** Cette methode garantit que les statuts de suivi atelier existent pour les interventions demo. */
+    /**
+     * Cette methode garantit que les statuts de suivi atelier existent pour les interventions demo.
+     * @return array<string, InterventionStatus>
+     */
     private function ensureInterventionStatuses(): array
     {
         $definitions = [
@@ -182,7 +197,10 @@ class CreateDemoDataCommand extends Command
         return $user;
     }
 
-    /** Cette methode cree les prestations actives visibles dans le dashboard garage. */
+    /**
+     * Cette methode cree les prestations actives visibles dans le dashboard garage.
+     * @return array<string, ServicePrestation>
+     */
     private function ensureServices(Garage $garage): array
     {
         $definitions = [
@@ -226,7 +244,10 @@ class CreateDemoDataCommand extends Command
         }
     }
 
-    /** Cette methode cree les vehicules du compte client de demonstration. */
+    /**
+     * Cette methode cree les vehicules du compte client de demonstration.
+     * @return array<string, Vehicle>
+     */
     private function ensureVehicles(User $client): array
     {
         $definitions = [
@@ -250,39 +271,58 @@ class CreateDemoDataCommand extends Command
         return $vehicles;
     }
 
-    /** Cette methode cree des rendez-vous coherents avec les horaires du garage. */
+    /**
+     * Cette methode cree des rendez-vous coherents avec la date du jour d'execution : les demandes
+     * et confirmations restent dans le futur, les rendez-vous deja lies a une intervention en cours
+     * ou terminee restent dans le passe. La recherche d'idempotence se fait sur le commentaire
+     * client (stable d'une execution a l'autre) plutot que sur la date de debut, qui change chaque
+     * jour : chercher par date aurait recree un nouveau rendez-vous a chaque lancement au lieu de
+     * mettre a jour celui de la veille, et aurait fini par accumuler des doublons perimes en base.
+     * @param array<string, Vehicle> $vehicles
+     * @param array<string, ServicePrestation> $services
+     * @return array<string, Appointment>
+     */
     private function ensureAppointments(Garage $garage, User $client, array $vehicles, array $services): array
     {
         $definitions = [
-            'attente_vidange' => [Appointment::STATUT_EN_ATTENTE, '2030-01-14 09:00', $vehicles['AA-123-AA'], $services['Vidange moteur'], 'Demande de vidange avant depart.'],
-            'attente_clim' => [Appointment::STATUT_EN_ATTENTE, '2030-01-15 10:30', $vehicles['BB-456-BB'], $services['Controle climatisation'], 'Controle climatisation avant ete.'],
-            'confirme_diag' => [Appointment::STATUT_CONFIRME, '2030-01-16 09:00', $vehicles['AA-123-AA'], $services['Diagnostic electronique'], 'Voyant moteur allume.'],
-            'confirme_freins' => [Appointment::STATUT_CONFIRME, '2030-01-17 10:00', $vehicles['BB-456-BB'], $services['Remplacement plaquettes de frein'], 'Bruit au freinage.'],
-            'confirme_revision' => [Appointment::STATUT_CONFIRME, '2030-01-18 09:00', $vehicles['AA-123-AA'], $services['Revision complete'], 'Revision complete avant controle technique.'],
-            'refuse_clim' => [Appointment::STATUT_REFUSE, '2030-01-20 11:00', $vehicles['BB-456-BB'], $services['Controle climatisation'], 'Creneau refuse pour demonstration.'],
-            'annule_vidange' => [Appointment::STATUT_ANNULE, '2030-01-21 14:00', $vehicles['AA-123-AA'], $services['Vidange moteur'], 'Client indisponible.'],
-            'termine_diag' => [Appointment::STATUT_TERMINE, '2030-01-22 09:00', $vehicles['BB-456-BB'], $services['Diagnostic electronique'], 'Diagnostic termine pour historique.'],
+            'attente_vidange' => [Appointment::STATUT_EN_ATTENTE, '+2 days 09:00', $vehicles['AA-123-AA'], $services['Vidange moteur'], 'Demande de vidange avant un long trajet.'],
+            'attente_clim' => [Appointment::STATUT_EN_ATTENTE, '+4 days 10:30', $vehicles['BB-456-BB'], $services['Controle climatisation'], "Controle climatisation avant l'ete."],
+            'confirme_annulable' => [Appointment::STATUT_CONFIRME, '+3 days 14:00', $vehicles['BB-456-BB'], $services['Vidange moteur'], "Vidange programmee, a annuler pour la demonstration si besoin."],
+            'confirme_diag' => [Appointment::STATUT_CONFIRME, '-1 days 09:00', $vehicles['AA-123-AA'], $services['Diagnostic electronique'], 'Voyant moteur allume.'],
+            'confirme_freins' => [Appointment::STATUT_CONFIRME, '-3 days 10:00', $vehicles['BB-456-BB'], $services['Remplacement plaquettes de frein'], 'Bruit au freinage.'],
+            'confirme_revision' => [Appointment::STATUT_CONFIRME, '-6 days 09:00', $vehicles['AA-123-AA'], $services['Revision complete'], 'Revision complete avant controle technique.'],
+            'refuse_clim' => [Appointment::STATUT_REFUSE, '-2 days 11:00', $vehicles['BB-456-BB'], $services['Controle climatisation'], 'Creneau refuse pour demonstration.'],
+            'annule_vidange' => [Appointment::STATUT_ANNULE, '-5 days 14:00', $vehicles['AA-123-AA'], $services['Vidange moteur'], 'Rendez-vous annule par le client, pour illustrer l\'historique.'],
+            'termine_diag' => [Appointment::STATUT_TERMINE, '-10 days 09:00', $vehicles['BB-456-BB'], $services['Diagnostic electronique'], 'Diagnostic termine pour historique.'],
         ];
         $appointments = [];
-        foreach ($definitions as $key => [$status, $date, $vehicle, $service, $comment]) {
-            $start = new \DateTimeImmutable($date);
+        foreach ($definitions as $key => [$status, $offset, $vehicle, $service, $comment]) {
+            $start = $this->now->modify($offset);
             $end = $start->modify('+'.$service->getDureeMinutes().' minutes');
-            $appointment = $this->entityManager->getRepository(Appointment::class)->findOneBy(['garage' => $garage, 'client' => $client, 'vehicle' => $vehicle, 'service' => $service, 'dateDebut' => $start]);
+            $appointment = $this->entityManager->getRepository(Appointment::class)->findOneBy(['garage' => $garage, 'client' => $client, 'commentaireClient' => $comment]);
             if (!$appointment instanceof Appointment) {
-                $appointment = (new Appointment())->setGarage($garage)->setClient($client)->setVehicle($vehicle)->setService($service)->setDateDebut($start);
+                $appointment = (new Appointment())->setGarage($garage)->setClient($client);
                 $this->entityManager->persist($appointment);
                 $this->markCreated('rendez-vous');
             } else {
                 $this->markReused('rendez-vous');
             }
-            $appointment->setDateFin($end)->setStatut($status)->setCommentaireClient($comment);
+            $appointment->setVehicle($vehicle)->setService($service)->setDateDebut($start)->setDateFin($end)->setStatut($status)->setCommentaireClient($comment);
             $appointments[$key] = $appointment;
         }
 
         return $appointments;
     }
 
-    /** Cette methode cree les interventions et leurs historiques de statut. */
+    /**
+     * Cette methode cree les interventions et leurs historiques de statut. Seuls les rendez-vous
+     * dont le vehicule a deja ete depose (dates passees) sont rattaches a une intervention : un
+     * rendez-vous futur ne peut pas avoir d'intervention en cours, l'atelier n'a pas encore vu le
+     * vehicule.
+     * @param array<string, Appointment> $appointments
+     * @param array<string, InterventionStatus> $statuses
+     * @return array<string, Intervention>
+     */
     private function ensureInterventions(array $appointments, array $statuses, User $employee): array
     {
         $definitions = [
@@ -306,8 +346,8 @@ class CreateDemoDataCommand extends Command
                 $this->markReused('interventions');
             }
             $intervention->setStatutActuel($statuses[$currentCode])->setNotesResume('Intervention de demonstration GarageFlow.');
-            if ($currentCode === 'VEHICULE_RECUPERE') {
-                $intervention->setClosedAt(new \DateTimeImmutable('2030-01-22 16:00'));
+            if ('VEHICULE_RECUPERE' === $currentCode) {
+                $intervention->setClosedAt($appointment->getDateDebut()->modify('+1 day'));
             }
             $this->ensureStatusHistory($intervention, $historyCodes, $statuses, $employee);
             $interventions[$key] = $intervention;
@@ -316,9 +356,16 @@ class CreateDemoDataCommand extends Command
         return $interventions;
     }
 
-    /** Cette methode ajoute les lignes d'historique manquantes sans les dupliquer. */
+    /**
+     * Cette methode ajoute les lignes d'historique manquantes sans les dupliquer.
+     * @param list<string> $historyCodes
+     * @param array<string, InterventionStatus> $statuses
+     */
     private function ensureStatusHistory(Intervention $intervention, array $historyCodes, array $statuses, User $employee): void
     {
+        $appointment = $intervention->getAppointment();
+        $baseDate = $appointment instanceof Appointment ? $appointment->getDateDebut() : $this->now;
+
         foreach ($historyCodes as $index => $code) {
             $history = $this->entityManager->getRepository(InterventionStatusHistory::class)->findOneBy(['intervention' => $intervention, 'status' => $statuses[$code]]);
             if (!$history instanceof InterventionStatusHistory) {
@@ -328,11 +375,14 @@ class CreateDemoDataCommand extends Command
             } else {
                 $this->markReused('historiques statut');
             }
-            $history->setChangedBy($employee)->setChangedAt((new \DateTimeImmutable('2030-01-10 09:00'))->modify('+'.$index.' hours'))->setCommentaire('Etape '.$statuses[$code]->getLibelle().' creee pour la demonstration.');
+            $history->setChangedBy($employee)->setChangedAt($baseDate->modify('+'.$index.' hours'))->setCommentaire('Etape '.$statuses[$code]->getLibelle().' creee pour la demonstration.');
         }
     }
 
-    /** Cette methode cree des notes internes uniquement visibles par le garage. */
+    /**
+     * Cette methode cree des notes internes uniquement visibles par le garage.
+     * @param array<string, Intervention> $interventions
+     */
     private function ensureInternalNotes(array $interventions, User $employee): void
     {
         $definitions = [
@@ -353,7 +403,11 @@ class CreateDemoDataCommand extends Command
         }
     }
 
-    /** Cette methode cree des notifications visibles dans les compteurs web et mobile. */
+    /**
+     * Cette methode cree des notifications visibles dans les compteurs web et mobile.
+     * @param array<string, Appointment> $appointments
+     * @param array<string, Intervention> $interventions
+     */
     private function ensureNotifications(User $manager, User $client, array $appointments, array $interventions): void
     {
         $definitions = [
@@ -373,11 +427,17 @@ class CreateDemoDataCommand extends Command
             } else {
                 $this->markReused('notifications');
             }
-            $notification->setCanal(Notification::CANAL_APP)->setAppointment($appointment)->setIntervention($intervention)->setLu($read)->setReadAt($read ? new \DateTimeImmutable('2030-01-12 12:00') : null);
+            $notification->setCanal(Notification::CANAL_APP)->setAppointment($appointment)->setIntervention($intervention)->setLu($read)->setReadAt($read ? $this->now->modify('-6 hours') : null);
         }
     }
 
-    /** Cette methode affiche un resume lisible pour guider la demonstration locale. */
+    /**
+     * Cette methode affiche un resume lisible pour guider la demonstration locale.
+     * @param array<string, Vehicle> $vehicles
+     * @param array<string, ServicePrestation> $services
+     * @param array<string, Appointment> $appointments
+     * @param array<string, Intervention> $interventions
+     */
     private function printSummary(SymfonyStyle $io, Garage $garage, User $manager, User $employee, User $client, array $vehicles, array $services, array $appointments, array $interventions): void
     {
         $io->success('Donnees de demonstration GarageFlow pretes.');
@@ -395,7 +455,7 @@ class CreateDemoDataCommand extends Command
         $io->writeln('Garage : '.$garage->getNom());
         $io->writeln('Vehicules : '.implode(', ', array_keys($vehicles)));
         $io->writeln('Prestations : '.implode(', ', array_keys($services)));
-        $io->writeln('Rendez-vous : '.count($appointments));
+        $io->writeln('Rendez-vous : '.count($appointments).' (dont "attente_vidange"/"attente_clim" en attente, "confirme_annulable" annulable)');
         $io->writeln('Interventions : '.count($interventions));
         $io->writeln('Commande : php bin/console app:create-demo-data');
     }
