@@ -8,6 +8,13 @@ Il communique avec les commandes de validation, les parcours API et le scenario 
 
 Date de recette : 1 juillet 2026
 
+> **Mise a jour 2026-08-16** : ce document est un instantane de la recette du 1 juillet 2026, garde
+> tel quel comme trace historique. Le code a evolue depuis (durcissement qualite sur
+> `chore/rncp-hardening`) et certains chiffres ci-dessous ne reflentent plus l'etat actuel. Les
+> ecarts connus sont annotes ligne par ligne ; pour l'etat courant, se referer a `composer run
+> quality` (backend), `docs/technique/SECURITE_DEPENDANCES.md` (audit npm date) et
+> `docs/oral/AUDIT_FINAL_MVP.md` (chiffres backend/web/mobile a jour).
+
 ## Etat Git initial
 
 | Zone | Test | Resultat | Commentaire |
@@ -37,7 +44,7 @@ Date de recette : 1 juillet 2026
 | Composer | `composer validate --strict` | OK | `composer.json` valide. |
 | Symfony | `php bin/console lint:container` | OK | Container valide. |
 | Doctrine | `php bin/console doctrine:schema:validate` | OK | Mapping correct et schema synchronise. |
-| PHPUnit | `php bin/phpunit` | OK | 27 tests, 191 assertions. |
+| PHPUnit | `php bin/phpunit` | OK | 27 tests, 191 assertions (etat du 1 juillet ; 46 tests et 237 assertions au 2026-08-16, cf. `AUDIT_FINAL_MVP.md`). |
 | Routes | `php bin/console debug:router` | OK | Routes auth, client, garage, interventions, notes, notifications et vehicules presentes. |
 
 Note : PHPUnit affiche des logs `Access Denied` attendus pendant certains tests de securite. Les tests restent verts.
@@ -52,7 +59,7 @@ Note : PHPUnit affiche des logs `Access Denied` attendus pendant certains tests 
 | Garages | `GET /api/garages/{id}` | OK | Detail garage accessible. |
 | Prestations | `GET /api/garages/{id}/services` | OK | Prestations actives disponibles. |
 | Vehicules | `GET /api/client/vehicles` | OK | 2 vehicules de demo presents. |
-| Creneaux | `GET /available-slots` | OK | Creneaux disponibles sur `2030-01-14`, avec `dateDebut` et `dateFin`. |
+| Creneaux | `GET /available-slots` | OK | Creneaux disponibles sur `2030-01-14`, avec `dateDebut` et `dateFin` (etat du 1 juillet : la commande de demo utilisait alors des dates fixes en 2030 ; depuis le 2026-08-16 elle genere des dates relatives au jour d'execution, cf. `DEMO_DATA.md`). |
 | RDV | `POST /api/client/appointments` | OK | RDV cree en `EN_ATTENTE` avec `dateDebut`. |
 | RDV | `GET /api/client/appointments` | OK | RDV cree visible cote client. |
 | RDV | `PATCH /api/client/appointments/{id}/cancel` | OK | Annulation valide avec statut `ANNULE`. |
@@ -107,7 +114,7 @@ Note : PHPUnit affiche des logs `Access Denied` attendus pendant certains tests 
 | Lint | `npm run lint` | OK | Aucun probleme ESLint. |
 | Build | `npm run build` | OK | TypeScript et Vite build OK. |
 | Tests | `npm test` | OK | 9 fichiers, 31 tests. Premier lancement sandbox bloque par `spawn EPERM` esbuild, relance hors sandbox OK. |
-| Audit | `npm audit --omit=dev` | OK | 0 vulnerabilite. |
+| Audit | `npm audit --omit=dev` | OK | 0 vulnerabilite (toujours 0 au 2026-08-16, cf. `docs/technique/SECURITE_DEPENDANCES.md`). |
 | Routes | Verification statique | OK | `/login`, `/dashboard`, `/appointments`, `/interventions`, `/notifications`, `/garage-settings` presentes. |
 
 ## Mobile client
@@ -117,7 +124,7 @@ Note : PHPUnit affiche des logs `Access Denied` attendus pendant certains tests 
 | Lint | `npm run lint` | OK | Aucun probleme ESLint. |
 | Tests | `npm test -- --runInBand` | OK | 16 suites, 39 tests. |
 | TypeScript | `npx tsc --noEmit` | OK | Types valides. |
-| Audit | `npm audit --omit=dev` | OK | 0 vulnerabilite. |
+| Audit | `npm audit --omit=dev` | OK | 0 vulnerabilite (etat du 1 juillet ; 18 vulnerabilites, 7 moderees et 11 hautes, au 2026-08-16 -- toutes issues du SDK Expo ~54.0.0, cf. `docs/technique/SECURITE_DEPENDANCES.md` pour le detail et pourquoi elles ne sont pas corrigees). |
 | Expo | `npx expo install --check` | OK | Premier lancement sandbox bloque par `fetch failed`, relance avec acces reseau OK. |
 | Booking | Tests BookingScreen | OK | Jours cliquables, `dateDebut`, creneaux groupes, pas de champ date manuel. |
 
