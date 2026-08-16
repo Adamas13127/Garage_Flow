@@ -33,12 +33,12 @@ php bin/console doctrine:migrations:migrate --no-interaction
 php bin/console app:create-demo-data
 ```
 
-Point d'attention : `backend/.env.test` pointe vers la meme base que le developpement local
-(`garageflow`), pas vers une base dediee aux tests. Lancer `php bin/phpunit` localement peut donc
-laisser des donnees de test (comptes, rendez-vous nommes par les scenarios de test) dans la base
-utilisee pour la demo. La commande `app:create-demo-data` ne les supprime pas -- elles ne
-correspondent a aucune des definitions ci-dessous, donc rien ne les reutilise ni ne les nettoie.
-La sequence de reset ci-dessus est la seule facon fiable de repartir d'un etat garanti propre.
+Point d'attention : `backend/.env.test` declare la meme base racine que le developpement local
+(`garageflow`), mais Symfony ajoute automatiquement le suffixe `_test` en environnement `test`
+(voir `config/packages/doctrine.yaml`, `dbname_suffix`). Les tests automatises tournent donc
+reellement sur `garageflow_test`, une base distincte de `garageflow` -- `php bin/phpunit` ne
+touche jamais aux donnees de demo. La sequence de reset ci-dessus reste utile pour repartir d'un
+etat garanti propre avant une demonstration, mais pas pour eviter une pollution par les tests.
 
 ## Comptes disponibles
 
