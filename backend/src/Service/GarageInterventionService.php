@@ -38,7 +38,11 @@ class GarageInterventionService
     ) {
     }
 
-    /** Cette methode liste les interventions du garage connecte avec des filtres optionnels. */
+    /**
+     * Cette methode liste les interventions du garage connecte avec des filtres optionnels.
+     *
+     * @return Intervention[]
+     */
     public function listForGarage(Garage $garage, InterventionFilterRequest $request): array
     {
         return $this->interventionRepository->findByGarageWithFilters($garage, $request->statusCode, $this->parseOptionalDate($request->date));
@@ -55,7 +59,11 @@ class GarageInterventionService
         return $intervention;
     }
 
-    /** Cette methode retourne l'historique complet visible par le garage. */
+    /**
+     * Cette methode retourne l'historique complet visible par le garage.
+     *
+     * @return InterventionStatusHistory[]
+     */
     public function getHistory(Intervention $intervention): array
     {
         return $this->historyRepository->findHistoryByIntervention($intervention);
@@ -79,8 +87,8 @@ class GarageInterventionService
             ->setCommentaire($this->nullableTrim($request->commentaire))
             ->setChangedAt(new \DateTimeImmutable());
 
-        if ($status->getCode() === 'VEHICULE_RECUPERE') {
-            if ($intervention->getClosedAt() === null) {
+        if ('VEHICULE_RECUPERE' === $status->getCode()) {
+            if (null === $intervention->getClosedAt()) {
                 $intervention->setClosedAt(new \DateTimeImmutable());
             }
             $appointment = $intervention->getAppointment();
@@ -92,7 +100,7 @@ class GarageInterventionService
 
         $this->entityManager->persist($history);
         $this->notificationService->notifyInterventionStatusChanged($intervention);
-        if ($status->getCode() === 'VEHICULE_PRET') {
+        if ('VEHICULE_PRET' === $status->getCode()) {
             $this->emailNotificationService->sendVehicleReadyEmail($intervention);
         } else {
             $this->emailNotificationService->sendInterventionStatusChangedEmail($intervention, $request->commentaire);
@@ -105,13 +113,13 @@ class GarageInterventionService
     /** Cette methode convertit le filtre date YYYY-MM-DD en objet utilisable par Doctrine. */
     private function parseOptionalDate(?string $date): ?\DateTimeImmutable
     {
-        if ($date === null || trim($date) === '') {
+        if (null === $date || '' === trim($date)) {
             return null;
         }
 
         $parsedDate = \DateTimeImmutable::createFromFormat('!Y-m-d', trim($date));
         $errors = \DateTimeImmutable::getLastErrors();
-        if (!$parsedDate instanceof \DateTimeImmutable || ($errors !== false && ($errors['warning_count'] > 0 || $errors['error_count'] > 0))) {
+        if (!$parsedDate instanceof \DateTimeImmutable || (false !== $errors && ($errors['warning_count'] > 0 || $errors['error_count'] > 0))) {
             throw new InvalidAppointmentRequestException('La date doit etre au format YYYY-MM-DD.');
         }
 
@@ -121,12 +129,12 @@ class GarageInterventionService
     /** Cette methode transforme une chaine vide en null pour les commentaires optionnels. */
     private function nullableTrim(?string $value): ?string
     {
-        if ($value === null) {
+        if (null === $value) {
             return null;
         }
 
         $trimmed = trim($value);
 
-        return $trimmed === '' ? null : $trimmed;
+        return '' === $trimmed ? null : $trimmed;
     }
 }

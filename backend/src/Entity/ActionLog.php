@@ -25,20 +25,97 @@ class ActionLog
     #[ORM\Column(type: 'text', nullable: true)] private ?string $description = null;
     #[ORM\Column] private ?\DateTimeImmutable $createdAt = null;
     /** Cette methode initialise la date de creation du log d'action. */
-    public function __construct() { $this->createdAt = new \DateTimeImmutable(); }
-    public function getId(): ?int { return $this->id; }
-    public function getUser(): ?User { return $this->user; }
-    public function setUser(?User $user): static { $this->user = $user; return $this; }
-    public function getGarage(): ?Garage { return $this->garage; }
-    public function setGarage(?Garage $garage): static { $this->garage = $garage; return $this; }
-    public function getAction(): ?string { return $this->action; }
-    public function setAction(string $action): static { $this->action = $action; return $this; }
-    public function getEntiteConcernee(): ?string { return $this->entiteConcernee; }
-    public function setEntiteConcernee(?string $entiteConcernee): static { $this->entiteConcernee = $entiteConcernee; return $this; }
-    public function getIdEntiteConcernee(): ?int { return $this->idEntiteConcernee; }
-    public function setIdEntiteConcernee(?int $idEntiteConcernee): static { $this->idEntiteConcernee = $idEntiteConcernee; return $this; }
-    public function getDescription(): ?string { return $this->description; }
-    public function setDescription(?string $description): static { $this->description = $description; return $this; }
-    public function getCreatedAt(): ?\DateTimeImmutable { return $this->createdAt; }
-    public function setCreatedAt(\DateTimeImmutable $createdAt): static { $this->createdAt = $createdAt; return $this; }
+    public function __construct()
+    {
+        $this->createdAt = new \DateTimeImmutable();
+    }
+
+    public function getId(): ?int
+    {
+        return $this->id;
+    }
+
+    public function getUser(): ?User
+    {
+        return $this->user;
+    }
+
+    public function setUser(?User $user): static
+    {
+        $this->user = $user;
+
+        return $this;
+    }
+
+    public function getGarage(): ?Garage
+    {
+        return $this->garage;
+    }
+
+    public function setGarage(?Garage $garage): static
+    {
+        $this->garage = $garage;
+
+        return $this;
+    }
+
+    public function getAction(): ?string
+    {
+        return $this->action;
+    }
+
+    public function setAction(string $action): static
+    {
+        $this->action = $action;
+
+        return $this;
+    }
+
+    public function getEntiteConcernee(): ?string
+    {
+        return $this->entiteConcernee;
+    }
+
+    public function setEntiteConcernee(?string $entiteConcernee): static
+    {
+        $this->entiteConcernee = $entiteConcernee;
+
+        return $this;
+    }
+
+    public function getIdEntiteConcernee(): ?int
+    {
+        return $this->idEntiteConcernee;
+    }
+
+    public function setIdEntiteConcernee(?int $idEntiteConcernee): static
+    {
+        $this->idEntiteConcernee = $idEntiteConcernee;
+
+        return $this;
+    }
+
+    public function getDescription(): ?string
+    {
+        return $this->description;
+    }
+
+    public function setDescription(?string $description): static
+    {
+        $this->description = $description;
+
+        return $this;
+    }
+
+    public function getCreatedAt(): ?\DateTimeImmutable
+    {
+        return $this->createdAt;
+    }
+
+    public function setCreatedAt(\DateTimeImmutable $createdAt): static
+    {
+        $this->createdAt = $createdAt;
+
+        return $this;
+    }
 }

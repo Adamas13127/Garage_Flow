@@ -8,9 +8,7 @@
 
 namespace App\Security;
 
-use RuntimeException;
-
 /** Cette exception indique qu'une periode ou une plage horaire n'est pas coherente. */
-class InvalidGarageScheduleException extends RuntimeException
+class InvalidGarageScheduleException extends \RuntimeException
 {
 }

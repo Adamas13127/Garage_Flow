@@ -38,7 +38,11 @@ class InterventionRepository extends ServiceEntityRepository
             ->getOneOrNullResult();
     }
 
-    /** Cette methode liste les interventions d'un garage avec filtres de statut et de date. */
+    /**
+     * Cette methode liste les interventions d'un garage avec filtres de statut et de date.
+     *
+     * @return Intervention[]
+     */
     public function findByGarageWithFilters(Garage $garage, ?string $statusCode, ?\DateTimeImmutable $date): array
     {
         $queryBuilder = $this->createQueryBuilder('intervention')
@@ -48,7 +52,7 @@ class InterventionRepository extends ServiceEntityRepository
             ->setParameter('garage', $garage)
             ->orderBy('appointment.dateDebut', 'DESC');
 
-        if ($statusCode !== null && $statusCode !== '') {
+        if (null !== $statusCode && '' !== $statusCode) {
             $queryBuilder
                 ->andWhere('status.code = :statusCode')
                 ->setParameter('statusCode', $statusCode);
@@ -78,7 +82,11 @@ class InterventionRepository extends ServiceEntityRepository
             ->getOneOrNullResult();
     }
 
-    /** Cette methode liste les interventions rattachees aux rendez-vous du client connecte. */
+    /**
+     * Cette methode liste les interventions rattachees aux rendez-vous du client connecte.
+     *
+     * @return Intervention[]
+     */
     public function findByClient(User $client): array
     {
         return $this->createQueryBuilder('intervention')

@@ -27,13 +27,21 @@ class AppointmentRepository extends ServiceEntityRepository
         parent::__construct($registry, Appointment::class);
     }
 
-    /** Cette methode retrouve les rendez-vous qui bloquent une periode pour un garage donne. */
+    /**
+     * Cette methode retrouve les rendez-vous qui bloquent une periode pour un garage donne.
+     *
+     * @return Appointment[]
+     */
     public function findBlockingAppointmentsForGarageBetween(Garage $garage, \DateTimeImmutable $start, \DateTimeImmutable $end): array
     {
         return $this->findBlockingAppointmentsForGarageBetweenExcludingAppointment($garage, $start, $end, null);
     }
 
-    /** Cette methode retrouve les rendez-vous bloquants en excluant le rendez-vous en cours de decision. */
+    /**
+     * Cette methode retrouve les rendez-vous bloquants en excluant le rendez-vous en cours de decision.
+     *
+     * @return Appointment[]
+     */
     public function findBlockingAppointmentsForGarageBetweenExcludingAppointment(Garage $garage, \DateTimeImmutable $start, \DateTimeImmutable $end, ?Appointment $excludedAppointment): array
     {
         $queryBuilder = $this->createQueryBuilder('appointment')
@@ -47,7 +55,7 @@ class AppointmentRepository extends ServiceEntityRepository
             ->setParameter('end', $end)
             ->orderBy('appointment.dateDebut', 'ASC');
 
-        if ($excludedAppointment instanceof Appointment && $excludedAppointment->getId() !== null) {
+        if ($excludedAppointment instanceof Appointment && null !== $excludedAppointment->getId()) {
             $queryBuilder
                 ->andWhere('appointment.id != :excludedId')
                 ->setParameter('excludedId', $excludedAppointment->getId());
@@ -56,7 +64,11 @@ class AppointmentRepository extends ServiceEntityRepository
         return $queryBuilder->getQuery()->getResult();
     }
 
-    /** Cette methode retourne tous les rendez-vous appartenant au client connecte. */
+    /**
+     * Cette methode retourne tous les rendez-vous appartenant au client connecte.
+     *
+     * @return Appointment[]
+     */
     public function findByClient(User $client): array
     {
         return $this->createQueryBuilder('appointment')
@@ -79,7 +91,11 @@ class AppointmentRepository extends ServiceEntityRepository
             ->getOneOrNullResult();
     }
 
-    /** Cette methode retourne les rendez-vous d'un garage avec des filtres simples de statut et de date. */
+    /**
+     * Cette methode retourne les rendez-vous d'un garage avec des filtres simples de statut et de date.
+     *
+     * @return Appointment[]
+     */
     public function findByGarageWithFilters(Garage $garage, ?string $statut, ?\DateTimeImmutable $date): array
     {
         $queryBuilder = $this->createQueryBuilder('appointment')
@@ -87,7 +103,7 @@ class AppointmentRepository extends ServiceEntityRepository
             ->setParameter('garage', $garage)
             ->orderBy('appointment.dateDebut', 'ASC');
 
-        if ($statut !== null && $statut !== '') {
+        if (null !== $statut && '' !== $statut) {
             $queryBuilder
                 ->andWhere('appointment.statut = :statut')
                 ->setParameter('statut', $statut);

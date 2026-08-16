@@ -40,8 +40,8 @@ class AuthApiTest extends BaseApiTestCase
             unset($case['expectedField']);
             $payload = array_merge($payload, $case);
             $this->requestJson('POST', '/api/auth/register/client', $payload);
-            $field === null ? $this->assertResponseStatus(201) : $this->assertResponseStatus(400);
-            if ($field !== null) {
+            null === $field ? $this->assertResponseStatus(201) : $this->assertResponseStatus(400);
+            if (null !== $field) {
                 self::assertArrayHasKey($field, $this->lastJson['errors'] ?? []);
             }
         }

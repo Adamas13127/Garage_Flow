@@ -24,18 +24,85 @@ class Unavailability
     #[ORM\Column(length: 255, nullable: true)] private ?string $motif = null;
     #[ORM\Column] private ?\DateTimeImmutable $createdAt = null;
     /** Cette methode initialise la date de creation de l'indisponibilite. */
-    public function __construct() { $this->createdAt = new \DateTimeImmutable(); }
-    public function getId(): ?int { return $this->id; }
-    public function getGarage(): ?Garage { return $this->garage; }
-    public function setGarage(?Garage $garage): static { $this->garage = $garage; return $this; }
-    public function getCreatedBy(): ?User { return $this->createdBy; }
-    public function setCreatedBy(?User $createdBy): static { $this->createdBy = $createdBy; return $this; }
-    public function getDateDebut(): ?\DateTimeImmutable { return $this->dateDebut; }
-    public function setDateDebut(\DateTimeImmutable $dateDebut): static { $this->dateDebut = $dateDebut; return $this; }
-    public function getDateFin(): ?\DateTimeImmutable { return $this->dateFin; }
-    public function setDateFin(\DateTimeImmutable $dateFin): static { $this->dateFin = $dateFin; return $this; }
-    public function getMotif(): ?string { return $this->motif; }
-    public function setMotif(?string $motif): static { $this->motif = $motif; return $this; }
-    public function getCreatedAt(): ?\DateTimeImmutable { return $this->createdAt; }
-    public function setCreatedAt(\DateTimeImmutable $createdAt): static { $this->createdAt = $createdAt; return $this; }
+    public function __construct()
+    {
+        $this->createdAt = new \DateTimeImmutable();
+    }
+
+    public function getId(): ?int
+    {
+        return $this->id;
+    }
+
+    public function getGarage(): ?Garage
+    {
+        return $this->garage;
+    }
+
+    public function setGarage(?Garage $garage): static
+    {
+        $this->garage = $garage;
+
+        return $this;
+    }
+
+    public function getCreatedBy(): ?User
+    {
+        return $this->createdBy;
+    }
+
+    public function setCreatedBy(?User $createdBy): static
+    {
+        $this->createdBy = $createdBy;
+
+        return $this;
+    }
+
+    public function getDateDebut(): ?\DateTimeImmutable
+    {
+        return $this->dateDebut;
+    }
+
+    public function setDateDebut(\DateTimeImmutable $dateDebut): static
+    {
+        $this->dateDebut = $dateDebut;
+
+        return $this;
+    }
+
+    public function getDateFin(): ?\DateTimeImmutable
+    {
+        return $this->dateFin;
+    }
+
+    public function setDateFin(\DateTimeImmutable $dateFin): static
+    {
+        $this->dateFin = $dateFin;
+
+        return $this;
+    }
+
+    public function getMotif(): ?string
+    {
+        return $this->motif;
+    }
+
+    public function setMotif(?string $motif): static
+    {
+        $this->motif = $motif;
+
+        return $this;
+    }
+
+    public function getCreatedAt(): ?\DateTimeImmutable
+    {
+        return $this->createdAt;
+    }
+
+    public function setCreatedAt(\DateTimeImmutable $createdAt): static
+    {
+        $this->createdAt = $createdAt;
+
+        return $this;
+    }
 }

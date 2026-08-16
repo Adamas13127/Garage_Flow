@@ -23,15 +23,25 @@ class UpdateGarageRequest
     public ?string $description = null;
     #[Assert\Length(max: 255)] public ?string $logoUrl = null;
     public ?bool $actif = null;
+    /** @var array<string, bool> */
     private array $providedFields = [];
-    public function markProvided(string $field): void { $this->providedFields[$field] = true; }
-    public function hasProvided(string $field): bool { return isset($this->providedFields[$field]); }
+
+    public function markProvided(string $field): void
+    {
+        $this->providedFields[$field] = true;
+    }
+
+    public function hasProvided(string $field): bool
+    {
+        return isset($this->providedFields[$field]);
+    }
+
     /** Cette methode refuse les champs obligatoires vides quand ils sont modifies. */
     #[Assert\Callback]
     public function validateRequiredStrings(ExecutionContextInterface $context): void
     {
         foreach (['nom', 'adresse', 'ville', 'codePostal'] as $field) {
-            if ($this->hasProvided($field) && trim((string) $this->$field) === '') {
+            if ($this->hasProvided($field) && '' === trim((string) $this->$field)) {
                 $context->buildViolation('Ce champ ne peut pas etre vide.')->atPath($field)->addViolation();
             }
         }

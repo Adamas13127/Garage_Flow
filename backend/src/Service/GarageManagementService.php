@@ -45,7 +45,7 @@ class GarageManagementService
             if (is_string($value)) {
                 $value = trim($value);
             }
-            if (in_array($field, ['telephone', 'email', 'description', 'logoUrl'], true) && $value === '') {
+            if (in_array($field, ['telephone', 'email', 'description', 'logoUrl'], true) && '' === $value) {
                 $value = null;
             }
             $garage->$setter($value);

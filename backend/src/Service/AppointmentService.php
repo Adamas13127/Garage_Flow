@@ -65,7 +65,11 @@ class AppointmentService
         return $appointment;
     }
 
-    /** Cette methode liste uniquement les rendez-vous du client connecte. */
+    /**
+     * Cette methode liste uniquement les rendez-vous du client connecte.
+     *
+     * @return Appointment[]
+     */
     public function getAppointmentsForClient(User $client): array
     {
         return $this->appointmentRepository->findByClient($client);
@@ -113,12 +117,12 @@ class AppointmentService
     /** Cette methode transforme une chaine vide en null pour stocker proprement le commentaire optionnel. */
     private function nullableTrim(?string $value): ?string
     {
-        if ($value === null) {
+        if (null === $value) {
             return null;
         }
 
         $trimmed = trim($value);
 
-        return $trimmed === '' ? null : $trimmed;
+        return '' === $trimmed ? null : $trimmed;
     }
 }

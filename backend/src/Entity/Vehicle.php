@@ -31,27 +31,147 @@ class Vehicle
     #[ORM\Column(nullable: true)] private ?\DateTimeImmutable $updatedAt = null;
     /** @var Collection<int, Appointment> */ #[ORM\OneToMany(mappedBy: 'vehicle', targetEntity: Appointment::class)] private Collection $appointments;
     /** Cette methode initialise les rendez-vous du vehicule et sa date de creation. */
-    public function __construct() { $this->createdAt = new \DateTimeImmutable(); $this->appointments = new ArrayCollection(); }
-    public function getId(): ?int { return $this->id; }
-    public function getClient(): ?User { return $this->client; }
-    public function setClient(?User $client): static { $this->client = $client; return $this; }
-    public function getMarque(): ?string { return $this->marque; }
-    public function setMarque(string $marque): static { $this->marque = $marque; return $this; }
-    public function getModele(): ?string { return $this->modele; }
-    public function setModele(string $modele): static { $this->modele = $modele; return $this; }
-    public function getPlaqueImmatriculation(): ?string { return $this->plaqueImmatriculation; }
-    public function setPlaqueImmatriculation(string $plaqueImmatriculation): static { $this->plaqueImmatriculation = $plaqueImmatriculation; return $this; }
-    public function getKilometrage(): ?int { return $this->kilometrage; }
-    public function setKilometrage(?int $kilometrage): static { $this->kilometrage = $kilometrage; return $this; }
-    public function getAnnee(): ?int { return $this->annee; }
-    public function setAnnee(?int $annee): static { $this->annee = $annee; return $this; }
-    public function getCarburant(): ?string { return $this->carburant; }
-    public function setCarburant(?string $carburant): static { $this->carburant = $carburant; return $this; }
-    public function getCreatedAt(): ?\DateTimeImmutable { return $this->createdAt; }
-    public function setCreatedAt(\DateTimeImmutable $createdAt): static { $this->createdAt = $createdAt; return $this; }
-    public function getUpdatedAt(): ?\DateTimeImmutable { return $this->updatedAt; }
-    public function setUpdatedAt(?\DateTimeImmutable $updatedAt): static { $this->updatedAt = $updatedAt; return $this; }
-    public function getAppointments(): Collection { return $this->appointments; }
-    public function addAppointment(Appointment $appointment): static { if (!$this->appointments->contains($appointment)) { $this->appointments->add($appointment); $appointment->setVehicle($this); } return $this; }
-    public function removeAppointment(Appointment $appointment): static { if ($this->appointments->removeElement($appointment) && $appointment->getVehicle() === $this) { $appointment->setVehicle(null); } return $this; }
+    public function __construct()
+    {
+        $this->createdAt = new \DateTimeImmutable();
+        $this->appointments = new ArrayCollection();
+    }
+
+    public function getId(): ?int
+    {
+        return $this->id;
+    }
+
+    public function getClient(): ?User
+    {
+        return $this->client;
+    }
+
+    public function setClient(?User $client): static
+    {
+        $this->client = $client;
+
+        return $this;
+    }
+
+    public function getMarque(): ?string
+    {
+        return $this->marque;
+    }
+
+    public function setMarque(string $marque): static
+    {
+        $this->marque = $marque;
+
+        return $this;
+    }
+
+    public function getModele(): ?string
+    {
+        return $this->modele;
+    }
+
+    public function setModele(string $modele): static
+    {
+        $this->modele = $modele;
+
+        return $this;
+    }
+
+    public function getPlaqueImmatriculation(): ?string
+    {
+        return $this->plaqueImmatriculation;
+    }
+
+    public function setPlaqueImmatriculation(string $plaqueImmatriculation): static
+    {
+        $this->plaqueImmatriculation = $plaqueImmatriculation;
+
+        return $this;
+    }
+
+    public function getKilometrage(): ?int
+    {
+        return $this->kilometrage;
+    }
+
+    public function setKilometrage(?int $kilometrage): static
+    {
+        $this->kilometrage = $kilometrage;
+
+        return $this;
+    }
+
+    public function getAnnee(): ?int
+    {
+        return $this->annee;
+    }
+
+    public function setAnnee(?int $annee): static
+    {
+        $this->annee = $annee;
+
+        return $this;
+    }
+
+    public function getCarburant(): ?string
+    {
+        return $this->carburant;
+    }
+
+    public function setCarburant(?string $carburant): static
+    {
+        $this->carburant = $carburant;
+
+        return $this;
+    }
+
+    public function getCreatedAt(): ?\DateTimeImmutable
+    {
+        return $this->createdAt;
+    }
+
+    public function setCreatedAt(\DateTimeImmutable $createdAt): static
+    {
+        $this->createdAt = $createdAt;
+
+        return $this;
+    }
+
+    public function getUpdatedAt(): ?\DateTimeImmutable
+    {
+        return $this->updatedAt;
+    }
+
+    public function setUpdatedAt(?\DateTimeImmutable $updatedAt): static
+    {
+        $this->updatedAt = $updatedAt;
+
+        return $this;
+    }
+
+    /** @return Collection<int, Appointment> */
+    public function getAppointments(): Collection
+    {
+        return $this->appointments;
+    }
+
+    public function addAppointment(Appointment $appointment): static
+    {
+        if (!$this->appointments->contains($appointment)) {
+            $this->appointments->add($appointment);
+            $appointment->setVehicle($this);
+        }
+
+return $this;
+    }
+
+    public function removeAppointment(Appointment $appointment): static
+    {
+        if ($this->appointments->removeElement($appointment) && $appointment->getVehicle() === $this) {
+            $appointment->setVehicle(null);
+        }
+
+return $this;
+    }
 }

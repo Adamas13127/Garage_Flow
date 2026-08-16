@@ -26,7 +26,11 @@ class OpeningHourRepository extends ServiceEntityRepository
         parent::__construct($registry, OpeningHour::class);
     }
 
-    /** Cette methode retourne les horaires actifs visibles pour un garage. */
+    /**
+     * Cette methode retourne les horaires actifs visibles pour un garage.
+     *
+     * @return OpeningHour[]
+     */
     public function findActiveByGarage(Garage $garage): array
     {
         return $this->createQueryBuilder('hour')
@@ -39,7 +43,11 @@ class OpeningHourRepository extends ServiceEntityRepository
             ->getResult();
     }
 
-    /** Cette methode retourne tous les horaires du garage rattache au gerant. */
+    /**
+     * Cette methode retourne tous les horaires du garage rattache au gerant.
+     *
+     * @return OpeningHour[]
+     */
     public function findByGarage(Garage $garage): array
     {
         return $this->createQueryBuilder('hour')
@@ -62,7 +70,12 @@ class OpeningHourRepository extends ServiceEntityRepository
             ->getQuery()
             ->getOneOrNullResult();
     }
-    /** Cette methode retourne les horaires actifs d'un garage pour un jour precis de la semaine. */
+
+    /**
+     * Cette methode retourne les horaires actifs d'un garage pour un jour precis de la semaine.
+     *
+     * @return OpeningHour[]
+     */
     public function findActiveByGarageAndWeekday(Garage $garage, int $weekday): array
     {
         return $this->createQueryBuilder('hour')

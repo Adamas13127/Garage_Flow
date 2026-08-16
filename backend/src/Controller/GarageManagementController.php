@@ -27,7 +27,6 @@ use App\Service\GarageManagementService;
 use App\Service\OpeningHourService;
 use App\Service\ServicePrestationService;
 use App\Service\UnavailabilityService;
-use JsonException;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -153,6 +152,7 @@ class GarageManagementController extends AbstractController
     {
         try {
             $this->servicePrestationService->disable($this->garage(), $id);
+
             return new JsonResponse(null, Response::HTTP_NO_CONTENT);
         } catch (GarageResourceNotFoundException $exception) {
             return $this->json(['message' => $exception->getMessage()], Response::HTTP_NOT_FOUND);
@@ -232,6 +232,7 @@ class GarageManagementController extends AbstractController
     {
         try {
             $this->openingHourService->disable($this->garage(), $id);
+
             return new JsonResponse(null, Response::HTTP_NO_CONTENT);
         } catch (GarageResourceNotFoundException $exception) {
             return $this->json(['message' => $exception->getMessage()], Response::HTTP_NOT_FOUND);
@@ -310,6 +311,7 @@ class GarageManagementController extends AbstractController
     {
         try {
             $this->unavailabilityService->delete($this->garage(), $id);
+
             return new JsonResponse(null, Response::HTTP_NO_CONTENT);
         } catch (GarageResourceNotFoundException $exception) {
             return $this->json(['message' => $exception->getMessage()], Response::HTTP_NOT_FOUND);
@@ -333,19 +335,27 @@ class GarageManagementController extends AbstractController
         return $this->garageManagementService->getGarageForUser($this->user());
     }
 
-    /** Cette methode transforme le JSON recu en tableau PHP utilisable par les DTO. */
+    /**
+     * Cette methode transforme le JSON recu en tableau PHP utilisable par les DTO.
+     *
+     * @return array<string, mixed>|JsonResponse
+     */
     private function payload(Request $request): array|JsonResponse
     {
         try {
             $payload = json_decode($request->getContent(), true, 512, JSON_THROW_ON_ERROR);
-        } catch (JsonException) {
+        } catch (\JsonException) {
             return $this->json(['message' => 'Le JSON envoye est invalide.'], Response::HTTP_BAD_REQUEST);
         }
 
         return is_array($payload) ? $payload : $this->json(['message' => 'Les donnees envoyees sont invalides.'], Response::HTTP_BAD_REQUEST);
     }
 
-    /** Cette methode remplit le DTO de modification du garage avec les champs reellement envoyes. */
+    /**
+     * Cette methode remplit le DTO de modification du garage avec les champs reellement envoyes.
+     *
+     * @param array<string, mixed> $payload
+     */
     private function fillUpdateGarageRequest(UpdateGarageRequest $dto, array $payload): void
     {
         foreach (['nom', 'adresse', 'ville', 'codePostal', 'telephone', 'email', 'description', 'logoUrl', 'actif'] as $field) {
@@ -354,11 +364,15 @@ class GarageManagementController extends AbstractController
             }
 
             $dto->markProvided($field);
-            $dto->$field = $field === 'actif' ? (bool) $payload[$field] : $this->nullableString($payload[$field]);
+            $dto->$field = 'actif' === $field ? (bool) $payload[$field] : $this->nullableString($payload[$field]);
         }
     }
 
-    /** Cette methode remplit le DTO de modification d'une prestation avec les bons types. */
+    /**
+     * Cette methode remplit le DTO de modification d'une prestation avec les bons types.
+     *
+     * @param array<string, mixed> $payload
+     */
     private function fillUpdateServiceRequest(UpdateServicePrestationRequest $dto, array $payload): void
     {
         if (array_key_exists('nom', $payload)) {
@@ -379,7 +393,11 @@ class GarageManagementController extends AbstractController
         }
     }
 
-    /** Cette methode remplit le DTO de modification d'un horaire avec les bons types. */
+    /**
+     * Cette methode remplit le DTO de modification d'un horaire avec les bons types.
+     *
+     * @param array<string, mixed> $payload
+     */
     private function fillUpdateOpeningHourRequest(UpdateOpeningHourRequest $dto, array $payload): void
     {
         if (array_key_exists('jourSemaine', $payload)) {
@@ -400,7 +418,11 @@ class GarageManagementController extends AbstractController
         }
     }
 
-    /** Cette methode remplit le DTO de modification d'une indisponibilite. */
+    /**
+     * Cette methode remplit le DTO de modification d'une indisponibilite.
+     *
+     * @param array<string, mixed> $payload
+     */
     private function fillUpdateUnavailabilityRequest(UpdateUnavailabilityRequest $dto, array $payload): void
     {
         foreach (['dateDebut', 'dateFin', 'motif'] as $field) {
@@ -417,7 +439,7 @@ class GarageManagementController extends AbstractController
     private function validateDto(object $dto): ?JsonResponse
     {
         $errors = $this->validator->validate($dto);
-        if (count($errors) === 0) {
+        if (0 === count($errors)) {
             return null;
         }
 
@@ -432,10 +454,14 @@ class GarageManagementController extends AbstractController
     /** Cette methode convertit une valeur JSON en chaine ou null. */
     private function nullableString(mixed $value): ?string
     {
-        return $value === null ? null : (string) $value;
+        return null === $value ? null : (string) $value;
     }
 
-    /** Cette methode prepare la reponse JSON d'un garage. */
+    /**
+     * Cette methode prepare la reponse JSON d'un garage.
+     *
+     * @return array<string, mixed>
+     */
     private function serializeGarage(Garage $garage): array
     {
         return [
@@ -452,7 +478,11 @@ class GarageManagementController extends AbstractController
         ];
     }
 
-    /** Cette methode prepare la reponse JSON d'une prestation. */
+    /**
+     * Cette methode prepare la reponse JSON d'une prestation.
+     *
+     * @return array<string, mixed>
+     */
     private function serializeService(ServicePrestation $service): array
     {
         return [
@@ -466,7 +496,11 @@ class GarageManagementController extends AbstractController
         ];
     }
 
-    /** Cette methode prepare la reponse JSON d'un horaire. */
+    /**
+     * Cette methode prepare la reponse JSON d'un horaire.
+     *
+     * @return array<string, mixed>
+     */
     private function serializeOpeningHour(OpeningHour $hour): array
     {
         return [
@@ -478,7 +512,11 @@ class GarageManagementController extends AbstractController
         ];
     }
 
-    /** Cette methode prepare la reponse JSON d'une indisponibilite. */
+    /**
+     * Cette methode prepare la reponse JSON d'une indisponibilite.
+     *
+     * @return array<string, mixed>
+     */
     private function serializeUnavailability(Unavailability $unavailability): array
     {
         return [

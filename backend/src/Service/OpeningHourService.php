@@ -24,8 +24,15 @@ class OpeningHourService
     {
     }
 
-    /** Cette methode liste les horaires du garage connecte. */
-    public function listForGarage(Garage $garage): array { return $this->repository->findByGarage($garage); }
+    /**
+     * Cette methode liste les horaires du garage connecte.
+     *
+     * @return OpeningHour[]
+     */
+    public function listForGarage(Garage $garage): array
+    {
+        return $this->repository->findByGarage($garage);
+    }
 
     /** Cette methode cree une plage horaire apres verification des heures. */
     public function create(Garage $garage, CreateOpeningHourRequest $request): OpeningHour
@@ -37,6 +44,7 @@ class OpeningHourService
         $hour->setGarage($garage)->setJourSemaine((int) $request->jourSemaine)->setHeureDebut($start)->setHeureFin($end)->setActif($request->actif ?? true);
         $this->entityManager->persist($hour);
         $this->entityManager->flush();
+
         return $hour;
     }
 
@@ -47,11 +55,20 @@ class OpeningHourService
         $start = $request->hasProvided('heureDebut') ? $this->parseTime((string) $request->heureDebut) : $hour->getHeureDebut();
         $end = $request->hasProvided('heureFin') ? $this->parseTime((string) $request->heureFin) : $hour->getHeureFin();
         $this->assertStartBeforeEnd($start, $end);
-        if ($request->hasProvided('jourSemaine')) { $hour->setJourSemaine((int) $request->jourSemaine); }
-        if ($request->hasProvided('heureDebut')) { $hour->setHeureDebut($start); }
-        if ($request->hasProvided('heureFin')) { $hour->setHeureFin($end); }
-        if ($request->hasProvided('actif')) { $hour->setActif((bool) $request->actif); }
+        if ($request->hasProvided('jourSemaine')) {
+            $hour->setJourSemaine((int) $request->jourSemaine);
+        }
+        if ($request->hasProvided('heureDebut')) {
+            $hour->setHeureDebut($start);
+        }
+        if ($request->hasProvided('heureFin')) {
+            $hour->setHeureFin($end);
+        }
+        if ($request->hasProvided('actif')) {
+            $hour->setActif((bool) $request->actif);
+        }
         $this->entityManager->flush();
+
         return $hour;
     }
 
@@ -66,7 +83,10 @@ class OpeningHourService
     private function getForGarage(Garage $garage, int $id): OpeningHour
     {
         $hour = $this->repository->findOneByGarageAndId($garage, $id);
-        if (!$hour instanceof OpeningHour) { throw new GarageResourceNotFoundException('Horaire introuvable.'); }
+        if (!$hour instanceof OpeningHour) {
+            throw new GarageResourceNotFoundException('Horaire introuvable.');
+        }
+
         return $hour;
     }
 
@@ -76,7 +96,7 @@ class OpeningHourService
         $time = \DateTimeImmutable::createFromFormat('!H:i', trim($value));
         $errors = \DateTimeImmutable::getLastErrors();
 
-        if (!$time instanceof \DateTimeImmutable || ($errors !== false && ($errors['warning_count'] > 0 || $errors['error_count'] > 0))) {
+        if (!$time instanceof \DateTimeImmutable || (false !== $errors && ($errors['warning_count'] > 0 || $errors['error_count'] > 0))) {
             throw new InvalidGarageScheduleException('Le format de l heure doit etre HH:MM.');
         }
 
@@ -86,6 +106,8 @@ class OpeningHourService
     /** Cette methode verifie que l'heure de debut est bien avant l'heure de fin. */
     private function assertStartBeforeEnd(\DateTimeImmutable $start, \DateTimeImmutable $end): void
     {
-        if ($start >= $end) { throw new InvalidGarageScheduleException('L heure de debut doit etre avant l heure de fin.'); }
+        if ($start >= $end) {
+            throw new InvalidGarageScheduleException('L heure de debut doit etre avant l heure de fin.');
+        }
     }
 }

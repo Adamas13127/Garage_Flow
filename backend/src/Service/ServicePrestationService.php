@@ -23,8 +23,15 @@ class ServicePrestationService
     {
     }
 
-    /** Cette methode liste toutes les prestations du garage connecte. */
-    public function listForGarage(Garage $garage): array { return $this->repository->findByGarage($garage); }
+    /**
+     * Cette methode liste toutes les prestations du garage connecte.
+     *
+     * @return ServicePrestation[]
+     */
+    public function listForGarage(Garage $garage): array
+    {
+        return $this->repository->findByGarage($garage);
+    }
 
     /** Cette methode cree une prestation pour le garage connecte. */
     public function create(Garage $garage, CreateServicePrestationRequest $request): ServicePrestation
@@ -33,6 +40,7 @@ class ServicePrestationService
         $service->setGarage($garage)->setNom(trim((string) $request->nom))->setDescription($this->nullableTrim($request->description))->setDureeMinutes((int) $request->dureeMinutes)->setActif($request->actif ?? true);
         $this->entityManager->persist($service);
         $this->entityManager->flush();
+
         return $service;
     }
 
@@ -40,12 +48,21 @@ class ServicePrestationService
     public function update(Garage $garage, int $id, UpdateServicePrestationRequest $request): ServicePrestation
     {
         $service = $this->getForGarage($garage, $id);
-        if ($request->hasProvided('nom')) { $service->setNom(trim((string) $request->nom)); }
-        if ($request->hasProvided('description')) { $service->setDescription($this->nullableTrim($request->description)); }
-        if ($request->hasProvided('dureeMinutes')) { $service->setDureeMinutes((int) $request->dureeMinutes); }
-        if ($request->hasProvided('actif')) { $service->setActif((bool) $request->actif); }
+        if ($request->hasProvided('nom')) {
+            $service->setNom(trim((string) $request->nom));
+        }
+        if ($request->hasProvided('description')) {
+            $service->setDescription($this->nullableTrim($request->description));
+        }
+        if ($request->hasProvided('dureeMinutes')) {
+            $service->setDureeMinutes((int) $request->dureeMinutes);
+        }
+        if ($request->hasProvided('actif')) {
+            $service->setActif((bool) $request->actif);
+        }
         $service->setUpdatedAt(new \DateTimeImmutable());
         $this->entityManager->flush();
+
         return $service;
     }
 
@@ -61,15 +78,21 @@ class ServicePrestationService
     private function getForGarage(Garage $garage, int $id): ServicePrestation
     {
         $service = $this->repository->findOneByGarageAndId($garage, $id);
-        if (!$service instanceof ServicePrestation) { throw new GarageResourceNotFoundException('Prestation introuvable.'); }
+        if (!$service instanceof ServicePrestation) {
+            throw new GarageResourceNotFoundException('Prestation introuvable.');
+        }
+
         return $service;
     }
 
     /** Cette methode transforme une chaine vide en valeur nulle. */
     private function nullableTrim(?string $value): ?string
     {
-        if ($value === null) { return null; }
+        if (null === $value) {
+            return null;
+        }
         $trimmed = trim($value);
-        return $trimmed === '' ? null : $trimmed;
+
+        return '' === $trimmed ? null : $trimmed;
     }
 }

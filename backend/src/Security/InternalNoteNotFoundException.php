@@ -8,9 +8,7 @@
 
 namespace App\Security;
 
-use RuntimeException;
-
 /** Cette exception indique qu'une note interne est introuvable dans l'intervention autorisee. */
-class InternalNoteNotFoundException extends RuntimeException
+class InternalNoteNotFoundException extends \RuntimeException
 {
 }

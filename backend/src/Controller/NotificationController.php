@@ -69,7 +69,11 @@ class NotificationController extends AbstractController
         return $user;
     }
 
-    /** Cette methode transforme une notification en tableau JSON public. */
+    /**
+     * Cette methode transforme une notification en tableau JSON public.
+     *
+     * @return array<string, mixed>
+     */
     private function serializeNotification(Notification $notification): array
     {
         return [

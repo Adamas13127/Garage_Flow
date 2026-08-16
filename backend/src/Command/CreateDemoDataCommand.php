@@ -90,6 +90,7 @@ class CreateDemoDataCommand extends Command
 
     /**
      * Cette methode cree les roles si la base locale n'a pas encore recu les fixtures.
+     *
      * @return array<string, Role>
      */
     private function ensureRoles(): array
@@ -119,6 +120,7 @@ class CreateDemoDataCommand extends Command
 
     /**
      * Cette methode garantit que les statuts de suivi atelier existent pour les interventions demo.
+     *
      * @return array<string, InterventionStatus>
      */
     private function ensureInterventionStatuses(): array
@@ -199,6 +201,7 @@ class CreateDemoDataCommand extends Command
 
     /**
      * Cette methode cree les prestations actives visibles dans le dashboard garage.
+     *
      * @return array<string, ServicePrestation>
      */
     private function ensureServices(Garage $garage): array
@@ -246,6 +249,7 @@ class CreateDemoDataCommand extends Command
 
     /**
      * Cette methode cree les vehicules du compte client de demonstration.
+     *
      * @return array<string, Vehicle>
      */
     private function ensureVehicles(User $client): array
@@ -278,8 +282,10 @@ class CreateDemoDataCommand extends Command
      * client (stable d'une execution a l'autre) plutot que sur la date de debut, qui change chaque
      * jour : chercher par date aurait recree un nouveau rendez-vous a chaque lancement au lieu de
      * mettre a jour celui de la veille, et aurait fini par accumuler des doublons perimes en base.
-     * @param array<string, Vehicle> $vehicles
+     *
+     * @param array<string, Vehicle>           $vehicles
      * @param array<string, ServicePrestation> $services
+     *
      * @return array<string, Appointment>
      */
     private function ensureAppointments(Garage $garage, User $client, array $vehicles, array $services): array
@@ -287,7 +293,7 @@ class CreateDemoDataCommand extends Command
         $definitions = [
             'attente_vidange' => [Appointment::STATUT_EN_ATTENTE, '+2 days 09:00', $vehicles['AA-123-AA'], $services['Vidange moteur'], 'Demande de vidange avant un long trajet.'],
             'attente_clim' => [Appointment::STATUT_EN_ATTENTE, '+4 days 10:30', $vehicles['BB-456-BB'], $services['Controle climatisation'], "Controle climatisation avant l'ete."],
-            'confirme_annulable' => [Appointment::STATUT_CONFIRME, '+3 days 14:00', $vehicles['BB-456-BB'], $services['Vidange moteur'], "Vidange programmee, a annuler pour la demonstration si besoin."],
+            'confirme_annulable' => [Appointment::STATUT_CONFIRME, '+3 days 14:00', $vehicles['BB-456-BB'], $services['Vidange moteur'], 'Vidange programmee, a annuler pour la demonstration si besoin.'],
             'confirme_diag' => [Appointment::STATUT_CONFIRME, '-1 days 09:00', $vehicles['AA-123-AA'], $services['Diagnostic electronique'], 'Voyant moteur allume.'],
             'confirme_freins' => [Appointment::STATUT_CONFIRME, '-3 days 10:00', $vehicles['BB-456-BB'], $services['Remplacement plaquettes de frein'], 'Bruit au freinage.'],
             'confirme_revision' => [Appointment::STATUT_CONFIRME, '-6 days 09:00', $vehicles['AA-123-AA'], $services['Revision complete'], 'Revision complete avant controle technique.'],
@@ -319,8 +325,10 @@ class CreateDemoDataCommand extends Command
      * dont le vehicule a deja ete depose (dates passees) sont rattaches a une intervention : un
      * rendez-vous futur ne peut pas avoir d'intervention en cours, l'atelier n'a pas encore vu le
      * vehicule.
-     * @param array<string, Appointment> $appointments
+     *
+     * @param array<string, Appointment>        $appointments
      * @param array<string, InterventionStatus> $statuses
+     *
      * @return array<string, Intervention>
      */
     private function ensureInterventions(array $appointments, array $statuses, User $employee): array
@@ -358,7 +366,8 @@ class CreateDemoDataCommand extends Command
 
     /**
      * Cette methode ajoute les lignes d'historique manquantes sans les dupliquer.
-     * @param list<string> $historyCodes
+     *
+     * @param list<string>                      $historyCodes
      * @param array<string, InterventionStatus> $statuses
      */
     private function ensureStatusHistory(Intervention $intervention, array $historyCodes, array $statuses, User $employee): void
@@ -381,6 +390,7 @@ class CreateDemoDataCommand extends Command
 
     /**
      * Cette methode cree des notes internes uniquement visibles par le garage.
+     *
      * @param array<string, Intervention> $interventions
      */
     private function ensureInternalNotes(array $interventions, User $employee): void
@@ -405,7 +415,8 @@ class CreateDemoDataCommand extends Command
 
     /**
      * Cette methode cree des notifications visibles dans les compteurs web et mobile.
-     * @param array<string, Appointment> $appointments
+     *
+     * @param array<string, Appointment>  $appointments
      * @param array<string, Intervention> $interventions
      */
     private function ensureNotifications(User $manager, User $client, array $appointments, array $interventions): void
@@ -433,10 +444,11 @@ class CreateDemoDataCommand extends Command
 
     /**
      * Cette methode affiche un resume lisible pour guider la demonstration locale.
-     * @param array<string, Vehicle> $vehicles
+     *
+     * @param array<string, Vehicle>           $vehicles
      * @param array<string, ServicePrestation> $services
-     * @param array<string, Appointment> $appointments
-     * @param array<string, Intervention> $interventions
+     * @param array<string, Appointment>       $appointments
+     * @param array<string, Intervention>      $interventions
      */
     private function printSummary(SymfonyStyle $io, Garage $garage, User $manager, User $employee, User $client, array $vehicles, array $services, array $appointments, array $interventions): void
     {
@@ -461,8 +473,14 @@ class CreateDemoDataCommand extends Command
     }
 
     /** Cette methode incremente le compteur de creation affiche dans le resume. */
-    private function markCreated(string $label): void { $this->created[$label] = ($this->created[$label] ?? 0) + 1; }
+    private function markCreated(string $label): void
+    {
+        $this->created[$label] = ($this->created[$label] ?? 0) + 1;
+    }
 
     /** Cette methode incremente le compteur de reutilisation affiche dans le resume. */
-    private function markReused(string $label): void { $this->reused[$label] = ($this->reused[$label] ?? 0) + 1; }
+    private function markReused(string $label): void
+    {
+        $this->reused[$label] = ($this->reused[$label] ?? 0) + 1;
+    }
 }

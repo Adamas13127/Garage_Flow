@@ -8,9 +8,7 @@
 
 namespace App\Security;
 
-use RuntimeException;
-
 /** Cette exception indique qu'une notification est introuvable pour l'utilisateur connecte. */
-class NotificationNotFoundException extends RuntimeException
+class NotificationNotFoundException extends \RuntimeException
 {
 }

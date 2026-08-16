@@ -26,7 +26,11 @@ class InterventionStatusHistoryRepository extends ServiceEntityRepository
         parent::__construct($registry, InterventionStatusHistory::class);
     }
 
-    /** Cette methode retourne tout l'historique d'une intervention pour le garage. */
+    /**
+     * Cette methode retourne tout l'historique d'une intervention pour le garage.
+     *
+     * @return InterventionStatusHistory[]
+     */
     public function findHistoryByIntervention(Intervention $intervention): array
     {
         return $this->createQueryBuilder('history')
@@ -37,7 +41,11 @@ class InterventionStatusHistoryRepository extends ServiceEntityRepository
             ->getResult();
     }
 
-    /** Cette methode retourne seulement l'historique visible par le client. */
+    /**
+     * Cette methode retourne seulement l'historique visible par le client.
+     *
+     * @return InterventionStatusHistory[]
+     */
     public function findVisibleHistoryByIntervention(Intervention $intervention): array
     {
         return $this->createQueryBuilder('history')

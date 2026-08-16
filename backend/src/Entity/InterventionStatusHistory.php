@@ -23,16 +23,73 @@ class InterventionStatusHistory
     #[ORM\Column(type: 'text', nullable: true)] private ?string $commentaire = null;
     #[ORM\Column] private ?\DateTimeImmutable $changedAt = null;
     /** Cette methode initialise la date du changement de statut. */
-    public function __construct() { $this->changedAt = new \DateTimeImmutable(); }
-    public function getId(): ?int { return $this->id; }
-    public function getIntervention(): ?Intervention { return $this->intervention; }
-    public function setIntervention(?Intervention $intervention): static { $this->intervention = $intervention; return $this; }
-    public function getStatus(): ?InterventionStatus { return $this->status; }
-    public function setStatus(?InterventionStatus $status): static { $this->status = $status; return $this; }
-    public function getChangedBy(): ?User { return $this->changedBy; }
-    public function setChangedBy(?User $changedBy): static { $this->changedBy = $changedBy; return $this; }
-    public function getCommentaire(): ?string { return $this->commentaire; }
-    public function setCommentaire(?string $commentaire): static { $this->commentaire = $commentaire; return $this; }
-    public function getChangedAt(): ?\DateTimeImmutable { return $this->changedAt; }
-    public function setChangedAt(\DateTimeImmutable $changedAt): static { $this->changedAt = $changedAt; return $this; }
+    public function __construct()
+    {
+        $this->changedAt = new \DateTimeImmutable();
+    }
+
+    public function getId(): ?int
+    {
+        return $this->id;
+    }
+
+    public function getIntervention(): ?Intervention
+    {
+        return $this->intervention;
+    }
+
+    public function setIntervention(?Intervention $intervention): static
+    {
+        $this->intervention = $intervention;
+
+        return $this;
+    }
+
+    public function getStatus(): ?InterventionStatus
+    {
+        return $this->status;
+    }
+
+    public function setStatus(?InterventionStatus $status): static
+    {
+        $this->status = $status;
+
+        return $this;
+    }
+
+    public function getChangedBy(): ?User
+    {
+        return $this->changedBy;
+    }
+
+    public function setChangedBy(?User $changedBy): static
+    {
+        $this->changedBy = $changedBy;
+
+        return $this;
+    }
+
+    public function getCommentaire(): ?string
+    {
+        return $this->commentaire;
+    }
+
+    public function setCommentaire(?string $commentaire): static
+    {
+        $this->commentaire = $commentaire;
+
+        return $this;
+    }
+
+    public function getChangedAt(): ?\DateTimeImmutable
+    {
+        return $this->changedAt;
+    }
+
+    public function setChangedAt(\DateTimeImmutable $changedAt): static
+    {
+        $this->changedAt = $changedAt;
+
+        return $this;
+    }
 }

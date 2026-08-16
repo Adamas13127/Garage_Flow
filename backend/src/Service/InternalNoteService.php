@@ -27,7 +27,11 @@ class InternalNoteService
     ) {
     }
 
-    /** Cette methode liste les notes internes d'une intervention du garage connecte. */
+    /**
+     * Cette methode liste les notes internes d'une intervention du garage connecte.
+     *
+     * @return InternalNote[]
+     */
     public function listForIntervention(Garage $garage, int $interventionId): array
     {
         $intervention = $this->interventionService->getForGarage($garage, $interventionId);

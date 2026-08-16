@@ -54,14 +54,14 @@ class UpdateVehicleRequest
     public function validateProvidedValues(ExecutionContextInterface $context): void
     {
         foreach (['marque', 'modele', 'plaqueImmatriculation'] as $field) {
-            if ($this->hasProvided($field) && trim((string) $this->$field) === '') {
+            if ($this->hasProvided($field) && '' === trim((string) $this->$field)) {
                 $context->buildViolation('Ce champ ne peut pas etre vide.')
                     ->atPath($field)
                     ->addViolation();
             }
         }
 
-        if ($this->annee !== null && $this->annee > ((int) date('Y') + 1)) {
+        if (null !== $this->annee && $this->annee > ((int) date('Y') + 1)) {
             $context->buildViolation('L annee ne peut pas etre superieure a l annee prochaine.')
                 ->atPath('annee')
                 ->addViolation();

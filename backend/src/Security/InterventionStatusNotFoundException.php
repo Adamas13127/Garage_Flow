@@ -8,9 +8,7 @@
 
 namespace App\Security;
 
-use RuntimeException;
-
 /** Cette exception indique que le statut d'intervention demande est introuvable. */
-class InterventionStatusNotFoundException extends RuntimeException
+class InterventionStatusNotFoundException extends \RuntimeException
 {
 }

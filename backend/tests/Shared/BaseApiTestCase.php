@@ -46,18 +46,18 @@ abstract class BaseApiTestCase extends WebTestCase
         $server = ['HTTP_ACCEPT' => 'application/json'];
         $content = '';
 
-        if ($payload !== null) {
+        if (null !== $payload) {
             $server['CONTENT_TYPE'] = 'application/json';
             $content = json_encode($payload, JSON_THROW_ON_ERROR);
         }
 
-        if ($token !== null) {
+        if (null !== $token) {
             $server['HTTP_AUTHORIZATION'] = 'Bearer '.$token;
         }
 
         $this->client->request($method, $uri, [], [], $server, $content);
         $body = $this->client->getResponse()->getContent();
-        $this->lastJson = is_string($body) && $body !== '' ? json_decode($body, true) : null;
+        $this->lastJson = is_string($body) && '' !== $body ? json_decode($body, true) : null;
 
         return is_array($this->lastJson) ? $this->lastJson : [];
     }
@@ -81,10 +81,10 @@ abstract class BaseApiTestCase extends WebTestCase
             if (($item['type'] ?? null) !== $type) {
                 continue;
             }
-            if ($appointmentId !== null && (int) ($item['appointmentId'] ?? 0) !== $appointmentId) {
+            if (null !== $appointmentId && (int) ($item['appointmentId'] ?? 0) !== $appointmentId) {
                 continue;
             }
-            if ($interventionId !== null && (int) ($item['interventionId'] ?? 0) !== $interventionId) {
+            if (null !== $interventionId && (int) ($item['interventionId'] ?? 0) !== $interventionId) {
                 continue;
             }
 

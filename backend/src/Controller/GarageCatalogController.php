@@ -38,7 +38,12 @@ class GarageCatalogController extends AbstractController
     #[Route('/{id}', name: 'api_garages_show', methods: ['GET'])]
     public function show(int $id): JsonResponse
     {
-        try { $garage = $this->catalogService->getActiveGarage($id); } catch (GarageNotFoundException $exception) { return $this->json(['message' => $exception->getMessage()], Response::HTTP_NOT_FOUND); }
+        try {
+            $garage = $this->catalogService->getActiveGarage($id);
+        } catch (GarageNotFoundException $exception) {
+            return $this->json(['message' => $exception->getMessage()], Response::HTTP_NOT_FOUND);
+        }
+
         return $this->json($this->serializeGarageDetail($garage));
     }
 
@@ -46,10 +51,16 @@ class GarageCatalogController extends AbstractController
     #[Route('/{id}/services', name: 'api_garages_services', methods: ['GET'])]
     public function services(int $id): JsonResponse
     {
-        try { $garage = $this->catalogService->getActiveGarage($id); } catch (GarageNotFoundException $exception) { return $this->json(['message' => $exception->getMessage()], Response::HTTP_NOT_FOUND); }
+        try {
+            $garage = $this->catalogService->getActiveGarage($id);
+        } catch (GarageNotFoundException $exception) {
+            return $this->json(['message' => $exception->getMessage()], Response::HTTP_NOT_FOUND);
+        }
+
         return $this->json(array_map(fn (ServicePrestation $service): array => $this->serializeService($service), $this->catalogService->getActiveServices($garage)));
     }
 
+    /** @return array<string, mixed> */
     private function serializeGarageDetail(Garage $garage): array
     {
         return $this->serializeGarage($garage) + [
@@ -59,21 +70,25 @@ class GarageCatalogController extends AbstractController
         ];
     }
 
+    /** @return array<string, mixed> */
     private function serializeGarage(Garage $garage): array
     {
         return ['id' => $garage->getId(), 'nom' => $garage->getNom(), 'adresse' => $garage->getAdresse(), 'ville' => $garage->getVille(), 'codePostal' => $garage->getCodePostal(), 'telephone' => $garage->getTelephone(), 'email' => $garage->getEmail(), 'description' => $garage->getDescription(), 'logoUrl' => $garage->getLogoUrl(), 'actif' => $garage->isActif()];
     }
 
+    /** @return array<string, mixed> */
     private function serializeService(ServicePrestation $service): array
     {
         return ['id' => $service->getId(), 'nom' => $service->getNom(), 'description' => $service->getDescription(), 'dureeMinutes' => $service->getDureeMinutes(), 'actif' => $service->isActif()];
     }
 
+    /** @return array<string, mixed> */
     private function serializeOpeningHour(OpeningHour $hour): array
     {
         return ['id' => $hour->getId(), 'jourSemaine' => $hour->getJourSemaine(), 'heureDebut' => $hour->getHeureDebut()?->format('H:i'), 'heureFin' => $hour->getHeureFin()?->format('H:i'), 'actif' => $hour->isActif()];
     }
 
+    /** @return array<string, mixed> */
     private function serializeUnavailability(Unavailability $unavailability): array
     {
         return ['id' => $unavailability->getId(), 'dateDebut' => $unavailability->getDateDebut()?->format(DATE_ATOM), 'dateFin' => $unavailability->getDateFin()?->format(DATE_ATOM), 'motif' => $unavailability->getMotif()];

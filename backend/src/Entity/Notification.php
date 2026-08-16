@@ -36,24 +36,121 @@ class Notification
     #[ORM\Column] private ?\DateTimeImmutable $createdAt = null;
     #[ORM\Column(nullable: true)] private ?\DateTimeImmutable $readAt = null;
     /** Cette methode initialise la date de creation et l'etat non lu de la notification. */
-    public function __construct() { $this->createdAt = new \DateTimeImmutable(); }
-    public function getId(): ?int { return $this->id; }
-    public function getRecipient(): ?User { return $this->recipient; }
-    public function setRecipient(?User $recipient): static { $this->recipient = $recipient; return $this; }
-    public function getAppointment(): ?Appointment { return $this->appointment; }
-    public function setAppointment(?Appointment $appointment): static { $this->appointment = $appointment; return $this; }
-    public function getIntervention(): ?Intervention { return $this->intervention; }
-    public function setIntervention(?Intervention $intervention): static { $this->intervention = $intervention; return $this; }
-    public function getType(): ?string { return $this->type; }
-    public function setType(string $type): static { $this->type = $type; return $this; }
-    public function getCanal(): ?string { return $this->canal; }
-    public function setCanal(string $canal): static { $this->canal = $canal; return $this; }
-    public function getContenu(): ?string { return $this->contenu; }
-    public function setContenu(string $contenu): static { $this->contenu = $contenu; return $this; }
-    public function isLu(): bool { return $this->lu; }
-    public function setLu(bool $lu): static { $this->lu = $lu; return $this; }
-    public function getCreatedAt(): ?\DateTimeImmutable { return $this->createdAt; }
-    public function setCreatedAt(\DateTimeImmutable $createdAt): static { $this->createdAt = $createdAt; return $this; }
-    public function getReadAt(): ?\DateTimeImmutable { return $this->readAt; }
-    public function setReadAt(?\DateTimeImmutable $readAt): static { $this->readAt = $readAt; return $this; }
+    public function __construct()
+    {
+        $this->createdAt = new \DateTimeImmutable();
+    }
+
+    public function getId(): ?int
+    {
+        return $this->id;
+    }
+
+    public function getRecipient(): ?User
+    {
+        return $this->recipient;
+    }
+
+    public function setRecipient(?User $recipient): static
+    {
+        $this->recipient = $recipient;
+
+        return $this;
+    }
+
+    public function getAppointment(): ?Appointment
+    {
+        return $this->appointment;
+    }
+
+    public function setAppointment(?Appointment $appointment): static
+    {
+        $this->appointment = $appointment;
+
+        return $this;
+    }
+
+    public function getIntervention(): ?Intervention
+    {
+        return $this->intervention;
+    }
+
+    public function setIntervention(?Intervention $intervention): static
+    {
+        $this->intervention = $intervention;
+
+        return $this;
+    }
+
+    public function getType(): ?string
+    {
+        return $this->type;
+    }
+
+    public function setType(string $type): static
+    {
+        $this->type = $type;
+
+        return $this;
+    }
+
+    public function getCanal(): ?string
+    {
+        return $this->canal;
+    }
+
+    public function setCanal(string $canal): static
+    {
+        $this->canal = $canal;
+
+        return $this;
+    }
+
+    public function getContenu(): ?string
+    {
+        return $this->contenu;
+    }
+
+    public function setContenu(string $contenu): static
+    {
+        $this->contenu = $contenu;
+
+        return $this;
+    }
+
+    public function isLu(): bool
+    {
+        return $this->lu;
+    }
+
+    public function setLu(bool $lu): static
+    {
+        $this->lu = $lu;
+
+        return $this;
+    }
+
+    public function getCreatedAt(): ?\DateTimeImmutable
+    {
+        return $this->createdAt;
+    }
+
+    public function setCreatedAt(\DateTimeImmutable $createdAt): static
+    {
+        $this->createdAt = $createdAt;
+
+        return $this;
+    }
+
+    public function getReadAt(): ?\DateTimeImmutable
+    {
+        return $this->readAt;
+    }
+
+    public function setReadAt(?\DateTimeImmutable $readAt): static
+    {
+        $this->readAt = $readAt;
+
+        return $this;
+    }
 }

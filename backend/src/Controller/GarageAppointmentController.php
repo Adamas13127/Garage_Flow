@@ -20,7 +20,6 @@ use App\Security\GarageNotFoundException;
 use App\Security\InvalidAppointmentRequestException;
 use App\Service\GarageAppointmentService;
 use App\Service\GarageManagementService;
-use JsonException;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -107,7 +106,7 @@ class GarageAppointmentController extends AbstractController
         }
 
         $dto = new RefuseAppointmentRequest();
-        $dto->motifRefus = array_key_exists('motifRefus', $payload) && $payload['motifRefus'] !== null ? (string) $payload['motifRefus'] : null;
+        $dto->motifRefus = array_key_exists('motifRefus', $payload) && null !== $payload['motifRefus'] ? (string) $payload['motifRefus'] : null;
 
         $validationResponse = $this->validateDto($dto);
         if ($validationResponse instanceof JsonResponse) {
@@ -140,16 +139,20 @@ class GarageAppointmentController extends AbstractController
         return $this->garageManagementService->getGarageForUser($this->user());
     }
 
-    /** Cette methode accepte un body JSON vide pour les actions simples comme refuser sans motif. */
+    /**
+     * Cette methode accepte un body JSON vide pour les actions simples comme refuser sans motif.
+     *
+     * @return array<string, mixed>|JsonResponse
+     */
     private function optionalPayload(Request $request): array|JsonResponse
     {
-        if (trim($request->getContent()) === '') {
+        if ('' === trim($request->getContent())) {
             return [];
         }
 
         try {
             $payload = json_decode($request->getContent(), true, 512, JSON_THROW_ON_ERROR);
-        } catch (JsonException) {
+        } catch (\JsonException) {
             return $this->json(['message' => 'Le JSON envoye est invalide.'], Response::HTTP_BAD_REQUEST);
         }
 
@@ -160,7 +163,7 @@ class GarageAppointmentController extends AbstractController
     private function validateDto(object $dto): ?JsonResponse
     {
         $errors = $this->validator->validate($dto);
-        if (count($errors) === 0) {
+        if (0 === count($errors)) {
             return null;
         }
 
@@ -172,7 +175,11 @@ class GarageAppointmentController extends AbstractController
         return $this->json(['message' => 'Les donnees envoyees sont invalides.', 'errors' => $details], Response::HTTP_BAD_REQUEST);
     }
 
-    /** Cette methode prepare la reponse JSON d'un rendez-vous garage sans exposer le mot de passe du client. */
+    /**
+     * Cette methode prepare la reponse JSON d'un rendez-vous garage sans exposer le mot de passe du client.
+     *
+     * @return array<string, mixed>
+     */
     private function serializeAppointment(Appointment $appointment): array
     {
         return [
@@ -205,7 +212,11 @@ class GarageAppointmentController extends AbstractController
         ];
     }
 
-    /** Cette methode prepare la reponse JSON de l'intervention creee automatiquement. */
+    /**
+     * Cette methode prepare la reponse JSON de l'intervention creee automatiquement.
+     *
+     * @return array<string, mixed>
+     */
     private function serializeIntervention(Intervention $intervention): array
     {
         return [

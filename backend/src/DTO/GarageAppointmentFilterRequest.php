@@ -24,7 +24,7 @@ class GarageAppointmentFilterRequest
     #[Assert\Callback]
     public function validateStatut(ExecutionContextInterface $context): void
     {
-        if ($this->statut === null || $this->statut === '') {
+        if (null === $this->statut || '' === $this->statut) {
             return;
         }
 

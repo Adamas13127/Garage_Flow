@@ -26,7 +26,11 @@ class NotificationRepository extends ServiceEntityRepository
         parent::__construct($registry, Notification::class);
     }
 
-    /** Cette methode liste les notifications d'un utilisateur, les plus recentes d'abord. */
+    /**
+     * Cette methode liste les notifications d'un utilisateur, les plus recentes d'abord.
+     *
+     * @return Notification[]
+     */
     public function findByRecipient(User $recipient): array
     {
         return $this->createQueryBuilder('notification')
@@ -37,7 +41,11 @@ class NotificationRepository extends ServiceEntityRepository
             ->getResult();
     }
 
-    /** Cette methode liste seulement les notifications non lues d'un utilisateur. */
+    /**
+     * Cette methode liste seulement les notifications non lues d'un utilisateur.
+     *
+     * @return Notification[]
+     */
     public function findUnreadByRecipient(User $recipient): array
     {
         return $this->createQueryBuilder('notification')

@@ -8,9 +8,7 @@
 
 namespace App\Security;
 
-use RuntimeException;
-
 /** Cette exception indique que le rendez-vous demande est introuvable pour ce client. */
-class AppointmentNotFoundException extends RuntimeException
+class AppointmentNotFoundException extends \RuntimeException
 {
 }

@@ -26,7 +26,11 @@ class UnavailabilityRepository extends ServiceEntityRepository
         parent::__construct($registry, Unavailability::class);
     }
 
-    /** Cette methode retourne les indisponibilites futures visibles dans le detail d'un garage. */
+    /**
+     * Cette methode retourne les indisponibilites futures visibles dans le detail d'un garage.
+     *
+     * @return Unavailability[]
+     */
     public function findFutureByGarage(Garage $garage): array
     {
         return $this->createQueryBuilder('unavailability')
@@ -39,7 +43,11 @@ class UnavailabilityRepository extends ServiceEntityRepository
             ->getResult();
     }
 
-    /** Cette methode retourne toutes les indisponibilites du garage rattache au gerant. */
+    /**
+     * Cette methode retourne toutes les indisponibilites du garage rattache au gerant.
+     *
+     * @return Unavailability[]
+     */
     public function findByGarage(Garage $garage): array
     {
         return $this->createQueryBuilder('unavailability')
@@ -61,7 +69,12 @@ class UnavailabilityRepository extends ServiceEntityRepository
             ->getQuery()
             ->getOneOrNullResult();
     }
-    /** Cette methode retrouve les indisponibilites qui chevauchent une periode precise. */
+
+    /**
+     * Cette methode retrouve les indisponibilites qui chevauchent une periode precise.
+     *
+     * @return Unavailability[]
+     */
     public function findForGarageBetween(Garage $garage, \DateTimeImmutable $start, \DateTimeImmutable $end): array
     {
         return $this->createQueryBuilder('unavailability')

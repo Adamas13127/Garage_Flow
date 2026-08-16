@@ -25,8 +25,15 @@ class UnavailabilityService
     {
     }
 
-    /** Cette methode liste les indisponibilites du garage connecte. */
-    public function listForGarage(Garage $garage): array { return $this->repository->findByGarage($garage); }
+    /**
+     * Cette methode liste les indisponibilites du garage connecte.
+     *
+     * @return Unavailability[]
+     */
+    public function listForGarage(Garage $garage): array
+    {
+        return $this->repository->findByGarage($garage);
+    }
 
     /** Cette methode cree une indisponibilite pour le garage connecte. */
     public function create(Garage $garage, User $user, CreateUnavailabilityRequest $request): Unavailability
@@ -38,6 +45,7 @@ class UnavailabilityService
         $unavailability->setGarage($garage)->setCreatedBy($user)->setDateDebut($start)->setDateFin($end)->setMotif($this->nullableTrim($request->motif));
         $this->entityManager->persist($unavailability);
         $this->entityManager->flush();
+
         return $unavailability;
     }
 
@@ -48,10 +56,17 @@ class UnavailabilityService
         $start = $request->hasProvided('dateDebut') ? $this->parseDate((string) $request->dateDebut) : $unavailability->getDateDebut();
         $end = $request->hasProvided('dateFin') ? $this->parseDate((string) $request->dateFin) : $unavailability->getDateFin();
         $this->assertStartBeforeEnd($start, $end);
-        if ($request->hasProvided('dateDebut')) { $unavailability->setDateDebut($start); }
-        if ($request->hasProvided('dateFin')) { $unavailability->setDateFin($end); }
-        if ($request->hasProvided('motif')) { $unavailability->setMotif($this->nullableTrim($request->motif)); }
+        if ($request->hasProvided('dateDebut')) {
+            $unavailability->setDateDebut($start);
+        }
+        if ($request->hasProvided('dateFin')) {
+            $unavailability->setDateFin($end);
+        }
+        if ($request->hasProvided('motif')) {
+            $unavailability->setMotif($this->nullableTrim($request->motif));
+        }
         $this->entityManager->flush();
+
         return $unavailability;
     }
 
@@ -66,26 +81,38 @@ class UnavailabilityService
     private function getForGarage(Garage $garage, int $id): Unavailability
     {
         $unavailability = $this->repository->findOneByGarageAndId($garage, $id);
-        if (!$unavailability instanceof Unavailability) { throw new GarageResourceNotFoundException('Indisponibilite introuvable.'); }
+        if (!$unavailability instanceof Unavailability) {
+            throw new GarageResourceNotFoundException('Indisponibilite introuvable.');
+        }
+
         return $unavailability;
     }
 
     /** Cette methode convertit une date ISO ou lisible par PHP en DateTimeImmutable. */
     private function parseDate(string $value): \DateTimeImmutable
     {
-        try { return new \DateTimeImmutable(trim($value)); } catch (\Exception) { throw new InvalidGarageScheduleException('Le format de date est invalide.'); }
+        try {
+            return new \DateTimeImmutable(trim($value));
+        } catch (\Exception) {
+            throw new InvalidGarageScheduleException('Le format de date est invalide.');
+        }
     }
 
     /** Cette methode verifie que la date de debut est bien avant la date de fin. */
     private function assertStartBeforeEnd(\DateTimeImmutable $start, \DateTimeImmutable $end): void
     {
-        if ($start >= $end) { throw new InvalidGarageScheduleException('La date de debut doit etre avant la date de fin.'); }
+        if ($start >= $end) {
+            throw new InvalidGarageScheduleException('La date de debut doit etre avant la date de fin.');
+        }
     }
 
     private function nullableTrim(?string $value): ?string
     {
-        if ($value === null) { return null; }
+        if (null === $value) {
+            return null;
+        }
         $trimmed = trim($value);
-        return $trimmed === '' ? null : $trimmed;
+
+        return '' === $trimmed ? null : $trimmed;
     }
 }

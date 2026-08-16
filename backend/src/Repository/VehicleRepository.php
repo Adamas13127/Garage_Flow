@@ -69,7 +69,7 @@ class VehicleRepository extends ServiceEntityRepository
             ->setParameter('client', $client)
             ->setParameter('plate', $plate);
 
-        if ($excludedVehicle !== null && $excludedVehicle->getId() !== null) {
+        if (null !== $excludedVehicle && null !== $excludedVehicle->getId()) {
             $queryBuilder
                 ->andWhere('vehicle.id != :excludedId')
                 ->setParameter('excludedId', $excludedVehicle->getId());

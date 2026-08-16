@@ -26,7 +26,11 @@ class InternalNoteRepository extends ServiceEntityRepository
         parent::__construct($registry, InternalNote::class);
     }
 
-    /** Cette methode liste les notes internes d'une intervention pour le garage. */
+    /**
+     * Cette methode liste les notes internes d'une intervention pour le garage.
+     *
+     * @return InternalNote[]
+     */
     public function findNotesByIntervention(Intervention $intervention): array
     {
         return $this->createQueryBuilder('note')

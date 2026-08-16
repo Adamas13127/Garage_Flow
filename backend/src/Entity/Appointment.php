@@ -40,31 +40,171 @@ class Appointment
     #[ORM\OneToOne(mappedBy: 'appointment', targetEntity: Intervention::class)] private ?Intervention $intervention = null;
     /** @var Collection<int, Notification> */ #[ORM\OneToMany(mappedBy: 'appointment', targetEntity: Notification::class)] private Collection $notifications;
     /** Cette methode initialise les notifications du rendez-vous et sa date de creation. */
-    public function __construct() { $this->createdAt = new \DateTimeImmutable(); $this->notifications = new ArrayCollection(); }
-    public function getId(): ?int { return $this->id; }
-    public function getGarage(): ?Garage { return $this->garage; }
-    public function setGarage(?Garage $garage): static { $this->garage = $garage; return $this; }
-    public function getClient(): ?User { return $this->client; }
-    public function setClient(?User $client): static { $this->client = $client; return $this; }
-    public function getVehicle(): ?Vehicle { return $this->vehicle; }
-    public function setVehicle(?Vehicle $vehicle): static { $this->vehicle = $vehicle; return $this; }
-    public function getService(): ?ServicePrestation { return $this->service; }
-    public function setService(?ServicePrestation $service): static { $this->service = $service; return $this; }
-    public function getDateDebut(): ?\DateTimeImmutable { return $this->dateDebut; }
-    public function setDateDebut(\DateTimeImmutable $dateDebut): static { $this->dateDebut = $dateDebut; return $this; }
-    public function getDateFin(): ?\DateTimeImmutable { return $this->dateFin; }
-    public function setDateFin(\DateTimeImmutable $dateFin): static { $this->dateFin = $dateFin; return $this; }
-    public function getStatut(): string { return $this->statut; }
-    public function setStatut(string $statut): static { $this->statut = $statut; return $this; }
-    public function getCommentaireClient(): ?string { return $this->commentaireClient; }
-    public function setCommentaireClient(?string $commentaireClient): static { $this->commentaireClient = $commentaireClient; return $this; }
-    public function getCreatedAt(): ?\DateTimeImmutable { return $this->createdAt; }
-    public function setCreatedAt(\DateTimeImmutable $createdAt): static { $this->createdAt = $createdAt; return $this; }
-    public function getUpdatedAt(): ?\DateTimeImmutable { return $this->updatedAt; }
-    public function setUpdatedAt(?\DateTimeImmutable $updatedAt): static { $this->updatedAt = $updatedAt; return $this; }
-    public function getIntervention(): ?Intervention { return $this->intervention; }
-    public function setIntervention(?Intervention $intervention): static { $this->intervention = $intervention; return $this; }
-    public function getNotifications(): Collection { return $this->notifications; }
-    public function addNotification(Notification $notification): static { if (!$this->notifications->contains($notification)) { $this->notifications->add($notification); $notification->setAppointment($this); } return $this; }
-    public function removeNotification(Notification $notification): static { if ($this->notifications->removeElement($notification) && $notification->getAppointment() === $this) { $notification->setAppointment(null); } return $this; }
+    public function __construct()
+    {
+        $this->createdAt = new \DateTimeImmutable();
+        $this->notifications = new ArrayCollection();
+    }
+
+    public function getId(): ?int
+    {
+        return $this->id;
+    }
+
+    public function getGarage(): ?Garage
+    {
+        return $this->garage;
+    }
+
+    public function setGarage(?Garage $garage): static
+    {
+        $this->garage = $garage;
+
+        return $this;
+    }
+
+    public function getClient(): ?User
+    {
+        return $this->client;
+    }
+
+    public function setClient(?User $client): static
+    {
+        $this->client = $client;
+
+        return $this;
+    }
+
+    public function getVehicle(): ?Vehicle
+    {
+        return $this->vehicle;
+    }
+
+    public function setVehicle(?Vehicle $vehicle): static
+    {
+        $this->vehicle = $vehicle;
+
+        return $this;
+    }
+
+    public function getService(): ?ServicePrestation
+    {
+        return $this->service;
+    }
+
+    public function setService(?ServicePrestation $service): static
+    {
+        $this->service = $service;
+
+        return $this;
+    }
+
+    public function getDateDebut(): ?\DateTimeImmutable
+    {
+        return $this->dateDebut;
+    }
+
+    public function setDateDebut(\DateTimeImmutable $dateDebut): static
+    {
+        $this->dateDebut = $dateDebut;
+
+        return $this;
+    }
+
+    public function getDateFin(): ?\DateTimeImmutable
+    {
+        return $this->dateFin;
+    }
+
+    public function setDateFin(\DateTimeImmutable $dateFin): static
+    {
+        $this->dateFin = $dateFin;
+
+        return $this;
+    }
+
+    public function getStatut(): string
+    {
+        return $this->statut;
+    }
+
+    public function setStatut(string $statut): static
+    {
+        $this->statut = $statut;
+
+        return $this;
+    }
+
+    public function getCommentaireClient(): ?string
+    {
+        return $this->commentaireClient;
+    }
+
+    public function setCommentaireClient(?string $commentaireClient): static
+    {
+        $this->commentaireClient = $commentaireClient;
+
+        return $this;
+    }
+
+    public function getCreatedAt(): ?\DateTimeImmutable
+    {
+        return $this->createdAt;
+    }
+
+    public function setCreatedAt(\DateTimeImmutable $createdAt): static
+    {
+        $this->createdAt = $createdAt;
+
+        return $this;
+    }
+
+    public function getUpdatedAt(): ?\DateTimeImmutable
+    {
+        return $this->updatedAt;
+    }
+
+    public function setUpdatedAt(?\DateTimeImmutable $updatedAt): static
+    {
+        $this->updatedAt = $updatedAt;
+
+        return $this;
+    }
+
+    public function getIntervention(): ?Intervention
+    {
+        return $this->intervention;
+    }
+
+    public function setIntervention(?Intervention $intervention): static
+    {
+        $this->intervention = $intervention;
+
+        return $this;
+    }
+
+    /** @return Collection<int, Notification> */
+    public function getNotifications(): Collection
+    {
+        return $this->notifications;
+    }
+
+    public function addNotification(Notification $notification): static
+    {
+        if (!$this->notifications->contains($notification)) {
+            $this->notifications->add($notification);
+            $notification->setAppointment($this);
+        }
+
+return $this;
+    }
+
+    public function removeNotification(Notification $notification): static
+    {
+        if ($this->notifications->removeElement($notification) && $notification->getAppointment() === $this) {
+            $notification->setAppointment(null);
+        }
+
+return $this;
+    }
 }

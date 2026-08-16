@@ -25,7 +25,6 @@ use App\Security\InvalidAppointmentRequestException;
 use App\Service\GarageInterventionService;
 use App\Service\GarageManagementService;
 use App\Service\InternalNoteService;
-use JsonException;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -95,8 +94,8 @@ class GarageInterventionController extends AbstractController
         }
 
         $dto = new UpdateInterventionStatusRequest();
-        $dto->statusCode = array_key_exists('statusCode', $payload) && $payload['statusCode'] !== null ? (string) $payload['statusCode'] : null;
-        $dto->commentaire = array_key_exists('commentaire', $payload) && $payload['commentaire'] !== null ? (string) $payload['commentaire'] : null;
+        $dto->statusCode = array_key_exists('statusCode', $payload) && null !== $payload['statusCode'] ? (string) $payload['statusCode'] : null;
+        $dto->commentaire = array_key_exists('commentaire', $payload) && null !== $payload['commentaire'] ? (string) $payload['commentaire'] : null;
 
         $validationResponse = $this->validateDto($dto);
         if ($validationResponse instanceof JsonResponse) {
@@ -136,7 +135,7 @@ class GarageInterventionController extends AbstractController
         }
 
         $dto = new CreateInternalNoteRequest();
-        $dto->contenu = array_key_exists('contenu', $payload) && $payload['contenu'] !== null ? (string) $payload['contenu'] : null;
+        $dto->contenu = array_key_exists('contenu', $payload) && null !== $payload['contenu'] ? (string) $payload['contenu'] : null;
 
         $validationResponse = $this->validateDto($dto);
         if ($validationResponse instanceof JsonResponse) {
@@ -160,7 +159,7 @@ class GarageInterventionController extends AbstractController
         }
 
         $dto = new UpdateInternalNoteRequest();
-        $dto->contenu = array_key_exists('contenu', $payload) && $payload['contenu'] !== null ? (string) $payload['contenu'] : null;
+        $dto->contenu = array_key_exists('contenu', $payload) && null !== $payload['contenu'] ? (string) $payload['contenu'] : null;
 
         $validationResponse = $this->validateDto($dto);
         if ($validationResponse instanceof JsonResponse) {
@@ -204,12 +203,16 @@ class GarageInterventionController extends AbstractController
         return $this->garageManagementService->getGarageForUser($this->user());
     }
 
-    /** Cette methode decode le JSON envoye par le garage. */
+    /**
+     * Cette methode decode le JSON envoye par le garage.
+     *
+     * @return array<string, mixed>|JsonResponse
+     */
     private function payload(Request $request): array|JsonResponse
     {
         try {
             $payload = json_decode($request->getContent(), true, 512, JSON_THROW_ON_ERROR);
-        } catch (JsonException) {
+        } catch (\JsonException) {
             return $this->json(['message' => 'Le JSON envoye est invalide.'], Response::HTTP_BAD_REQUEST);
         }
 
@@ -220,7 +223,7 @@ class GarageInterventionController extends AbstractController
     private function validateDto(object $dto): ?JsonResponse
     {
         $errors = $this->validator->validate($dto);
-        if (count($errors) === 0) {
+        if (0 === count($errors)) {
             return null;
         }
 
@@ -232,7 +235,11 @@ class GarageInterventionController extends AbstractController
         return $this->json(['message' => 'Les donnees envoyees sont invalides.', 'errors' => $details], Response::HTTP_BAD_REQUEST);
     }
 
-    /** Cette methode prepare le resume d'une intervention pour les listes garage. */
+    /**
+     * Cette methode prepare le resume d'une intervention pour les listes garage.
+     *
+     * @return array<string, mixed>
+     */
     private function serializeInterventionSummary(Intervention $intervention): array
     {
         $appointment = $intervention->getAppointment();
@@ -250,7 +257,11 @@ class GarageInterventionController extends AbstractController
         ];
     }
 
-    /** Cette methode prepare le detail d'une intervention avec historique et notes internes. */
+    /**
+     * Cette methode prepare le detail d'une intervention avec historique et notes internes.
+     *
+     * @return array<string, mixed>
+     */
     private function serializeInterventionDetail(Intervention $intervention): array
     {
         return $this->serializeInterventionSummary($intervention) + [
@@ -259,7 +270,11 @@ class GarageInterventionController extends AbstractController
         ];
     }
 
-    /** Cette methode prepare un statut d'intervention pour la reponse JSON. */
+    /**
+     * Cette methode prepare un statut d'intervention pour la reponse JSON.
+     *
+     * @return array<string, mixed>
+     */
     private function serializeStatus(Intervention $intervention): array
     {
         $status = $intervention->getStatutActuel();
@@ -267,7 +282,11 @@ class GarageInterventionController extends AbstractController
         return ['code' => $status?->getCode(), 'libelle' => $status?->getLibelle(), 'ordreAffichage' => $status?->getOrdreAffichage(), 'visibleClient' => $status?->isVisibleClient()];
     }
 
-    /** Cette methode prepare une ligne d'historique pour le garage. */
+    /**
+     * Cette methode prepare une ligne d'historique pour le garage.
+     *
+     * @return array<string, mixed>
+     */
     private function serializeHistory(InterventionStatusHistory $history): array
     {
         return [
@@ -279,7 +298,11 @@ class GarageInterventionController extends AbstractController
         ];
     }
 
-    /** Cette methode prepare une note interne uniquement pour les reponses garage. */
+    /**
+     * Cette methode prepare une note interne uniquement pour les reponses garage.
+     *
+     * @return array<string, mixed>
+     */
     private function serializeNote(InternalNote $note): array
     {
         return [

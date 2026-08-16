@@ -15,7 +15,6 @@ use App\Entity\Vehicle;
 use App\Security\DuplicateVehiclePlateException;
 use App\Security\VehicleNotFoundException;
 use App\Service\VehicleService;
-use JsonException;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -60,9 +59,9 @@ class VehicleController extends AbstractController
         $dto->marque = isset($payload['marque']) ? (string) $payload['marque'] : null;
         $dto->modele = isset($payload['modele']) ? (string) $payload['modele'] : null;
         $dto->plaqueImmatriculation = isset($payload['plaqueImmatriculation']) ? (string) $payload['plaqueImmatriculation'] : null;
-        $dto->kilometrage = array_key_exists('kilometrage', $payload) && $payload['kilometrage'] !== null ? (int) $payload['kilometrage'] : null;
-        $dto->annee = array_key_exists('annee', $payload) && $payload['annee'] !== null ? (int) $payload['annee'] : null;
-        $dto->carburant = array_key_exists('carburant', $payload) && $payload['carburant'] !== null ? (string) $payload['carburant'] : null;
+        $dto->kilometrage = array_key_exists('kilometrage', $payload) && null !== $payload['kilometrage'] ? (int) $payload['kilometrage'] : null;
+        $dto->annee = array_key_exists('annee', $payload) && null !== $payload['annee'] ? (int) $payload['annee'] : null;
+        $dto->carburant = array_key_exists('carburant', $payload) && null !== $payload['carburant'] ? (string) $payload['carburant'] : null;
 
         $validationResponse = $this->validateDto($dto);
         if ($validationResponse instanceof JsonResponse) {
@@ -105,12 +104,12 @@ class VehicleController extends AbstractController
             }
         }
 
-        $dto->marque = array_key_exists('marque', $payload) && $payload['marque'] !== null ? (string) $payload['marque'] : null;
-        $dto->modele = array_key_exists('modele', $payload) && $payload['modele'] !== null ? (string) $payload['modele'] : null;
-        $dto->plaqueImmatriculation = array_key_exists('plaqueImmatriculation', $payload) && $payload['plaqueImmatriculation'] !== null ? (string) $payload['plaqueImmatriculation'] : null;
-        $dto->kilometrage = array_key_exists('kilometrage', $payload) && $payload['kilometrage'] !== null ? (int) $payload['kilometrage'] : null;
-        $dto->annee = array_key_exists('annee', $payload) && $payload['annee'] !== null ? (int) $payload['annee'] : null;
-        $dto->carburant = array_key_exists('carburant', $payload) && $payload['carburant'] !== null ? (string) $payload['carburant'] : null;
+        $dto->marque = array_key_exists('marque', $payload) && null !== $payload['marque'] ? (string) $payload['marque'] : null;
+        $dto->modele = array_key_exists('modele', $payload) && null !== $payload['modele'] ? (string) $payload['modele'] : null;
+        $dto->plaqueImmatriculation = array_key_exists('plaqueImmatriculation', $payload) && null !== $payload['plaqueImmatriculation'] ? (string) $payload['plaqueImmatriculation'] : null;
+        $dto->kilometrage = array_key_exists('kilometrage', $payload) && null !== $payload['kilometrage'] ? (int) $payload['kilometrage'] : null;
+        $dto->annee = array_key_exists('annee', $payload) && null !== $payload['annee'] ? (int) $payload['annee'] : null;
+        $dto->carburant = array_key_exists('carburant', $payload) && null !== $payload['carburant'] ? (string) $payload['carburant'] : null;
 
         $validationResponse = $this->validateDto($dto);
         if ($validationResponse instanceof JsonResponse) {
@@ -152,7 +151,11 @@ class VehicleController extends AbstractController
         return $user;
     }
 
-    /** Cette methode transforme un vehicule en tableau JSON sans exposer de donnees sensibles. */
+    /**
+     * Cette methode transforme un vehicule en tableau JSON sans exposer de donnees sensibles.
+     *
+     * @return array<string, mixed>
+     */
     private function serializeVehicle(Vehicle $vehicle): array
     {
         return [
@@ -168,12 +171,16 @@ class VehicleController extends AbstractController
         ];
     }
 
-    /** Cette methode decode le JSON envoye par le client et retourne une erreur 400 si le format est invalide. */
+    /**
+     * Cette methode decode le JSON envoye par le client et retourne une erreur 400 si le format est invalide.
+     *
+     * @return array<string, mixed>|JsonResponse
+     */
     private function decodeJsonPayload(Request $request): array|JsonResponse
     {
         try {
             $payload = json_decode($request->getContent(), true, 512, JSON_THROW_ON_ERROR);
-        } catch (JsonException) {
+        } catch (\JsonException) {
             return $this->json(['message' => 'Le JSON envoye est invalide.'], Response::HTTP_BAD_REQUEST);
         }
 
@@ -188,7 +195,7 @@ class VehicleController extends AbstractController
     private function validateDto(object $dto): ?JsonResponse
     {
         $errors = $this->validator->validate($dto);
-        if (count($errors) === 0) {
+        if (0 === count($errors)) {
             return null;
         }
 

@@ -26,7 +26,11 @@ class GarageCatalogService
     ) {
     }
 
-    /** Cette methode retourne tous les garages actifs visibles par les clients. */
+    /**
+     * Cette methode retourne tous les garages actifs visibles par les clients.
+     *
+     * @return Garage[]
+     */
     public function getActiveGarages(): array
     {
         return $this->garageRepository->findActiveGarages();
@@ -43,19 +47,31 @@ class GarageCatalogService
         return $garage;
     }
 
-    /** Cette methode retourne les prestations actives d'un garage public. */
+    /**
+     * Cette methode retourne les prestations actives d'un garage public.
+     *
+     * @return \App\Entity\ServicePrestation[]
+     */
     public function getActiveServices(Garage $garage): array
     {
         return $this->servicePrestationRepository->findActiveServicesByGarage($garage);
     }
 
-    /** Cette methode retourne les horaires actifs d'un garage public. */
+    /**
+     * Cette methode retourne les horaires actifs d'un garage public.
+     *
+     * @return \App\Entity\OpeningHour[]
+     */
     public function getActiveOpeningHours(Garage $garage): array
     {
         return $this->openingHourRepository->findActiveByGarage($garage);
     }
 
-    /** Cette methode retourne les futures indisponibilites utiles au detail public. */
+    /**
+     * Cette methode retourne les futures indisponibilites utiles au detail public.
+     *
+     * @return \App\Entity\Unavailability[]
+     */
     public function getFutureUnavailabilities(Garage $garage): array
     {
         return $this->unavailabilityRepository->findFutureByGarage($garage);

@@ -41,7 +41,7 @@ class CreateVehicleRequest
     #[Assert\Callback]
     public function validateYear(ExecutionContextInterface $context): void
     {
-        if ($this->annee !== null && $this->annee > ((int) date('Y') + 1)) {
+        if (null !== $this->annee && $this->annee > ((int) date('Y') + 1)) {
             $context->buildViolation('L annee ne peut pas etre superieure a l annee prochaine.')
                 ->atPath('annee')
                 ->addViolation();

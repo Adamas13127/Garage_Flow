@@ -26,7 +26,11 @@ class UserRepository extends ServiceEntityRepository
         parent::__construct($registry, User::class);
     }
 
-    /** Cette methode retrouve les gerants actifs d'un garage pour leur envoyer une notification. */
+    /**
+     * Cette methode retrouve les gerants actifs d'un garage pour leur envoyer une notification.
+     *
+     * @return User[]
+     */
     public function findActiveManagersByGarage(Garage $garage): array
     {
         return $this->createQueryBuilder('user')

@@ -58,14 +58,18 @@ class ClientInterventionController extends AbstractController
             throw $this->createAccessDeniedException('Authentification requise.');
         }
 
-        if ($user->getRole()?->getCode() !== 'ROLE_CLIENT') {
+        if ('ROLE_CLIENT' !== $user->getRole()?->getCode()) {
             throw new AccessDeniedException('Seul un client peut utiliser ces routes.');
         }
 
         return $user;
     }
 
-    /** Cette methode prepare l'intervention visible par le client sans notes internes. */
+    /**
+     * Cette methode prepare l'intervention visible par le client sans notes internes.
+     *
+     * @return array<string, mixed>
+     */
     private function serializeIntervention(Intervention $intervention, bool $withHistory): array
     {
         $appointment = $intervention->getAppointment();
@@ -92,7 +96,11 @@ class ClientInterventionController extends AbstractController
         return $data;
     }
 
-    /** Cette methode prepare une ligne d'historique autorisee pour le client. */
+    /**
+     * Cette methode prepare une ligne d'historique autorisee pour le client.
+     *
+     * @return array<string, mixed>
+     */
     private function serializeVisibleHistory(InterventionStatusHistory $history): array
     {
         return [

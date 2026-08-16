@@ -18,7 +18,6 @@ use App\Security\GarageResourceNotFoundException;
 use App\Security\InvalidAppointmentRequestException;
 use App\Security\VehicleNotFoundException;
 use App\Service\AppointmentService;
-use JsonException;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -64,8 +63,8 @@ class ClientAppointmentController extends AbstractController
         $dto->garageId = array_key_exists('garageId', $payload) ? (int) $payload['garageId'] : null;
         $dto->vehicleId = array_key_exists('vehicleId', $payload) ? (int) $payload['vehicleId'] : null;
         $dto->serviceId = array_key_exists('serviceId', $payload) ? (int) $payload['serviceId'] : null;
-        $dto->dateDebut = array_key_exists('dateDebut', $payload) && $payload['dateDebut'] !== null ? (string) $payload['dateDebut'] : null;
-        $dto->commentaireClient = array_key_exists('commentaireClient', $payload) && $payload['commentaireClient'] !== null ? (string) $payload['commentaireClient'] : null;
+        $dto->dateDebut = array_key_exists('dateDebut', $payload) && null !== $payload['dateDebut'] ? (string) $payload['dateDebut'] : null;
+        $dto->commentaireClient = array_key_exists('commentaireClient', $payload) && null !== $payload['commentaireClient'] ? (string) $payload['commentaireClient'] : null;
 
         $validationResponse = $this->validateDto($dto);
         if ($validationResponse instanceof JsonResponse) {
@@ -115,19 +114,23 @@ class ClientAppointmentController extends AbstractController
             throw $this->createAccessDeniedException('Authentification requise.');
         }
 
-        if ($user->getRole()?->getCode() !== 'ROLE_CLIENT') {
+        if ('ROLE_CLIENT' !== $user->getRole()?->getCode()) {
             throw new AccessDeniedException('Seul un client peut utiliser ces routes.');
         }
 
         return $user;
     }
 
-    /** Cette methode decode le JSON envoye par le client et retourne une erreur 400 si besoin. */
+    /**
+     * Cette methode decode le JSON envoye par le client et retourne une erreur 400 si besoin.
+     *
+     * @return array<string, mixed>|JsonResponse
+     */
     private function decodeJsonPayload(Request $request): array|JsonResponse
     {
         try {
             $payload = json_decode($request->getContent(), true, 512, JSON_THROW_ON_ERROR);
-        } catch (JsonException) {
+        } catch (\JsonException) {
             return $this->json(['message' => 'Le JSON envoye est invalide.'], Response::HTTP_BAD_REQUEST);
         }
 
@@ -142,7 +145,7 @@ class ClientAppointmentController extends AbstractController
     private function validateDto(object $dto): ?JsonResponse
     {
         $errors = $this->validator->validate($dto);
-        if (count($errors) === 0) {
+        if (0 === count($errors)) {
             return null;
         }
 
@@ -154,7 +157,11 @@ class ClientAppointmentController extends AbstractController
         return $this->json(['message' => 'Les donnees envoyees sont invalides.', 'errors' => $details], Response::HTTP_BAD_REQUEST);
     }
 
-    /** Cette methode prepare la reponse JSON d'un rendez-vous sans exposer d'informations inutiles. */
+    /**
+     * Cette methode prepare la reponse JSON d'un rendez-vous sans exposer d'informations inutiles.
+     *
+     * @return array<string, mixed>
+     */
     private function serializeAppointment(Appointment $appointment): array
     {
         return [

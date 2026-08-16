@@ -25,7 +25,11 @@ class GarageRepository extends ServiceEntityRepository
         parent::__construct($registry, Garage::class);
     }
 
-    /** Cette methode retourne les garages actifs visibles dans le catalogue public. */
+    /**
+     * Cette methode retourne les garages actifs visibles dans le catalogue public.
+     *
+     * @return Garage[]
+     */
     public function findActiveGarages(): array
     {
         return $this->createQueryBuilder('garage')

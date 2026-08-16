@@ -40,12 +40,12 @@ class EmailNotificationService
     /** Cette methode envoie un email quand le garage refuse un rendez-vous client. */
     public function sendAppointmentRefusedEmail(Appointment $appointment, ?string $reason = null): void
     {
-        $reasonText = $reason !== null && trim($reason) !== '' ? "\n\nMotif indique par le garage : ".trim($reason) : '';
+        $reasonText = null !== $reason && '' !== trim($reason) ? "\n\nMotif indique par le garage : ".trim($reason) : '';
 
         $this->sendAppointmentEmail(
             $appointment,
             'Votre rendez-vous GarageFlow a ete refuse',
-            "Votre demande de rendez-vous a ete refusee.".$reasonText."\n\n".$this->appointmentSummary($appointment)
+            'Votre demande de rendez-vous a ete refusee.'.$reasonText."\n\n".$this->appointmentSummary($appointment)
         );
     }
 
@@ -68,12 +68,12 @@ class EmailNotificationService
         }
 
         $status = $intervention->getStatutActuel();
-        $commentText = $commentaire !== null && trim($commentaire) !== '' ? "\n\nMessage du garage : ".trim($commentaire) : '';
+        $commentText = null !== $commentaire && '' !== trim($commentaire) ? "\n\nMessage du garage : ".trim($commentaire) : '';
 
         $this->sendAppointmentEmail(
             $appointment,
             'Mise a jour de votre reparation',
-            "Le statut de votre intervention a ete mis a jour : ".($status?->getLibelle() ?? $status?->getCode() ?? 'Statut en cours').'.'.$commentText."\n\n".$this->appointmentSummary($appointment)
+            'Le statut de votre intervention a ete mis a jour : '.($status?->getLibelle() ?? $status?->getCode() ?? 'Statut en cours').'.'.$commentText."\n\n".$this->appointmentSummary($appointment)
         );
     }
 
@@ -96,7 +96,7 @@ class EmailNotificationService
     private function sendAppointmentEmail(Appointment $appointment, string $subject, string $text): void
     {
         $client = $appointment->getClient();
-        if (!$client instanceof User || $client->getEmail() === null || trim($client->getEmail()) === '') {
+        if (!$client instanceof User || null === $client->getEmail() || '' === trim($client->getEmail())) {
             return;
         }
 
@@ -136,7 +136,7 @@ class EmailNotificationService
         return implode("\n", [
             'Garage : '.($garage?->getNom() ?? 'GarageFlow'),
             'Prestation : '.($service?->getNom() ?? 'Prestation GarageFlow'),
-            'Vehicule : '.($vehicleLabel !== '' ? $vehicleLabel : 'Vehicule client'),
+            'Vehicule : '.('' !== $vehicleLabel ? $vehicleLabel : 'Vehicule client'),
             'Date : '.($date instanceof \DateTimeImmutable ? $date->format('d/m/Y H:i') : 'Date a confirmer'),
         ]);
     }

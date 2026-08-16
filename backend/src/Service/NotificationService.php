@@ -69,9 +69,7 @@ class NotificationService
         }
 
         foreach ($this->userRepository->findActiveManagersByGarage($garage) as $manager) {
-            if ($manager instanceof User) {
-                $this->createForAppointment($manager, $appointment, Notification::TYPE_RDV_DEMANDE, 'Nouvelle demande de rendez-vous recue.');
-            }
+            $this->createForAppointment($manager, $appointment, Notification::TYPE_RDV_DEMANDE, 'Nouvelle demande de rendez-vous recue.');
         }
     }
 
@@ -102,9 +100,7 @@ class NotificationService
         }
 
         foreach ($this->userRepository->findActiveManagersByGarage($garage) as $manager) {
-            if ($manager instanceof User) {
-                $this->createForAppointment($manager, $appointment, Notification::TYPE_RDV_ANNULE, 'Un client a annule son rendez-vous.');
-            }
+            $this->createForAppointment($manager, $appointment, Notification::TYPE_RDV_ANNULE, 'Un client a annule son rendez-vous.');
         }
     }
 
@@ -116,15 +112,20 @@ class NotificationService
             return;
         }
 
-        if ($intervention->getStatutActuel()?->getCode() === 'VEHICULE_PRET') {
+        if ('VEHICULE_PRET' === $intervention->getStatutActuel()?->getCode()) {
             $this->createForIntervention($client, $intervention, Notification::TYPE_VEHICULE_PRET, 'Votre vehicule est pret.');
+
             return;
         }
 
         $this->createForIntervention($client, $intervention, Notification::TYPE_STATUT_INTERVENTION_CHANGE, 'Le statut de votre intervention a ete mis a jour.');
     }
 
-    /** Cette methode liste les notifications de l'utilisateur connecte. */
+    /**
+     * Cette methode liste les notifications de l'utilisateur connecte.
+     *
+     * @return Notification[]
+     */
     public function listForUser(User $recipient, bool $unreadOnly = false): array
     {
         return $unreadOnly ? $this->notificationRepository->findUnreadByRecipient($recipient) : $this->notificationRepository->findByRecipient($recipient);
@@ -152,11 +153,9 @@ class NotificationService
     {
         $count = 0;
         foreach ($this->notificationRepository->findUnreadByRecipient($recipient) as $notification) {
-            if ($notification instanceof Notification) {
-                $notification->setLu(true);
-                $notification->setReadAt(new \DateTimeImmutable());
-                ++$count;
-            }
+            $notification->setLu(true);
+            $notification->setReadAt(new \DateTimeImmutable());
+            ++$count;
         }
 
         $this->entityManager->flush();

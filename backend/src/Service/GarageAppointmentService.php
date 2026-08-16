@@ -34,7 +34,11 @@ class GarageAppointmentService
     ) {
     }
 
-    /** Cette methode liste les rendez-vous du garage connecte avec les filtres demandes. */
+    /**
+     * Cette methode liste les rendez-vous du garage connecte avec les filtres demandes.
+     *
+     * @return Appointment[]
+     */
     public function listForGarage(Garage $garage, GarageAppointmentFilterRequest $request): array
     {
         return $this->appointmentRepository->findByGarageWithFilters($garage, $request->statut, $this->parseOptionalDate($request->date));
@@ -51,13 +55,17 @@ class GarageAppointmentService
         return $appointment;
     }
 
-    /** Cette methode confirme un rendez-vous en attente et cree l'intervention associee. */
+    /**
+     * Cette methode confirme un rendez-vous en attente et cree l'intervention associee.
+     *
+     * @return array{appointment: Appointment, intervention: Intervention}
+     */
     public function accept(Garage $garage, int $id, User $changedBy): array
     {
         $appointment = $this->getForGarage($garage, $id);
         $this->assertPending($appointment);
         $service = $appointment->getService();
-        if ($service === null || !$this->availabilityService->isSlotAvailableExcludingAppointment($garage, $service, $appointment->getDateDebut(), $appointment)) {
+        if (null === $service || !$this->availabilityService->isSlotAvailableExcludingAppointment($garage, $service, $appointment->getDateDebut(), $appointment)) {
             throw new AppointmentConflictException('Ce creneau n est plus disponible.');
         }
 
@@ -88,7 +96,7 @@ class GarageAppointmentService
     /** Cette methode bloque les transitions depuis un statut autre que EN_ATTENTE. */
     private function assertPending(Appointment $appointment): void
     {
-        if ($appointment->getStatut() !== Appointment::STATUT_EN_ATTENTE) {
+        if (Appointment::STATUT_EN_ATTENTE !== $appointment->getStatut()) {
             throw new AppointmentConflictException('Ce rendez-vous ne peut plus etre traite.');
         }
     }
@@ -96,13 +104,13 @@ class GarageAppointmentService
     /** Cette methode convertit le filtre date YYYY-MM-DD si le garage l'a fourni. */
     private function parseOptionalDate(?string $date): ?\DateTimeImmutable
     {
-        if ($date === null || trim($date) === '') {
+        if (null === $date || '' === trim($date)) {
             return null;
         }
 
         $parsedDate = \DateTimeImmutable::createFromFormat('!Y-m-d', trim($date));
         $errors = \DateTimeImmutable::getLastErrors();
-        if (!$parsedDate instanceof \DateTimeImmutable || ($errors !== false && ($errors['warning_count'] > 0 || $errors['error_count'] > 0))) {
+        if (!$parsedDate instanceof \DateTimeImmutable || (false !== $errors && ($errors['warning_count'] > 0 || $errors['error_count'] > 0))) {
             throw new InvalidAppointmentRequestException('La date doit etre au format YYYY-MM-DD.');
         }
 

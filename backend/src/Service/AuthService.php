@@ -15,7 +15,6 @@ use App\Repository\RoleRepository;
 use App\Repository\UserRepository;
 use App\Security\DuplicateEmailException;
 use Doctrine\ORM\EntityManagerInterface;
-use RuntimeException;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 
 /**
@@ -38,13 +37,13 @@ class AuthService
     {
         $email = mb_strtolower(trim((string) $request->email));
 
-        if ($this->userRepository->findOneBy(['email' => $email]) !== null) {
+        if (null !== $this->userRepository->findOneBy(['email' => $email])) {
             throw new DuplicateEmailException('Un compte existe deja avec cet email.');
         }
 
         $role = $this->roleRepository->findOneBy(['code' => 'ROLE_CLIENT']);
         if (!$role instanceof Role) {
-            throw new RuntimeException('Le role ROLE_CLIENT doit etre charge avant de creer un client.');
+            throw new \RuntimeException('Le role ROLE_CLIENT doit etre charge avant de creer un client.');
         }
 
         $user = new User();
@@ -52,7 +51,7 @@ class AuthService
         $user->setNom(trim((string) $request->nom));
         $user->setPrenom(trim((string) $request->prenom));
         $user->setEmail($email);
-        $user->setTelephone($request->telephone !== null && trim($request->telephone) !== '' ? trim($request->telephone) : null);
+        $user->setTelephone(null !== $request->telephone && '' !== trim($request->telephone) ? trim($request->telephone) : null);
         $user->setActif(true);
         $user->setPassword($this->passwordHasher->hashPassword($user, (string) $request->password));
 

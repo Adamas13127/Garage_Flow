@@ -28,23 +28,123 @@ class ServicePrestation
     #[ORM\Column(nullable: true)] private ?\DateTimeImmutable $updatedAt = null;
     /** @var Collection<int, Appointment> */ #[ORM\OneToMany(mappedBy: 'service', targetEntity: Appointment::class)] private Collection $appointments;
     /** Cette methode initialise les rendez-vous lies et la date de creation. */
-    public function __construct() { $this->createdAt = new \DateTimeImmutable(); $this->appointments = new ArrayCollection(); }
-    public function getId(): ?int { return $this->id; }
-    public function getGarage(): ?Garage { return $this->garage; }
-    public function setGarage(?Garage $garage): static { $this->garage = $garage; return $this; }
-    public function getNom(): ?string { return $this->nom; }
-    public function setNom(string $nom): static { $this->nom = $nom; return $this; }
-    public function getDescription(): ?string { return $this->description; }
-    public function setDescription(?string $description): static { $this->description = $description; return $this; }
-    public function getDureeMinutes(): ?int { return $this->dureeMinutes; }
-    public function setDureeMinutes(int $dureeMinutes): static { $this->dureeMinutes = $dureeMinutes; return $this; }
-    public function isActif(): bool { return $this->actif; }
-    public function setActif(bool $actif): static { $this->actif = $actif; return $this; }
-    public function getCreatedAt(): ?\DateTimeImmutable { return $this->createdAt; }
-    public function setCreatedAt(\DateTimeImmutable $createdAt): static { $this->createdAt = $createdAt; return $this; }
-    public function getUpdatedAt(): ?\DateTimeImmutable { return $this->updatedAt; }
-    public function setUpdatedAt(?\DateTimeImmutable $updatedAt): static { $this->updatedAt = $updatedAt; return $this; }
-    public function getAppointments(): Collection { return $this->appointments; }
-    public function addAppointment(Appointment $appointment): static { if (!$this->appointments->contains($appointment)) { $this->appointments->add($appointment); $appointment->setService($this); } return $this; }
-    public function removeAppointment(Appointment $appointment): static { if ($this->appointments->removeElement($appointment) && $appointment->getService() === $this) { $appointment->setService(null); } return $this; }
+    public function __construct()
+    {
+        $this->createdAt = new \DateTimeImmutable();
+        $this->appointments = new ArrayCollection();
+    }
+
+    public function getId(): ?int
+    {
+        return $this->id;
+    }
+
+    public function getGarage(): ?Garage
+    {
+        return $this->garage;
+    }
+
+    public function setGarage(?Garage $garage): static
+    {
+        $this->garage = $garage;
+
+        return $this;
+    }
+
+    public function getNom(): ?string
+    {
+        return $this->nom;
+    }
+
+    public function setNom(string $nom): static
+    {
+        $this->nom = $nom;
+
+        return $this;
+    }
+
+    public function getDescription(): ?string
+    {
+        return $this->description;
+    }
+
+    public function setDescription(?string $description): static
+    {
+        $this->description = $description;
+
+        return $this;
+    }
+
+    public function getDureeMinutes(): ?int
+    {
+        return $this->dureeMinutes;
+    }
+
+    public function setDureeMinutes(int $dureeMinutes): static
+    {
+        $this->dureeMinutes = $dureeMinutes;
+
+        return $this;
+    }
+
+    public function isActif(): bool
+    {
+        return $this->actif;
+    }
+
+    public function setActif(bool $actif): static
+    {
+        $this->actif = $actif;
+
+        return $this;
+    }
+
+    public function getCreatedAt(): ?\DateTimeImmutable
+    {
+        return $this->createdAt;
+    }
+
+    public function setCreatedAt(\DateTimeImmutable $createdAt): static
+    {
+        $this->createdAt = $createdAt;
+
+        return $this;
+    }
+
+    public function getUpdatedAt(): ?\DateTimeImmutable
+    {
+        return $this->updatedAt;
+    }
+
+    public function setUpdatedAt(?\DateTimeImmutable $updatedAt): static
+    {
+        $this->updatedAt = $updatedAt;
+
+        return $this;
+    }
+
+    /** @return Collection<int, Appointment> */
+    public function getAppointments(): Collection
+    {
+        return $this->appointments;
+    }
+
+    public function addAppointment(Appointment $appointment): static
+    {
+        if (!$this->appointments->contains($appointment)) {
+            $this->appointments->add($appointment);
+            $appointment->setService($this);
+        }
+
+return $this;
+    }
+
+    public function removeAppointment(Appointment $appointment): static
+    {
+        if ($this->appointments->removeElement($appointment) && $appointment->getService() === $this) {
+            $appointment->setService(null);
+        }
+
+return $this;
+    }
 }

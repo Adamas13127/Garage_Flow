@@ -10,7 +10,7 @@ use App\Kernel;
 
 require_once dirname(__DIR__).'/vendor/autoload_runtime.php';
 
-/**
+/*
  * Cette fonction cree le noyau Symfony avec l'environnement courant.
  */
 return static function (array $context) {

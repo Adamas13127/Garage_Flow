@@ -10,7 +10,6 @@ namespace App\Service;
 
 use App\Entity\Appointment;
 use App\Entity\Garage;
-use App\Entity\OpeningHour;
 use App\Entity\ServicePrestation;
 use App\Repository\AppointmentRepository;
 use App\Repository\GarageRepository;
@@ -35,7 +34,11 @@ class AvailabilityService
     ) {
     }
 
-    /** Cette methode retourne les creneaux disponibles pour un garage, une prestation et une date. */
+    /**
+     * Cette methode retourne les creneaux disponibles pour un garage, une prestation et une date.
+     *
+     * @return array<int, array{dateDebut: string, dateFin: string}>
+     */
     public function getAvailableSlots(int $garageId, int $serviceId, string $date): array
     {
         $garage = $this->getActiveGarage($garageId);
@@ -46,10 +49,6 @@ class AvailabilityService
         $now = new \DateTimeImmutable();
 
         foreach ($this->openingHourRepository->findActiveByGarageAndWeekday($garage, $weekday) as $openingHour) {
-            if (!$openingHour instanceof OpeningHour) {
-                continue;
-            }
-
             $periodStart = $this->combineDayAndTime($day, $openingHour->getHeureDebut());
             $periodEnd = $this->combineDayAndTime($day, $openingHour->getHeureFin());
             $cursor = $periodStart;
@@ -120,7 +119,7 @@ class AvailabilityService
         $day = \DateTimeImmutable::createFromFormat('!Y-m-d', trim($date));
         $errors = \DateTimeImmutable::getLastErrors();
 
-        if (!$day instanceof \DateTimeImmutable || ($errors !== false && ($errors['warning_count'] > 0 || $errors['error_count'] > 0))) {
+        if (!$day instanceof \DateTimeImmutable || (false !== $errors && ($errors['warning_count'] > 0 || $errors['error_count'] > 0))) {
             throw new InvalidAppointmentRequestException('La date doit etre au format YYYY-MM-DD.');
         }
 
@@ -146,10 +145,6 @@ class AvailabilityService
         }
 
         foreach ($this->openingHourRepository->findActiveByGarageAndWeekday($garage, (int) $start->format('N')) as $openingHour) {
-            if (!$openingHour instanceof OpeningHour) {
-                continue;
-            }
-
             $periodStart = $this->combineDayAndTime($day, $openingHour->getHeureDebut(), $start->getTimezone());
             $periodEnd = $this->combineDayAndTime($day, $openingHour->getHeureFin(), $start->getTimezone());
 
@@ -164,11 +159,11 @@ class AvailabilityService
     /** Cette methode verifie qu'aucune indisponibilite ni rendez-vous bloquant ne chevauche la periode. */
     private function isPeriodFree(Garage $garage, \DateTimeImmutable $start, \DateTimeImmutable $end, ?Appointment $excludedAppointment = null): bool
     {
-        if ($this->unavailabilityRepository->findForGarageBetween($garage, $start, $end) !== []) {
+        if ([] !== $this->unavailabilityRepository->findForGarageBetween($garage, $start, $end)) {
             return false;
         }
 
-        return $this->appointmentRepository->findBlockingAppointmentsForGarageBetweenExcludingAppointment($garage, $start, $end, $excludedAppointment) === [];
+        return [] === $this->appointmentRepository->findBlockingAppointmentsForGarageBetweenExcludingAppointment($garage, $start, $end, $excludedAppointment);
     }
 
     /** Cette methode colle une heure recurrente sur une date precise pour obtenir un vrai creneau. */

@@ -8,9 +8,7 @@
 
 namespace App\Security;
 
-use RuntimeException;
-
 /** Cette exception indique qu'une ressource de garage est introuvable pour ce garage. */
-class GarageResourceNotFoundException extends RuntimeException
+class GarageResourceNotFoundException extends \RuntimeException
 {
 }

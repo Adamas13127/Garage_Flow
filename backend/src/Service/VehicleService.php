@@ -143,12 +143,12 @@ class VehicleService
     /** Cette methode transforme une chaine vide en valeur nulle pour les champs optionnels. */
     private function nullableTrim(?string $value): ?string
     {
-        if ($value === null) {
+        if (null === $value) {
             return null;
         }
 
         $trimmed = trim($value);
 
-        return $trimmed === '' ? null : $trimmed;
+        return '' === $trimmed ? null : $trimmed;
     }
 }

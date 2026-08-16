@@ -22,15 +22,69 @@ class OpeningHour
     #[ORM\Column(type: 'time_immutable')] private ?\DateTimeImmutable $heureDebut = null;
     #[ORM\Column(type: 'time_immutable')] private ?\DateTimeImmutable $heureFin = null;
     #[ORM\Column(options: ['default' => true])] private bool $actif = true;
-    public function getId(): ?int { return $this->id; }
-    public function getGarage(): ?Garage { return $this->garage; }
-    public function setGarage(?Garage $garage): static { $this->garage = $garage; return $this; }
-    public function getJourSemaine(): ?int { return $this->jourSemaine; }
-    public function setJourSemaine(int $jourSemaine): static { $this->jourSemaine = $jourSemaine; return $this; }
-    public function getHeureDebut(): ?\DateTimeImmutable { return $this->heureDebut; }
-    public function setHeureDebut(\DateTimeImmutable $heureDebut): static { $this->heureDebut = $heureDebut; return $this; }
-    public function getHeureFin(): ?\DateTimeImmutable { return $this->heureFin; }
-    public function setHeureFin(\DateTimeImmutable $heureFin): static { $this->heureFin = $heureFin; return $this; }
-    public function isActif(): bool { return $this->actif; }
-    public function setActif(bool $actif): static { $this->actif = $actif; return $this; }
+
+    public function getId(): ?int
+    {
+        return $this->id;
+    }
+
+    public function getGarage(): ?Garage
+    {
+        return $this->garage;
+    }
+
+    public function setGarage(?Garage $garage): static
+    {
+        $this->garage = $garage;
+
+        return $this;
+    }
+
+    public function getJourSemaine(): ?int
+    {
+        return $this->jourSemaine;
+    }
+
+    public function setJourSemaine(int $jourSemaine): static
+    {
+        $this->jourSemaine = $jourSemaine;
+
+        return $this;
+    }
+
+    public function getHeureDebut(): ?\DateTimeImmutable
+    {
+        return $this->heureDebut;
+    }
+
+    public function setHeureDebut(\DateTimeImmutable $heureDebut): static
+    {
+        $this->heureDebut = $heureDebut;
+
+        return $this;
+    }
+
+    public function getHeureFin(): ?\DateTimeImmutable
+    {
+        return $this->heureFin;
+    }
+
+    public function setHeureFin(\DateTimeImmutable $heureFin): static
+    {
+        $this->heureFin = $heureFin;
+
+        return $this;
+    }
+
+    public function isActif(): bool
+    {
+        return $this->actif;
+    }
+
+    public function setActif(bool $actif): static
+    {
+        $this->actif = $actif;
+
+        return $this;
+    }
 }

@@ -12,7 +12,6 @@ use App\DTO\RegisterClientRequest;
 use App\Entity\User;
 use App\Security\DuplicateEmailException;
 use App\Service\AuthService;
-use JsonException;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -40,7 +39,7 @@ class AuthController extends AbstractController
     {
         try {
             $payload = json_decode($request->getContent(), true, 512, JSON_THROW_ON_ERROR);
-        } catch (JsonException) {
+        } catch (\JsonException) {
             return $this->json(['message' => 'Le JSON envoye est invalide.'], Response::HTTP_BAD_REQUEST);
         }
 
@@ -53,7 +52,7 @@ class AuthController extends AbstractController
         $dto->prenom = isset($payload['prenom']) ? (string) $payload['prenom'] : null;
         $dto->email = isset($payload['email']) ? (string) $payload['email'] : null;
         $dto->password = isset($payload['password']) ? (string) $payload['password'] : null;
-        $dto->telephone = isset($payload['telephone']) && $payload['telephone'] !== null ? (string) $payload['telephone'] : null;
+        $dto->telephone = isset($payload['telephone']) ? (string) $payload['telephone'] : null;
 
         $errors = $this->validator->validate($dto);
         if (count($errors) > 0) {
@@ -86,6 +85,7 @@ class AuthController extends AbstractController
     {
         return $this->json(['message' => 'Identifiants invalides.'], Response::HTTP_UNAUTHORIZED);
     }
+
     /**
      * Cette route permet au frontend de connaitre l'utilisateur connecte grace au token JWT.
      */

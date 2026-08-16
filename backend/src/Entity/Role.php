@@ -40,19 +40,67 @@ class Role
     }
 
     /** Cette methode retourne l'identifiant technique du role. */
-    public function getId(): ?int { return $this->id; }
+    public function getId(): ?int
+    {
+        return $this->id;
+    }
+
     /** Cette methode retourne le code technique du role. */
-    public function getCode(): ?string { return $this->code; }
+    public function getCode(): ?string
+    {
+        return $this->code;
+    }
+
     /** Cette methode modifie le code technique du role. */
-    public function setCode(string $code): static { $this->code = $code; return $this; }
+    public function setCode(string $code): static
+    {
+        $this->code = $code;
+
+        return $this;
+    }
+
     /** Cette methode retourne le libelle lisible du role. */
-    public function getLibelle(): ?string { return $this->libelle; }
+    public function getLibelle(): ?string
+    {
+        return $this->libelle;
+    }
+
     /** Cette methode modifie le libelle lisible du role. */
-    public function setLibelle(string $libelle): static { $this->libelle = $libelle; return $this; }
-    /** Cette methode retourne les utilisateurs lies a ce role. */
-    public function getUsers(): Collection { return $this->users; }
+    public function setLibelle(string $libelle): static
+    {
+        $this->libelle = $libelle;
+
+        return $this;
+    }
+
+    /**
+     * Cette methode retourne les utilisateurs lies a ce role.
+     *
+     * @return Collection<int, User>
+     */
+    public function getUsers(): Collection
+    {
+        return $this->users;
+    }
+
     /** Cette methode ajoute un utilisateur dans la liste du role. */
-    public function addUser(User $user): static { if (!$this->users->contains($user)) { $this->users->add($user); $user->setRole($this); } return $this; }
+    public function addUser(User $user): static
+    {
+        if (!$this->users->contains($user)) {
+            $this->users->add($user);
+            $user->setRole($this);
+        }
+
+return $this;
+    }
+
     /** Cette methode retire un utilisateur de la liste du role. */
-    public function removeUser(User $user): static { if ($this->users->removeElement($user) && $user->getRole() === $this) { $user->setRole(null); } return $this; }
+    public function removeUser(User $user): static
+    {
+        if ($this->users->removeElement($user) && $user->getRole() === $this) {
+            $user->setRole(null);
+        }
+
+return $this;
+    }
 }

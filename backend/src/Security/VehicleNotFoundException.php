@@ -8,11 +8,9 @@
 
 namespace App\Security;
 
-use RuntimeException;
-
 /**
  * Cette exception indique que le vehicule demande est introuvable pour ce client.
  */
-class VehicleNotFoundException extends RuntimeException
+class VehicleNotFoundException extends \RuntimeException
 {
 }

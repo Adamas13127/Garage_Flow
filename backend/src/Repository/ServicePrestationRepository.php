@@ -26,7 +26,11 @@ class ServicePrestationRepository extends ServiceEntityRepository
         parent::__construct($registry, ServicePrestation::class);
     }
 
-    /** Cette methode retourne les prestations actives visibles pour un garage actif. */
+    /**
+     * Cette methode retourne les prestations actives visibles pour un garage actif.
+     *
+     * @return ServicePrestation[]
+     */
     public function findActiveServicesByGarage(Garage $garage): array
     {
         return $this->createQueryBuilder('service')
@@ -38,7 +42,11 @@ class ServicePrestationRepository extends ServiceEntityRepository
             ->getResult();
     }
 
-    /** Cette methode retourne toutes les prestations du garage rattache au gerant. */
+    /**
+     * Cette methode retourne toutes les prestations du garage rattache au gerant.
+     *
+     * @return ServicePrestation[]
+     */
     public function findByGarage(Garage $garage): array
     {
         return $this->createQueryBuilder('service')
