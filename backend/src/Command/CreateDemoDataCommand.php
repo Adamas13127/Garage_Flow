@@ -24,6 +24,7 @@ use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
+use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
@@ -59,6 +60,17 @@ class CreateDemoDataCommand extends Command
         parent::__construct();
     }
 
+    protected function configure(): void
+    {
+        $this
+            ->addOption(
+                'fresh',
+                null,
+                InputOption::VALUE_NONE,
+                'Supprime les rendez-vous, interventions, notes et notifications de demonstration existants avant de tout regenerer avec des dates fraiches. Utile le jour de la soutenance pour repartir d\'un etat garanti propre si des essais anterieurs ont laisse des donnees perimees ou incoherentes.'
+            );
+    }
+
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $io = new SymfonyStyle($input, $output);
@@ -75,6 +87,12 @@ class CreateDemoDataCommand extends Command
         $services = $this->ensureServices($garage);
         $this->ensureOpeningHours($garage);
         $vehicles = $this->ensureVehicles($client);
+
+        if ($input->getOption('fresh')) {
+            $this->resetTimeSensitiveDemoData($garage, $client);
+            $io->note('Option --fresh : rendez-vous, interventions, notes et notifications de demonstration precedents supprimes avant regeneration.');
+        }
+
         $appointments = $this->ensureAppointments($garage, $client, $vehicles, $services);
         $interventions = $this->ensureInterventions($appointments, $statuses, $employee);
         $this->ensureInternalNotes($interventions, $employee);
@@ -260,6 +278,57 @@ class CreateDemoDataCommand extends Command
         }
 
         return $vehicles;
+    }
+
+    /**
+     * Cette methode supprime les rendez-vous du client de demonstration et tout ce qui en depend
+     * (interventions, historiques de statut, notes internes, notifications). Elle existe pour
+     * l'option --fresh : sans elle, une insertion manuelle faite pendant une repetition (double
+     * reservation testee en vrai, rendez-vous accepte puis laisse tel quel...) resterait en base a
+     * cote du scenario recalcule et pourrait fausser la demonstration. Les entites non sensibles a
+     * la date (garage, utilisateurs, prestations, horaires, vehicules) sont volontairement
+     * conservees : ensureAppointments() les reutilise sans probleme.
+     */
+    private function resetTimeSensitiveDemoData(Garage $garage, User $client): void
+    {
+        $appointments = $this->entityManager->getRepository(Appointment::class)->findBy(['garage' => $garage, 'client' => $client]);
+        $interventions = array_values(array_filter(array_map(
+            static fn (Appointment $appointment): ?Intervention => $appointment->getIntervention(),
+            $appointments
+        )));
+
+        foreach ($interventions as $intervention) {
+            foreach ($this->entityManager->getRepository(Notification::class)->findBy(['intervention' => $intervention]) as $notification) {
+                $this->entityManager->remove($notification);
+            }
+        }
+        foreach ($appointments as $appointment) {
+            foreach ($this->entityManager->getRepository(Notification::class)->findBy(['appointment' => $appointment]) as $notification) {
+                $this->entityManager->remove($notification);
+            }
+        }
+        $this->entityManager->flush();
+
+        foreach ($interventions as $intervention) {
+            foreach ($this->entityManager->getRepository(InternalNote::class)->findBy(['intervention' => $intervention]) as $note) {
+                $this->entityManager->remove($note);
+            }
+            foreach ($this->entityManager->getRepository(InterventionStatusHistory::class)->findBy(['intervention' => $intervention]) as $history) {
+                $this->entityManager->remove($history);
+            }
+        }
+        $this->entityManager->flush();
+
+        foreach ($interventions as $intervention) {
+            $this->entityManager->remove($intervention);
+        }
+        $this->entityManager->flush();
+
+        foreach ($appointments as $appointment) {
+            $appointment->setIntervention(null);
+            $this->entityManager->remove($appointment);
+        }
+        $this->entityManager->flush();
     }
 
     /**
