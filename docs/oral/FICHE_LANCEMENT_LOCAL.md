@@ -136,8 +136,11 @@ npm run dev
 ```
 
 **Resultat attendu** : `npm install` se termine sans conflit de peer dependency (vitest 4 declare
-officiellement vite 7), le serveur Vite demarre et annonce une URL locale
-(`http://127.0.0.1:5173` par defaut).
+officiellement vite 7), le serveur Vite demarre et annonce `http://127.0.0.1:5173`. Le script `dev`
+est fige sur ce port (`--port 5173 --strictPort`) : si le port est deja occupe (par exemple un
+ancien `npm run dev` reste ouvert dans un terminal oublie), la commande echoue clairement au lieu
+de basculer silencieusement sur un autre port — voir "Port 5173 deja occupe" dans les problemes
+frequents.
 
 La variable utile est :
 
@@ -214,6 +217,20 @@ Verifier que l'iPhone utilise Expo Go 54 et que le projet reste en Expo SDK 54 :
 ```bash
 npx expo install --check
 ```
+
+### Port 5173 deja occupe
+
+`npm run dev` echoue avec `Port 5173 is already in use`. Un ancien serveur web oublie dans un
+terminal (parfois vieux de plusieurs semaines) peut squatter le port. Identifier puis fermer ce
+processus :
+
+```bash
+netstat -ano | findstr :5173
+taskkill /PID <pid_affiche> /F
+```
+
+Si `taskkill` refuse (acces refuse), le processus appartient a une autre session Windows : fermer
+la fenetre ou le terminal d'origine, ou redemarrer la session concernee.
 
 ### Docker non lance
 

@@ -6,6 +6,77 @@ Il communique avec les donnees de demonstration, le dashboard web, l'application
 
 # Scenario de demo jury
 
+## Preparation le jour J
+
+A lancer le matin de la soutenance, dans cet ordre, depuis un poste deja configure (voir
+`FICHE_LANCEMENT_LOCAL.md` pour un poste neuf). Les dates du scenario (rendez-vous en attente,
+rendez-vous annulable, interventions en cours) sont toujours calculees par rapport au jour
+d'execution de la commande : les relancer le 17 septembre au matin suffit a obtenir un jeu de
+donnees a jour, sans modification manuelle.
+
+1. Docker (depuis `backend/`) :
+   ```bash
+   docker compose up -d
+   ```
+   **Resultat attendu** : `docker ps` liste `backend-database-1` et `backend-mailer-1` a l'etat `Up`.
+
+2. Backend (depuis `backend/`) :
+   ```bash
+   php -S 0.0.0.0:8000 -t public
+   ```
+   **Resultat attendu** : aucune erreur au demarrage ; `curl http://127.0.0.1:8000/api/auth/login`
+   repond (401 ou 200 selon les identifiants envoyes).
+
+3. Donnees de demonstration fraiches (depuis `backend/`) :
+   ```bash
+   php bin/console app:create-demo-data --fresh
+   ```
+   **Resultat attendu** : le resume affiche `9 cree(s), 0 reutilise(s)` pour les rendez-vous,
+   `4 cree(s)` pour les interventions, `3 cree(s)` pour les notes internes et `6 cree(s)` pour les
+   notifications. `--fresh` supprime d'abord les rendez-vous/interventions/notes/notifications
+   d'une eventuelle repetition de la veille avant de tout regenerer avec des dates fraiches ; sans
+   cette option, la commande reste idempotente et recalcule quand meme les dates a chaque
+   lancement, mais peut laisser trainer un rendez-vous cree manuellement pendant un essai.
+
+4. Web (depuis `web/`) :
+   ```bash
+   npm run dev
+   ```
+   **Resultat attendu** : le serveur demarre sur `http://127.0.0.1:5173` (port fige). Si la
+   commande echoue avec `Port 5173 is already in use`, un ancien serveur oublie dans un terminal
+   occupe le port : voir "Port 5173 deja occupe" dans `FICHE_LANCEMENT_LOCAL.md`.
+
+5. Mobile (depuis `mobile/`, sur le telephone de demonstration) :
+   ```bash
+   npx expo start -c
+   ```
+   **Resultat attendu** : Expo affiche un QR code, l'application se connecte a l'API sans erreur
+   reseau une fois `EXPO_PUBLIC_API_BASE_URL` verifie.
+
+6. Verification rapide des trois preuves (optionnel mais recommande avant l'oral) : relire l'id et
+   la date exacte du rendez-vous "confirme_annulable" affiches dans le dashboard web ou par
+   ```bash
+   php bin/console dbal:run-sql "SELECT id, statut, date_debut FROM appointment WHERE commentaire_client LIKE '%annuler pour la demonstration%'"
+   ```
+   avant de tenter la double reservation : la date change a chaque `--fresh`, ne pas se fier a un
+   identifiant ou une date notee lors d'une repetition precedente.
+
+### Si un port est occupe
+
+Un serveur de repetition oublie dans un terminal ferme sans `Ctrl+C` peut rester actif des
+semaines et bloquer 5173 (web), 8000 (backend) ou 8081 (Metro/Expo mobile) le jour J. Identifier
+puis tuer le processus fautif :
+
+```bash
+netstat -ano | findstr :5173
+taskkill /PID <pid_affiche> /F
+```
+
+**Si `taskkill` echoue avec un refus d'acces** (le processus appartient a une autre session
+Windows) : ouvrir un terminal en tant qu'administrateur et relancer la meme commande
+`taskkill /PID <pid> /F`, ou fermer directement la fenetre/le terminal d'origine si elle est encore
+ouverte. En dernier recours, redemarrer la session Windows concernee libere le port.
+
 ## Preparation
 
 1. Lancer MySQL avec Docker.
