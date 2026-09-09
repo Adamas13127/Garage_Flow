@@ -3,19 +3,23 @@
  * Il existe pour rendre le parcours de reservation plus visuel et plus rapide.
  * Il communique avec l'accueil, les garages et les details de garage.
  */
+import { Ionicons } from '@expo/vector-icons';
+import type { ComponentProps } from 'react';
 import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { colors, spacing, typography } from '../../utils/theme';
 
-export const serviceCategories = [
-  { icon: 'E', label: 'Entretien' },
-  { icon: 'V', label: 'Vidange' },
-  { icon: 'F', label: 'Freins' },
-  { icon: 'P', label: 'Pneus' },
-  { icon: 'C', label: 'Clim' },
-  { icon: 'D', label: 'Diagnostic' },
-  { icon: 'B', label: 'Batterie' },
-  { icon: 'CA', label: 'Carrosserie' },
-  { icon: 'EL', label: 'Electrique' },
+type IoniconName = ComponentProps<typeof Ionicons>['name'];
+
+export const serviceCategories: { icon: IoniconName; label: string }[] = [
+  { icon: 'settings-outline', label: 'Entretien' },
+  { icon: 'water-outline', label: 'Vidange' },
+  { icon: 'disc-outline', label: 'Freins' },
+  { icon: 'ellipse-outline', label: 'Pneus' },
+  { icon: 'snow-outline', label: 'Clim' },
+  { icon: 'pulse-outline', label: 'Diagnostic' },
+  { icon: 'battery-charging-outline', label: 'Batterie' },
+  { icon: 'car-outline', label: 'Carrosserie' },
+  { icon: 'flash-outline', label: 'Electrique' },
 ];
 
 interface ServiceCategoryStripProps {
@@ -32,7 +36,7 @@ export function ServiceCategoryStrip({ onSelect, selected }: ServiceCategoryStri
         return (
           <Pressable accessibilityRole="button" key={category.label} onPress={() => onSelect?.(category.label)} style={[styles.chip, isSelected && styles.selected]}>
             <View style={[styles.iconBox, isSelected && styles.selectedIcon]}>
-              <Text style={[styles.icon, isSelected && styles.selectedText]}>{category.icon}</Text>
+              <Ionicons color={isSelected ? '#fff' : colors.primary} name={category.icon} size={16} />
             </View>
             <Text style={[styles.label, isSelected && styles.selectedText]}>{category.label}</Text>
           </Pressable>
@@ -58,7 +62,6 @@ export function getServiceCategoryLabel(serviceName?: string | null): string {
 
 const styles = StyleSheet.create({
   chip: { alignItems: 'center', backgroundColor: colors.surface, borderColor: colors.border, borderRadius: 8, borderWidth: 1, gap: spacing.xs, minWidth: 68, paddingHorizontal: spacing.sm, paddingVertical: spacing.xs },
-  icon: { color: colors.primary, fontSize: 12, fontWeight: '900' },
   iconBox: { alignItems: 'center', backgroundColor: colors.primarySoft, borderRadius: 16, height: 28, justifyContent: 'center', width: 28 },
   label: { color: colors.text, fontSize: typography.secondary, fontWeight: '800' },
   row: { gap: spacing.sm, paddingVertical: spacing.xs },

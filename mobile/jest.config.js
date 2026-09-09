@@ -8,6 +8,6 @@ module.exports = {
   setupFilesAfterEnv: ['<rootDir>/src/test/setup.ts'],
   testMatch: ['**/*.test.tsx'],
   transformIgnorePatterns: [
-    'node_modules/(?!((jest-)?react-native|@react-native|expo|@expo|expo-modules-core|@react-navigation|react-native-safe-area-context|react-native-screens)/)',
+    'node_modules/(?!((jest-)?react-native|@react-native|expo(-[^/]+)?|@expo|expo-modules-core|@react-navigation|react-native-safe-area-context|react-native-screens)/)',
   ],
 };
