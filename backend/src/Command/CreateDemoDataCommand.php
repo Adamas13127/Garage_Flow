@@ -36,8 +36,14 @@ use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 class CreateDemoDataCommand extends Command
 {
     private const DEMO_PASSWORD = 'Password123';
+
+    /**
+     * Email du garage principal du scenario : c'est lui qui porte les vehicules, rendez-vous,
+     * interventions et notifications de la demonstration guidee, et l'identifiant recherche par
+     * les tests de cette commande (voir CreateDemoDataCommandTest). Ne pas le changer.
+     */
     private const GARAGE_EMAIL = 'demo.garage@garageflow.local';
-    private const GARAGE_NAME = 'Garage Demo GarageFlow';
+    private const GARAGE_NAME = 'Garage du Vieux-Port';
 
     /** @var array<string, int> */
     private array $created = [];
@@ -80,12 +86,20 @@ class CreateDemoDataCommand extends Command
 
         $roles = $this->ensureRoles();
         $statuses = $this->ensureInterventionStatuses();
-        $garage = $this->getOrCreateGarage();
+        $garages = $this->ensureGarages();
+        $garage = $garages['principal'];
         $manager = $this->getOrCreateUser('gerant.demo@garageflow.local', 'Demo', 'Gerant', $roles['ROLE_GERANT'], $garage);
         $employee = $this->getOrCreateUser('employe.demo@garageflow.local', 'Demo', 'Employe', $roles['ROLE_EMPLOYE'], $garage);
-        $client = $this->getOrCreateUser('client.demo@garageflow.local', 'Client', 'Demo', $roles['ROLE_CLIENT'], null);
-        $services = $this->ensureServices($garage);
-        $this->ensureOpeningHours($garage);
+        $client = $this->getOrCreateUser('client.demo@garageflow.local', 'Girard', 'Camille', $roles['ROLE_CLIENT'], null);
+        $services = $this->ensureServices($garage, [
+            'Vidange moteur' => 60,
+            'Diagnostic electronique' => 45,
+            'Remplacement plaquettes de frein' => 90,
+            'Revision complete' => 120,
+            'Controle climatisation' => 60,
+        ]);
+        $this->ensureOpeningHours($garage, [1 => ['09:00', '18:00'], 2 => ['09:00', '18:00'], 3 => ['09:00', '18:00'], 4 => ['09:00', '18:00'], 5 => ['09:00', '17:00'], 6 => ['09:00', '13:00']]);
+        $this->ensureSecondaryGarages($garages);
         $vehicles = $this->ensureVehicles($client);
 
         if ($input->getOption('fresh')) {
@@ -99,7 +113,7 @@ class CreateDemoDataCommand extends Command
         $this->ensureNotifications($manager, $client, $appointments, $interventions);
 
         $this->entityManager->flush();
-        $this->printSummary($io, $garage, $manager, $employee, $client, $vehicles, $services, $appointments, $interventions);
+        $this->printSummary($io, $garages, $manager, $employee, $client, $vehicles, $services, $appointments, $interventions);
 
         return Command::SUCCESS;
     }
@@ -162,28 +176,81 @@ class CreateDemoDataCommand extends Command
         return $statuses;
     }
 
-    private function getOrCreateGarage(): Garage
+    /**
+     * Cette methode cree le garage principal du scenario (identifie par self::GARAGE_EMAIL, voir
+     * la constante) et trois garages marketplace supplementaires dans des villes differentes des
+     * Bouches-du-Rhone, pour que l'accueil client ne montre plus un seul etablissement. Seul le
+     * garage principal porte les vehicules, rendez-vous et interventions de la demonstration
+     * guidee ; les trois autres existent pour rendre la liste et la recherche credibles.
+     *
+     * @return array<string, Garage>
+     */
+    private function ensureGarages(): array
     {
-        $garage = $this->entityManager->getRepository(Garage::class)->findOneBy(['email' => self::GARAGE_EMAIL]);
-        if (!$garage instanceof Garage) {
-            $garage = new Garage();
-            $this->entityManager->persist($garage);
-            $this->markCreated('garages');
-        } else {
-            $this->markReused('garages');
+        $definitions = [
+            'principal' => [self::GARAGE_EMAIL, self::GARAGE_NAME, '12 Quai du Port', 'Marseille', '13002', '0491000001', 'Garage generaliste au coeur du Vieux-Port, entretien et reparation toutes marques.'],
+            'aix' => ['garage.aix@garageflow.local', 'Atelier Automobile Sainte-Victoire', '45 avenue Victor Hugo', 'Aix-en-Provence', '13100', '0442000002', 'Specialiste diagnostic electronique et carrosserie, au pied de la Sainte-Victoire.'],
+            'aubagne' => ['garage.aubagne@garageflow.local', 'Garage Fabre', '8 boulevard Jean Jaures', 'Aubagne', '13400', '0442000003', 'Garage familial, entretien courant et pneumatiques.'],
+            'salon' => ['garage.salon@garageflow.local', 'Garage des Alpilles', "21 route d'Avignon", 'Salon-de-Provence', '13300', '0490000004', 'Revision, controle technique et electricite automobile.'],
+        ];
+
+        $garages = [];
+        foreach ($definitions as $key => [$email, $nom, $adresse, $ville, $codePostal, $telephone, $description]) {
+            $garage = $this->entityManager->getRepository(Garage::class)->findOneBy(['email' => $email]);
+            if (!$garage instanceof Garage) {
+                $garage = new Garage();
+                $this->entityManager->persist($garage);
+                $this->markCreated('garages');
+            } else {
+                $this->markReused('garages');
+            }
+
+            $garage
+                ->setNom($nom)
+                ->setAdresse($adresse)
+                ->setVille($ville)
+                ->setCodePostal($codePostal)
+                ->setTelephone($telephone)
+                ->setEmail($email)
+                ->setDescription($description)
+                ->setActif(true);
+            $garages[$key] = $garage;
         }
 
-        $garage
-            ->setNom(self::GARAGE_NAME)
-            ->setAdresse('1 rue de la Demo')
-            ->setVille('Paris')
-            ->setCodePostal('75000')
-            ->setTelephone('0102030405')
-            ->setEmail(self::GARAGE_EMAIL)
-            ->setDescription('Garage de demonstration pour le jury')
-            ->setActif(true);
+        return $garages;
+    }
 
-        return $garage;
+    /**
+     * Cette methode donne aux trois garages secondaires des prestations et des horaires propres,
+     * differents du garage principal et differents entre eux, pour que le marketplace ne montre
+     * pas trois fois le meme catalogue.
+     *
+     * @param array<string, Garage> $garages
+     */
+    private function ensureSecondaryGarages(array $garages): void
+    {
+        $this->ensureServices($garages['aix'], [
+            'Diagnostic electronique' => 60,
+            'Controle climatisation' => 45,
+            'Carrosserie - petits chocs' => 180,
+            'Revision complete' => 120,
+        ]);
+        $this->ensureOpeningHours($garages['aix'], [1 => ['08:30', '19:00'], 2 => ['08:30', '19:00'], 3 => ['08:30', '19:00'], 4 => ['08:30', '19:00'], 5 => ['08:30', '19:00'], 6 => ['09:00', '12:30']]);
+
+        $this->ensureServices($garages['aubagne'], [
+            'Vidange moteur' => 45,
+            'Remplacement pneumatiques' => 60,
+            'Remplacement plaquettes de frein' => 90,
+        ]);
+        $this->ensureOpeningHours($garages['aubagne'], [2 => ['09:00', '18:00'], 3 => ['09:00', '18:00'], 4 => ['09:00', '18:00'], 5 => ['09:00', '18:00'], 6 => ['09:00', '18:00']]);
+
+        $this->ensureServices($garages['salon'], [
+            'Vidange moteur' => 50,
+            'Revision complete' => 150,
+            'Batterie et electricite' => 45,
+            'Controle technique - preparation' => 60,
+        ]);
+        $this->ensureOpeningHours($garages['salon'], [1 => ['09:00', '17:30'], 2 => ['09:00', '17:30'], 3 => ['09:00', '17:30'], 4 => ['09:00', '17:30'], 5 => ['09:00', '17:30']]);
     }
 
     private function getOrCreateUser(string $email, string $nom, string $prenom, Role $role, ?Garage $garage): User
@@ -210,17 +277,12 @@ class CreateDemoDataCommand extends Command
     }
 
     /**
+     * @param array<string, int> $definitions nom de la prestation => duree en minutes
+     *
      * @return array<string, ServicePrestation>
      */
-    private function ensureServices(Garage $garage): array
+    private function ensureServices(Garage $garage, array $definitions): array
     {
-        $definitions = [
-            'Vidange moteur' => 60,
-            'Diagnostic electronique' => 45,
-            'Remplacement plaquettes de frein' => 90,
-            'Revision complete' => 120,
-            'Controle climatisation' => 60,
-        ];
         $services = [];
         foreach ($definitions as $name => $duration) {
             $service = $this->entityManager->getRepository(ServicePrestation::class)->findOneBy(['garage' => $garage, 'nom' => $name]);
@@ -238,9 +300,11 @@ class CreateDemoDataCommand extends Command
         return $services;
     }
 
-    private function ensureOpeningHours(Garage $garage): void
+    /**
+     * @param array<int, array{string, string}> $definitions jour ISO (1=lundi..7=dimanche) => [debut, fin]
+     */
+    private function ensureOpeningHours(Garage $garage, array $definitions): void
     {
-        $definitions = [1 => ['09:00', '18:00'], 2 => ['09:00', '18:00'], 3 => ['09:00', '18:00'], 4 => ['09:00', '18:00'], 5 => ['09:00', '17:00'], 6 => ['09:00', '13:00']];
         foreach ($definitions as $day => [$start, $end]) {
             $hour = $this->entityManager->getRepository(OpeningHour::class)->findOneBy(['garage' => $garage, 'jourSemaine' => $day]);
             if (!$hour instanceof OpeningHour) {
@@ -493,12 +557,13 @@ class CreateDemoDataCommand extends Command
     }
 
     /**
+     * @param array<string, Garage>            $garages
      * @param array<string, Vehicle>           $vehicles
      * @param array<string, ServicePrestation> $services
      * @param array<string, Appointment>       $appointments
      * @param array<string, Intervention>      $interventions
      */
-    private function printSummary(SymfonyStyle $io, Garage $garage, User $manager, User $employee, User $client, array $vehicles, array $services, array $appointments, array $interventions): void
+    private function printSummary(SymfonyStyle $io, array $garages, User $manager, User $employee, User $client, array $vehicles, array $services, array $appointments, array $interventions): void
     {
         $io->success('Donnees de demonstration GarageFlow pretes.');
         $io->section('Resume idempotent');
@@ -512,7 +577,11 @@ class CreateDemoDataCommand extends Command
             'Client : '.$client->getEmail().' / '.self::DEMO_PASSWORD,
         ]);
         $io->section('Donnees principales');
-        $io->writeln('Garage : '.$garage->getNom());
+        $io->writeln('Garages :');
+        foreach ($garages as $key => $garage) {
+            $marker = 'principal' === $key ? ' (garage principal du scenario guide)' : '';
+            $io->writeln('  - '.$garage->getNom().' - '.$garage->getVille().$marker);
+        }
         $io->writeln('Vehicules : '.implode(', ', array_keys($vehicles)));
         $io->writeln('Prestations : '.implode(', ', array_keys($services)));
         $io->writeln('Rendez-vous : '.count($appointments).' (dont "attente_vidange"/"attente_clim" en attente, "confirme_annulable" annulable)');
