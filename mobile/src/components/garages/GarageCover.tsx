@@ -68,7 +68,7 @@ export function GarageCover({ large, name }: GarageCoverProps) {
           </View>
           <Text style={styles.available}>Ouvert</Text>
         </View>
-        <Ionicons color="rgba(255,255,255,0.85)" name="build-outline" size={large ? 34 : 26} />
+        <Ionicons color="rgba(255,255,255,0.85)" name="hammer-outline" size={large ? 34 : 26} />
         <Text style={styles.label}>Atelier partenaire</Text>
       </View>
     </View>
