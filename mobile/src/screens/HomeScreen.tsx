@@ -4,8 +4,9 @@
  * Il communique avec useAuth, les API mobiles et MainTabs.
  */
 import type { BottomTabScreenProps } from '@react-navigation/bottom-tabs';
+import { Ionicons } from '@expo/vector-icons';
 import { useEffect, useState } from 'react';
-import { ScrollView, StyleSheet, Text, View } from 'react-native';
+import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { getClientAppointments } from '../api/appointmentApi';
 import { getGarages } from '../api/garageApi';
 import { getClientInterventions } from '../api/interventionApi';
@@ -74,6 +75,10 @@ export function HomeScreen({ navigation }: HomeScreenProps) {
   return (
     <ScreenContainer>
       <MobileHeader title={`Bonjour ${user?.prenom ?? 'client'}`} subtitle="Autour de vous" unreadCount={counts.notifications} onNotifications={() => navigation.navigate('Notifications')} />
+      <Pressable accessibilityRole="button" onPress={() => navigation.navigate('Garages')} style={styles.searchEntry}>
+        <Ionicons color={colors.placeholder} name="search-outline" size={18} />
+        <Text style={styles.searchPlaceholder}>Rechercher un garage, une prestation...</Text>
+      </Pressable>
       {loading ? <LoadingState /> : null}
       {error ? <ErrorState message={error} /> : null}
       <View style={styles.hero}>
@@ -104,4 +109,6 @@ const styles = StyleSheet.create({
   heroSubtitle: { color: '#e0f2fe', fontSize: typography.body, lineHeight: 20 },
   heroTitle: { color: '#fff', fontSize: 21, fontWeight: '900' },
   recommendedRow: { gap: spacing.md, paddingVertical: spacing.xs },
+  searchEntry: { alignItems: 'center', backgroundColor: colors.surface, borderColor: colors.border, borderRadius: 8, borderWidth: 1, flexDirection: 'row', gap: spacing.sm, paddingHorizontal: spacing.md, paddingVertical: spacing.sm },
+  searchPlaceholder: { color: colors.placeholder, fontSize: typography.body },
 });
