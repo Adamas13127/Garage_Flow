@@ -3,6 +3,14 @@
  * Il existe pour afficher les garages, prestations et creneaux disponibles aux clients.
  * Il communique avec garageApi.ts, GaragesScreen, GarageDetailScreen et BookingScreen.
  */
+export interface OpeningHour {
+  id?: number;
+  jourSemaine: number;
+  heureDebut?: string | null;
+  heureFin?: string | null;
+  actif?: boolean;
+}
+
 export interface Garage {
   id: number;
   nom: string;
@@ -12,6 +20,7 @@ export interface Garage {
   telephone?: string | null;
   email?: string | null;
   description?: string | null;
+  openingHours?: OpeningHour[] | null;
 }
 
 export interface ServicePrestation {
