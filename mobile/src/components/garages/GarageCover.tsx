@@ -50,9 +50,28 @@ function getGradientBands(name: string): string[] {
   });
 }
 
+const GENERIC_NAME_WORDS = new Set(['garage', 'atelier', 'du', 'des', 'de', 'le', 'la', 'les']);
+
+/**
+ * Cette fonction derive un monogramme du nom du garage en ignorant les mots generiques
+ * ("Garage", "Atelier", articles) : sans ce filtre, "Garage du Vieux-Port" et "Garage des
+ * Alpilles" produisaient toutes les deux les initiales "GD".
+ */
+function getInitials(name: string): string {
+  const words = name.split(/[\s-]+/).filter(Boolean);
+  const significantWords = words.filter((word) => !GENERIC_NAME_WORDS.has(word.toLowerCase()));
+  const source = significantWords.length > 0 ? significantWords : words;
+
+  if (source.length >= 2) {
+    return source.slice(0, 2).map((word) => word[0]?.toUpperCase()).join('');
+  }
+
+  return (source[0] ?? '').slice(0, 2).toUpperCase() || 'GF';
+}
+
 /** Cette couverture simule une image d'atelier propre tant que le backend ne fournit pas de photo. */
 export function GarageCover({ large, name }: GarageCoverProps) {
-  const initials = name.split(' ').filter(Boolean).slice(0, 2).map((part) => part[0]?.toUpperCase()).join('') || 'GF';
+  const initials = getInitials(name);
   const bands = getGradientBands(name);
   return (
     <View style={[styles.cover, large && styles.large]}>
