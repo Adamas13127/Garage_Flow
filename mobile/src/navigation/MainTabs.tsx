@@ -38,11 +38,11 @@ export function tabIconFor(routeName: string): IoniconName {
 export function MainTabs() {
   return (
     <Tab.Navigator screenOptions={({ route }) => ({ tabBarActiveTintColor: colors.primary, tabBarIcon: ({ color, size }) => <Ionicons color={color} name={tabIconFor(route.name)} size={size} />, tabBarInactiveTintColor: colors.muted, tabBarLabelStyle: { fontSize: 11, fontWeight: '700' }, tabBarStyle: { minHeight: 62, paddingBottom: 5, paddingTop: 5 }, headerTitleStyle: { color: colors.text, fontSize: 17 } })}>
-      <Tab.Screen name="Home" component={HomeScreen} options={{ title: 'Accueil', tabBarLabel: 'Accueil' }} />
+      <Tab.Screen name="Home" component={HomeScreen} options={{ title: 'Accueil', tabBarLabel: 'Accueil', headerShown: false }} />
       <Tab.Screen name="Garages" component={GaragesStackNavigator} options={{ title: 'Garages', tabBarLabel: 'Garages', headerShown: false }} />
       <Tab.Screen name="Appointments" component={AppointmentsStackNavigator} options={{ title: 'RDV', tabBarLabel: 'RDV', headerShown: false }} />
       <Tab.Screen name="Interventions" component={InterventionsStackNavigator} options={{ title: 'Suivi', tabBarLabel: 'Suivi', headerShown: false }} />
-      <Tab.Screen name="Profile" component={ProfileScreen} options={{ title: 'Profil', tabBarLabel: 'Profil' }} />
+      <Tab.Screen name="Profile" component={ProfileScreen} options={{ title: 'Profil', tabBarLabel: 'Profil', headerShown: false }} />
       <Tab.Screen name="Vehicles" component={VehiclesScreen} options={{ title: 'Autos', tabBarButton: () => null, tabBarItemStyle: { display: 'none' } }} />
       <Tab.Screen name="Notifications" component={NotificationsScreen} options={{ title: 'Alertes', tabBarButton: () => null, tabBarItemStyle: { display: 'none' } }} />
     </Tab.Navigator>
