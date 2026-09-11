@@ -70,6 +70,19 @@ export function AppointmentsPage() {
     void loadAppointments();
   }, [loadAppointments]);
 
+  const refreshPendingRequests = useCallback(async () => {
+    try {
+      setAppointments(await getGarageAppointments());
+    } catch {
+      // Rafraichissement automatique silencieux: on garde la derniere liste connue en cas d'echec reseau.
+    }
+  }, []);
+
+  useEffect(() => {
+    const intervalId = window.setInterval(() => void refreshPendingRequests(), 30000);
+    return () => window.clearInterval(intervalId);
+  }, [refreshPendingRequests]);
+
   const sections = useMemo(() => {
     const sorted = [...appointments].sort((first, second) => new Date(first.dateDebut).getTime() - new Date(second.dateDebut).getTime());
     const pending = sorted.filter((appointment) => appointment.statut === 'EN_ATTENTE');

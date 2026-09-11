@@ -5,7 +5,7 @@
  */
 import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import { beforeEach, describe, expect, it, vi } from 'vitest';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { AppointmentsPage } from './AppointmentsPage';
 
 const appointmentApiMock = vi.hoisted(() => ({
@@ -26,6 +26,10 @@ describe('AppointmentsPage', () => {
     appointmentApiMock.acceptAppointment.mockResolvedValue(pendingAppointment);
     appointmentApiMock.refuseAppointment.mockResolvedValue(pendingAppointment);
     appointmentApiMock.getGarageAppointments.mockResolvedValue([]);
+  });
+
+  afterEach(() => {
+    vi.useRealTimers();
   });
 
   /** Ce test verifie que la page explique proprement l'absence de rendez-vous. */
@@ -89,5 +93,39 @@ describe('AppointmentsPage', () => {
     await user.click(await screen.findByRole('button', { name: 'Accepter' }));
 
     expect(await screen.findByText('Ce rendez-vous a deja ete traite.')).toBeInTheDocument();
+  });
+
+  /** Ce test verifie qu'une nouvelle demande cree pendant l'affichage remonte sans rechargement manuel. */
+  it('rafraichit automatiquement les demandes en attente toutes les 30 secondes', async () => {
+    vi.useFakeTimers({ toFake: ['setInterval', 'clearInterval'] });
+    appointmentApiMock.getGarageAppointments.mockResolvedValue([pendingAppointment]);
+
+    render(<AppointmentsPage />);
+
+    expect(await screen.findByText('Besoin rapide')).toBeInTheDocument();
+    expect(appointmentApiMock.getGarageAppointments).toHaveBeenCalledTimes(1);
+
+    const newPendingAppointment = { ...pendingAppointment, id: 5, commentaireClient: 'Nouvelle demande arrivee pendant l affichage' };
+    appointmentApiMock.getGarageAppointments.mockResolvedValue([pendingAppointment, newPendingAppointment]);
+
+    await vi.advanceTimersByTimeAsync(30000);
+
+    expect(await screen.findByText('Nouvelle demande arrivee pendant l affichage')).toBeInTheDocument();
+    expect(appointmentApiMock.getGarageAppointments).toHaveBeenCalledTimes(2);
+  });
+
+  /** Ce test verifie que le rafraichissement automatique s'arrete quand la page n'est plus affichee. */
+  it('arrete le rafraichissement automatique quand la page est demontee', async () => {
+    vi.useFakeTimers({ toFake: ['setInterval', 'clearInterval'] });
+    appointmentApiMock.getGarageAppointments.mockResolvedValue([pendingAppointment]);
+
+    const { unmount } = render(<AppointmentsPage />);
+    expect(await screen.findByText('Besoin rapide')).toBeInTheDocument();
+    expect(appointmentApiMock.getGarageAppointments).toHaveBeenCalledTimes(1);
+
+    unmount();
+    await vi.advanceTimersByTimeAsync(60000);
+
+    expect(appointmentApiMock.getGarageAppointments).toHaveBeenCalledTimes(1);
   });
 });
