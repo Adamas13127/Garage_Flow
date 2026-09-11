@@ -3,6 +3,7 @@
  * Il existe pour afficher, creer, modifier et supprimer les vehicules du client connecte.
  * Il communique avec vehicleApi.ts et les cartes de vehicules.
  */
+import type { BottomTabScreenProps } from '@react-navigation/bottom-tabs';
 import { useCallback, useEffect, useState } from 'react';
 import { Alert, StyleSheet, Text, View } from 'react-native';
 import { createVehicle, deleteVehicle, getVehicles, updateVehicle } from '../api/vehicleApi';
@@ -16,8 +17,12 @@ import { ScreenContainer } from '../components/layout/ScreenContainer';
 import { AppButton } from '../components/ui/AppButton';
 import { AppInput } from '../components/ui/AppInput';
 import { VehicleListCard } from '../components/vehicles/VehicleListCard';
+import { useRefreshOnFocus } from '../hooks/useRefreshOnFocus';
+import type { MainTabsParamList } from '../navigation/MainTabs';
 import type { Vehicle, VehiclePayload } from '../types/vehicle';
 import { colors, spacing, typography } from '../utils/theme';
+
+type VehiclesScreenProps = BottomTabScreenProps<MainTabsParamList, 'Vehicles'>;
 
 interface VehicleFormState { marque: string; modele: string; plaqueImmatriculation: string; kilometrage: string; annee: string; carburant: string; }
 const emptyForm: VehicleFormState = { marque: '', modele: '', plaqueImmatriculation: '', kilometrage: '', annee: '', carburant: '' };
@@ -26,7 +31,7 @@ const emptyForm: VehicleFormState = { marque: '', modele: '', plaqueImmatriculat
 function vehicleToForm(vehicle: Vehicle): VehicleFormState { return { marque: vehicle.marque ?? '', modele: vehicle.modele ?? '', plaqueImmatriculation: vehicle.plaqueImmatriculation ?? vehicle.immatriculation ?? '', kilometrage: vehicle.kilometrage != null ? String(vehicle.kilometrage) : '', annee: vehicle.annee != null ? String(vehicle.annee) : '', carburant: vehicle.carburant ?? '' }; }
 
 /** Cette page gere les vehicules du client avec une liste visible avant le formulaire. */
-export function VehiclesScreen() {
+export function VehiclesScreen({ navigation }: VehiclesScreenProps) {
   const [vehicles, setVehicles] = useState<Vehicle[]>([]);
   const [form, setForm] = useState<VehicleFormState>(emptyForm);
   const [editingId, setEditingId] = useState<number | null>(null);
@@ -38,6 +43,7 @@ export function VehiclesScreen() {
 
   const loadVehicles = useCallback(async () => { try { setLoading(true); setError(null); setVehicles(await getVehicles()); } catch (exception) { setError(exception instanceof Error ? exception.message : 'Impossible de charger les vehicules.'); } finally { setLoading(false); } }, []);
   useEffect(() => { void loadVehicles(); }, [loadVehicles]);
+  useRefreshOnFocus(navigation, () => void loadVehicles());
 
   function validateVehicle(): VehiclePayload | string {
     const kilometrage = form.kilometrage ? Number(form.kilometrage) : null;

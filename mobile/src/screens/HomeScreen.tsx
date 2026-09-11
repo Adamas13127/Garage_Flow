@@ -5,7 +5,7 @@
  */
 import type { BottomTabScreenProps } from '@react-navigation/bottom-tabs';
 import { Ionicons } from '@expo/vector-icons';
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { getClientAppointments } from '../api/appointmentApi';
 import { getGarages } from '../api/garageApi';
@@ -22,6 +22,7 @@ import { ScreenContainer } from '../components/layout/ScreenContainer';
 import { AppButton } from '../components/ui/AppButton';
 import type { MainTabsParamList } from '../navigation/MainTabs';
 import { useAuth } from '../hooks/useAuth';
+import { useRefreshOnFocus } from '../hooks/useRefreshOnFocus';
 import type { Appointment } from '../types/appointment';
 import type { Garage } from '../types/garage';
 import type { Intervention } from '../types/intervention';
@@ -48,29 +49,29 @@ export function HomeScreen({ navigation }: HomeScreenProps) {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  useEffect(() => {
-    async function loadSummary() {
-      try {
-        setLoading(true);
-        const results = await Promise.allSettled([getVehicles(), getClientAppointments(), getClientInterventions(), getUnreadNotifications(), getGarages()]);
-        const vehicles = results[0].status === 'fulfilled' ? results[0].value.length : 0;
-        const appointmentsList = results[1].status === 'fulfilled' ? results[1].value : [];
-        const interventionsList = results[2].status === 'fulfilled' ? results[2].value : [];
-        const notifications = results[3].status === 'fulfilled' ? results[3].value.length : 0;
-        const garagesList = results[4].status === 'fulfilled' ? results[4].value : [];
-        const upcoming = appointmentsList.filter((item) => isUpcomingAppointment(item.statut));
-        const openInterventions = interventionsList.filter((item) => isOpenIntervention(item.statutActuel?.code ?? item.statut));
-        setCounts({ appointments: upcoming.length, interventions: openInterventions.length, notifications, vehicles });
-        setGarages(garagesList.slice(0, 3));
-        setNextAppointment(upcoming[0]);
-        setCurrentIntervention(openInterventions[0]);
-        if (results.some((result) => result.status === 'rejected')) setError('Certaines donnees du resume ne sont pas disponibles.');
-      } finally {
-        setLoading(false);
-      }
+  const loadSummary = useCallback(async () => {
+    try {
+      setLoading(true);
+      const results = await Promise.allSettled([getVehicles(), getClientAppointments(), getClientInterventions(), getUnreadNotifications(), getGarages()]);
+      const vehicles = results[0].status === 'fulfilled' ? results[0].value.length : 0;
+      const appointmentsList = results[1].status === 'fulfilled' ? results[1].value : [];
+      const interventionsList = results[2].status === 'fulfilled' ? results[2].value : [];
+      const notifications = results[3].status === 'fulfilled' ? results[3].value.length : 0;
+      const garagesList = results[4].status === 'fulfilled' ? results[4].value : [];
+      const upcoming = appointmentsList.filter((item) => isUpcomingAppointment(item.statut));
+      const openInterventions = interventionsList.filter((item) => isOpenIntervention(item.statutActuel?.code ?? item.statut));
+      setCounts({ appointments: upcoming.length, interventions: openInterventions.length, notifications, vehicles });
+      setGarages(garagesList.slice(0, 3));
+      setNextAppointment(upcoming[0]);
+      setCurrentIntervention(openInterventions[0]);
+      if (results.some((result) => result.status === 'rejected')) setError('Certaines donnees du resume ne sont pas disponibles.');
+    } finally {
+      setLoading(false);
     }
-    void loadSummary();
   }, []);
+
+  useEffect(() => { void loadSummary(); }, [loadSummary]);
+  useRefreshOnFocus(navigation, () => void loadSummary());
 
   return (
     <ScreenContainer>

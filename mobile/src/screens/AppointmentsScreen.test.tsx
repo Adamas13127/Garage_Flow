@@ -3,7 +3,7 @@
  * Il existe pour verifier les filtres RDV, l'action detail et l'annulation.
  * Il communique avec AppointmentsScreen et appointmentApi.ts mocke.
  */
-import { fireEvent, render, screen, waitFor } from '@testing-library/react-native';
+import { act, fireEvent, render, screen, waitFor } from '@testing-library/react-native';
 import { cancelAppointment, getClientAppointments } from '../api/appointmentApi';
 import { AppointmentsScreen } from './AppointmentsScreen';
 
@@ -11,8 +11,17 @@ jest.mock('../api/appointmentApi', () => ({ cancelAppointment: jest.fn(), getCli
 
 const mockCancelAppointment = cancelAppointment as jest.MockedFunction<typeof cancelAppointment>;
 const mockGetClientAppointments = getClientAppointments as jest.MockedFunction<typeof getClientAppointments>;
-const navigation = { navigate: jest.fn() } as never;
 const route = { key: 'AppointmentsList', name: 'AppointmentsList' } as never;
+
+/** Ce mock de navigation capture le callback 'focus' pour simuler un retour sur l'ecran. */
+function createNavigation() {
+  const listeners: Record<string, () => void> = {};
+  const navigation = {
+    navigate: jest.fn(),
+    addListener: jest.fn((event: string, callback: () => void) => { listeners[event] = callback; return jest.fn(); }),
+  };
+  return { navigation: navigation as never, emitFocus: () => listeners.focus?.() };
+}
 
 describe('AppointmentsScreen', () => {
   beforeEach(() => { jest.clearAllMocks(); });
@@ -23,6 +32,7 @@ describe('AppointmentsScreen', () => {
   /** Ce test verifie que les filtres RDV principaux sont visibles. */
   it('affiche les filtres de rendez-vous', async () => {
     mockGetClientAppointments.mockResolvedValue([pendingAppointment]);
+    const { navigation } = createNavigation();
     render(<AppointmentsScreen navigation={navigation} route={route} />);
     expect(await screen.findByText('A venir')).toBeTruthy();
     expect(screen.getByText('En attente')).toBeTruthy();
@@ -33,6 +43,7 @@ describe('AppointmentsScreen', () => {
   /** Ce test verifie qu'un rendez-vous en attente affiche l'action d'annulation. */
   it('affiche le bouton annuler pour un rendez-vous en attente', async () => {
     mockGetClientAppointments.mockResolvedValue([pendingAppointment]);
+    const { navigation } = createNavigation();
     render(<AppointmentsScreen navigation={navigation} route={route} />);
     expect(await screen.findByText('Annuler')).toBeTruthy();
   });
@@ -40,6 +51,7 @@ describe('AppointmentsScreen', () => {
   /** Ce test verifie qu'un rendez-vous termine ne peut plus etre annule. */
   it('ne montre pas le bouton annuler pour un rendez-vous termine', async () => {
     mockGetClientAppointments.mockResolvedValue([{ ...pendingAppointment, id: 8, statut: 'TERMINE' }]);
+    const { navigation } = createNavigation();
     render(<AppointmentsScreen navigation={navigation} route={route} />);
     fireEvent.press(await screen.findByText('Tous'));
     await screen.findByText('Garage Central');
@@ -50,8 +62,23 @@ describe('AppointmentsScreen', () => {
   it('appelle cancelAppointment', async () => {
     mockGetClientAppointments.mockResolvedValue([pendingAppointment]);
     mockCancelAppointment.mockResolvedValue({ ...pendingAppointment });
+    const { navigation } = createNavigation();
     render(<AppointmentsScreen navigation={navigation} route={route} />);
     fireEvent.press(await screen.findByText('Annuler'));
     await waitFor(() => expect(mockCancelAppointment).toHaveBeenCalledWith(7));
+  });
+
+  /** Ce test verifie que le retour sur l'ecran recharge les rendez-vous, sans le recharger au montage initial. */
+  it('recharge les rendez-vous quand l ecran redevient visible', async () => {
+    mockGetClientAppointments.mockResolvedValue([pendingAppointment]);
+    const { navigation, emitFocus } = createNavigation();
+    render(<AppointmentsScreen navigation={navigation} route={route} />);
+    await screen.findByText('Garage Central');
+    expect(mockGetClientAppointments).toHaveBeenCalledTimes(1);
+
+    mockGetClientAppointments.mockResolvedValue([{ ...pendingAppointment, id: 9, garage: { id: 1, nom: 'Garage Nord' } }]);
+    act(() => emitFocus());
+    await screen.findByText('Garage Nord');
+    expect(mockGetClientAppointments).toHaveBeenCalledTimes(2);
   });
 });

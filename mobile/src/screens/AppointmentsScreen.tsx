@@ -14,6 +14,7 @@ import { EmptyState } from '../components/feedback/EmptyState';
 import { ErrorState } from '../components/feedback/ErrorState';
 import { LoadingState } from '../components/feedback/LoadingState';
 import { ScreenContainer } from '../components/layout/ScreenContainer';
+import { useRefreshOnFocus } from '../hooks/useRefreshOnFocus';
 import type { AppointmentsStackParamList } from '../navigation/AppointmentsStackNavigator';
 import type { Appointment } from '../types/appointment';
 import { colors } from '../utils/theme';
@@ -46,6 +47,7 @@ export function AppointmentsScreen({ navigation }: AppointmentsScreenProps) {
 
   const loadAppointments = useCallback(async () => { try { setLoading(true); setError(null); setItems(await getClientAppointments()); } catch (exception) { setError(exception instanceof Error ? exception.message : 'Impossible de charger les rendez-vous.'); } finally { setLoading(false); } }, []);
   useEffect(() => { void loadAppointments(); }, [loadAppointments]);
+  useRefreshOnFocus(navigation, () => void loadAppointments());
   const filteredItems = useMemo(() => items.filter((item) => matchesFilter(item, filter)), [filter, items]);
 
   async function handleCancel(id: number) { try { setError(null); await cancelAppointment(id); setSuccess('Rendez-vous annule.'); await loadAppointments(); } catch (exception) { setError(exception instanceof Error ? exception.message : 'Impossible d annuler le rendez-vous.'); } }

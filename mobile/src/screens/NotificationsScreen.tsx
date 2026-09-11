@@ -3,6 +3,7 @@
  * Il existe pour afficher les alertes, filtrer les non lues et les marquer comme lues.
  * Il communique avec notificationApi.ts et NotificationCard.
  */
+import type { BottomTabScreenProps } from '@react-navigation/bottom-tabs';
 import { useCallback, useEffect, useState } from 'react';
 import { StyleSheet, Text } from 'react-native';
 import { getNotifications, getUnreadNotifications, markAllNotificationsAsRead, markNotificationAsRead } from '../api/notificationApi';
@@ -14,14 +15,17 @@ import { LoadingState } from '../components/feedback/LoadingState';
 import { ScreenContainer } from '../components/layout/ScreenContainer';
 import { NotificationCard } from '../components/notifications/NotificationCard';
 import { AppButton } from '../components/ui/AppButton';
+import { useRefreshOnFocus } from '../hooks/useRefreshOnFocus';
+import type { MainTabsParamList } from '../navigation/MainTabs';
 import type { NotificationItem } from '../types/notification';
 import { colors } from '../utils/theme';
 
+type NotificationsScreenProps = BottomTabScreenProps<MainTabsParamList, 'Notifications'>;
 type NotificationFilter = 'all' | 'unread';
 const filterOptions = [{ label: 'Toutes', value: 'all' }, { label: 'Non lues', value: 'unread' }] satisfies { label: string; value: NotificationFilter }[];
 
 /** Cet ecran liste les notifications du client et gere leur lecture. */
-export function NotificationsScreen() {
+export function NotificationsScreen({ navigation }: NotificationsScreenProps) {
   const [items, setItems] = useState<NotificationItem[]>([]);
   const [filter, setFilter] = useState<NotificationFilter>('all');
   const [loading, setLoading] = useState(true);
@@ -31,6 +35,7 @@ export function NotificationsScreen() {
 
   const loadNotifications = useCallback(async () => { try { setLoading(true); setError(null); setItems(filter === 'unread' ? await getUnreadNotifications() : await getNotifications()); } catch (exception) { setError(exception instanceof Error ? exception.message : 'Impossible de charger les notifications.'); } finally { setLoading(false); } }, [filter]);
   useEffect(() => { void loadNotifications(); }, [loadNotifications]);
+  useRefreshOnFocus(navigation, () => void loadNotifications());
 
   async function handleMarkRead(id: number) { try { setActionLoading(id); setError(null); await markNotificationAsRead(id); setSuccess('Notification marquee comme lue.'); await loadNotifications(); } catch (exception) { setError(exception instanceof Error ? exception.message : 'Impossible de marquer la notification comme lue.'); } finally { setActionLoading(null); } }
   async function handleMarkAllRead() { try { setActionLoading('all'); setError(null); await markAllNotificationsAsRead(); setSuccess('Toutes les notifications sont lues.'); await loadNotifications(); } catch (exception) { setError(exception instanceof Error ? exception.message : 'Impossible de marquer toutes les notifications comme lues.'); } finally { setActionLoading(null); } }
