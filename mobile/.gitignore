@@ -13,3 +13,14 @@ npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 .DS_Store
+
+# Projets natifs generes par expo prebuild / expo run (regenerables, jamais versionnes)
+android/
+ios/
+
+# Artefacts de build natifs
+.gradle/
+local.properties
+*.keystore
+*.apk
+*.aab
