@@ -131,3 +131,7 @@ Compte conseille : `client.demo@garageflow.local` / `Password123`.
 ## Message de conclusion
 
 GarageFlow montre un MVP coherent : le garage gere son activite depuis le web, le client suit son parcours depuis le mobile, et le backend reste la source de verite pour les droits, les donnees et les regles metier.
+
+## Point de vigilance apres soutenance
+
+La configuration Expo (`mobile/app.json`) et le dossier natif genere `mobile/android` divergent sur l'identifiant Android (`com.garageflow.client` contre `com.anonymous.garageflowclient`), a aligner par une regeneration complete (`expo prebuild --platform android --clean`) avant toute publication.
