@@ -6,9 +6,20 @@
     "orientation": "portrait",
     "userInterfaceStyle": "light",
     "scheme": "garageflow",
-    "assetBundlePatterns": ["**/*"],
-    "ios": { "supportsTablet": true },
-    "android": { "adaptiveIcon": { "backgroundColor": "#0f172a" } },
-    "plugins": ["expo-font"]
+    "assetBundlePatterns": [
+      "**/*"
+    ],
+    "ios": {
+      "supportsTablet": true
+    },
+    "android": {
+      "adaptiveIcon": {
+        "backgroundColor": "#0f172a"
+      },
+      "package": "com.garageflow.client"
+    },
+    "plugins": [
+      "expo-font"
+    ]
   }
 }
